@@ -16,6 +16,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <style>
+        /* บรรทัดที่ 26-58: Styles เดิม */
         body { font-family: 'Kanit', sans-serif; background-color: #f8fafc; color: #1e293b; }
         
         /* Modern Inputs */
@@ -36,6 +37,26 @@
         /* Active State */
         .timeline-step.active .step-dot { background: #10b981; border-color: #10b981; box-shadow: 0 0 0 3px #d1fae5; }
         .timeline-step.active .step-text { color: #059669; font-weight: 700; }
+
+        /* บรรทัดที่ 64-90: Style เพิ่มเติมสำหรับ Queue / Admin */
+        .queue-card {
+            background: #fff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: 0.3s;
+        }
+        .queue-number {
+            font-size: 4rem; font-weight: 800; color: #0f172a; line-height: 1;
+        }
+        .queue-service {
+            font-size: 1.1rem; font-weight: 600; color: #475569;
+        }
+        .admin-action-btn {
+            background: #f1f5f9; color: #1e293b; padding: 10px 15px; border-radius: 10px; font-weight: 600;
+            transition: 0.2s;
+        }
+        .admin-action-btn:hover {
+            background: #e2e8f0;
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -50,7 +71,7 @@
             <div id="nav-auth" class="hidden gap-3">
                 <div class="text-right">
                     <div id="user-name" class="text-sm font-bold">...</div>
-                    <div class="text-[10px] text-slate-400">Customer</div>
+                    <div class="text-[10px] text-slate-400"><span id="user-role">Customer</span></div>
                 </div>
                 <button onclick="Auth.logout()" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-red-50 hover:text-red-500 transition"><i class="fa-solid fa-power-off"></i></button>
             </div>
@@ -124,9 +145,60 @@
             </div>
         </section>
 
+        <section id="view-admin" class="hidden w-full max-w-5xl mt-6 animate__animated animate__fadeIn">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6 flex items-center gap-3"><i class="fa-solid fa-terminal text-blue-600"></i> Admin Panel: Queue Management</h2>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="md:col-span-1 queue-card bg-slate-100 text-center border-slate-300">
+                    <div class="text-sm font-bold text-slate-500 mb-3 uppercase">คิวปัจจุบัน</div>
+                    <div id="current-queue" class="queue-number">00</div>
+                    <div id="current-service" class="queue-service">---</div>
+                    <button onclick="Queue.next()" class="btn-main mt-6 bg-green-600 hover:bg-green-700">
+                        <i class="fa-solid fa-forward mr-2"></i> เรียกคิวถัดไป
+                    </button>
+                </div>
+
+                <div class="md:col-span-2 queue-card space-y-4">
+                    <h3 class="font-bold text-lg text-slate-700">เพิ่มคิวใหม่</h3>
+                    <div><label class="text-xs font-bold text-slate-400 ml-1">ชื่อผู้รับบริการ</label><input id="q-name" class="input-box" placeholder="ชื่อลูกค้า"></div>
+                    <div><label class="text-xs font-bold text-slate-400 ml-1">บริการ/ประเภท</label><input id="q-service" class="input-box" placeholder="เช่น ตัดผม, ตรวจสุขภาพ"></div>
+                    <button onclick="Queue.add()" class="btn-main">
+                        <i class="fa-solid fa-plus mr-2"></i> เพิ่มคิวเข้าระบบ
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="font-bold text-lg text-slate-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-users"></i> คิวที่กำลังรอ <span id="waiting-count" class="text-sm bg-slate-200 text-slate-600 px-3 py-1 rounded-full font-normal">0</span></h3>
+                <div id="queue-list-container" class="space-y-3">
+                    <div class="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 text-slate-400">
+                        <i class="fa-solid fa-clock text-3xl mb-2"></i><br>ไม่มีคิวที่กำลังรอ
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-queue-status" class="hidden w-full max-w-lg mt-6 animate__animated animate__fadeIn text-center">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bell text-yellow-500"></i> สถานะคิวปัจจุบัน
+                </h2>
+                <p class="text-slate-400 mb-6">คิวที่ถูกเรียกไปแล้วคือ <span id="status-current-q" class="font-bold text-lg text-slate-800">00</span></p>
+
+                <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 text-blue-700">
+                    <div class="text-sm font-bold uppercase">คิวของคุณ</div>
+                    <div id="status-your-q" class="text-5xl font-extrabold my-2">--</div>
+                    <div id="status-service" class="text-lg font-medium">---</div>
+                </div>
+                
+                <p id="waiting-info" class="text-sm text-slate-500 mt-4">มีคิวรออยู่ข้างหน้า **--** คิว</p>
+            </div>
+        </section>
+
     </main>
 
     <script>
+        // บรรทัดที่ 307-316: Config และ Init Firebase เดิม
         // --- 1. FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyAHAkBhypqyJuuL22tLrFKN7ZqdEsqGDTk",
@@ -141,27 +213,33 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // --- 2. VIEW CONTROLLER ---
+        // บรรทัดที่ 322-340: View Controller เดิม + เพิ่มการจัดการ Admin View
+        // --- 2. VIEW CONTROLLER (Revised) ---
         const View = {
             toggleAuth: (mode) => {
                 document.getElementById('form-login').classList.toggle('hidden', mode === 'reg');
                 document.getElementById('form-register').classList.toggle('hidden', mode === 'log');
             },
-            showDashboard: (user) => {
-                document.getElementById('view-auth').classList.add('hidden');
-                document.getElementById('view-dashboard').classList.remove('hidden');
-                document.getElementById('nav-auth').classList.remove('hidden');
-                document.getElementById('nav-auth').classList.add('flex');
-                document.getElementById('user-name').innerText = user.displayName || user.email;
-            },
-            showLogin: () => {
-                document.getElementById('view-auth').classList.remove('hidden');
-                document.getElementById('view-dashboard').classList.add('hidden');
-                document.getElementById('nav-auth').classList.add('hidden');
-                document.getElementById('nav-auth').classList.remove('flex');
+            // ฟังก์ชันหลักในการเปลี่ยนหน้า
+            showView: (viewId, user, role) => {
+                const views = ['view-auth', 'view-dashboard', 'view-admin', 'view-queue-status'];
+                views.forEach(id => document.getElementById(id).classList.add('hidden'));
+
+                if (user) {
+                    document.getElementById(viewId).classList.remove('hidden');
+                    document.getElementById('nav-auth').classList.remove('hidden');
+                    document.getElementById('nav-auth').classList.add('flex');
+                    document.getElementById('user-name').innerText = user.displayName || user.email;
+                    document.getElementById('user-role').innerText = role;
+                } else {
+                    document.getElementById('view-auth').classList.remove('hidden');
+                    document.getElementById('nav-auth').classList.add('hidden');
+                    document.getElementById('nav-auth').classList.remove('flex');
+                }
             }
         };
 
+        // บรรทัดที่ 343-365: Auth System เดิม
         // --- 3. AUTH SYSTEM ---
         const Auth = {
             login: () => {
@@ -176,26 +254,56 @@
                 if(!n || !e || !p) return Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบ', 'warning');
                 auth.createUserWithEmailAndPassword(e, p).then(cred => {
                     cred.user.updateProfile({ displayName: n });
+                    // เพิ่ม role ให้เป็น customer เริ่มต้น
+                    db.collection('users').doc(cred.user.uid).set({ role: 'customer' });
                     Swal.fire('สำเร็จ', 'สมัครสมาชิกเรียบร้อย', 'success');
                 }).catch(err => Swal.fire('Error', err.message, 'error'));
             },
             logout: () => auth.signOut().then(() => location.reload())
         };
 
-        // --- 4. APP LOGIC (The Core Fix) ---
+        // บรรทัดที่ 368-500: App Logic เดิม
+        // --- 4. CORE APP LOGIC (Revised and Extended) ---
         const App = {
             init: () => {
                 auth.onAuthStateChanged(user => {
                     if (user) {
-                        View.showDashboard(user);
-                        App.loadOrders(user.uid);
+                        App.checkUserRole(user);
                     } else {
-                        View.showLogin();
+                        View.showView('view-auth');
                     }
                 });
             },
 
-            // สร้างออเดอร์ใหม่ (ส่งไปที่ web_orders เหมือนแอดมิน)
+            // **NEW** ตรวจสอบสิทธิ์ผู้ใช้งาน
+            checkUserRole: (user) => {
+                db.collection('users').doc(user.uid).get().then(doc => {
+                    let role = 'customer';
+                    if (doc.exists && doc.data().role) {
+                        role = doc.data().role;
+                    }
+                    
+                    if (role === 'admin') {
+                        View.showView('view-admin', user, 'Admin');
+                        Queue.loadAdminQueue();
+                    } else if (role === 'queue_user') {
+                        // สมมติว่าลูกค้าที่จองคิวแล้วจะถูก redirect ไปหน้าดูคิว
+                        View.showView('view-queue-status', user, 'Queue User');
+                        Queue.loadCustomerStatus(user.uid);
+                    }
+                     else {
+                        // Default คือ customer (ผู้สั่งทำระบบ)
+                        View.showView('view-dashboard', user, 'Customer');
+                        App.loadOrders(user.uid);
+                    }
+                }).catch(() => {
+                    // หากไม่มี Doc ใน 'users' ให้ถือเป็น customer
+                    View.showView('view-dashboard', user, 'Customer');
+                    App.loadOrders(user.uid);
+                });
+            },
+
+            // สร้างออเดอร์ใหม่ (เหมือนเดิม)
             createOrder: () => {
                 const user = auth.currentUser;
                 const shop = document.getElementById('ord-shop').value;
@@ -215,12 +323,13 @@
                 }).then(() => {
                     Swal.fire('ส่งข้อมูลแล้ว', 'แอดมินได้รับรายการสั่งทำแล้ว', 'success');
                     document.getElementById('ord-shop').value = '';
+                    document.getElementById('ord-adm-email').value = '';
+                    document.getElementById('ord-adm-pass').value = '';
                 });
             },
 
-            // โหลดข้อมูล (แก้บั๊ก Loading ค้างด้วยการใช้ where อย่างเดียว)
+            // โหลดข้อมูล Order (เหมือนเดิม)
             loadOrders: (uid) => {
-                // Query: ดึงเฉพาะของ User คนนี้
                 db.collection('web_orders')
                   .where('uid', '==', uid)
                   .onSnapshot(snap => {
@@ -231,64 +340,247 @@
                           return;
                       }
 
-                      // แปลงข้อมูล + เรียงลำดับใน Javascript (แก้ปัญหา Index ของ Firebase)
                       let orders = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                       orders.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
                       container.innerHTML = orders.map(o => {
-                          // Map สถานะให้ตรงกับแอดมิน
                           const steps = ['pending', 'working', 'testing', 'completed'];
                           const labels = ['รับเรื่อง', 'กำลังทำ', 'ตรวจสอบ', 'เสร็จสิ้น'];
                           const currentIdx = steps.indexOf(o.status);
 
-                          // สร้าง HTML Timeline
                           let timelineHTML = '';
                           labels.forEach((lbl, i) => {
                               const activeClass = i <= currentIdx ? 'active' : '';
+                              // **FIXED**: เปลี่ยนจาก <i class="fa-solid fa-check"></i> เป็น div เปล่าๆ เพื่อให้ dot กลม
+                              const dotContent = i <= currentIdx ? `<i class="fa-solid fa-check text-white text-xs"></i>` : '';
                               timelineHTML += `
-                                <div class="timeline-step ${activeClass}">
-                                    <div class="step-dot"><i class="fa-solid fa-check"></i></div>
-                                    <div class="step-text">${lbl}</div>
-                                </div>`;
+                                  <div class="timeline-step ${activeClass}">
+                                      <div class="step-dot flex items-center justify-center">${dotContent}</div>
+                                      <div class="step-text">${lbl}</div>
+                                  </div>`;
                           });
 
-                          // กล่องข้อความเมื่อเสร็จ
                           let footerHTML = '';
                           if (o.status === 'completed') {
                               footerHTML = `
-                                <div class="mt-6 bg-green-50 border border-green-100 p-4 rounded-xl flex items-start gap-3">
-                                    <i class="fa-solid fa-circle-check text-green-500 text-xl mt-1"></i>
-                                    <div>
-                                        <div class="font-bold text-green-700">งานเสร็จเรียบร้อยแล้ว!</div>
-                                        <div class="text-xs text-green-600 mt-1">แอดมินได้ส่งมอบโค้ดให้ทางช่องทางติดต่อแล้ว</div>
-                                    </div>
-                                </div>`;
+                                  <div class="mt-6 bg-green-50 border border-green-100 p-4 rounded-xl flex items-start gap-3">
+                                      <i class="fa-solid fa-circle-check text-green-500 text-xl mt-1"></i>
+                                      <div>
+                                          <div class="font-bold text-green-700">งานเสร็จเรียบร้อยแล้ว!</div>
+                                          <div class="text-xs text-green-600 mt-1">แอดมินได้ส่งมอบโค้ดให้ทางช่องทางติดต่อแล้ว</div>
+                                      </div>
+                                  </div>`;
                           }
 
                           return `
-                            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm animate__animated animate__fadeIn">
-                                <div class="flex justify-between items-start mb-2">
-                                    <div>
-                                        <div class="text-xs text-slate-400 uppercase font-bold">Project Name</div>
-                                        <h4 class="text-xl font-bold text-slate-800">${o.shopName}</h4>
-                                    </div>
-                                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-md font-mono">
-                                        ${o.timestamp ? new Date(o.timestamp.toDate()).toLocaleDateString() : 'Just now'}
-                                    </span>
-                                </div>
-                                
-                                <div class="timeline-container">
-                                    <div class="timeline-line"></div>
-                                    ${timelineHTML}
-                                </div>
-                                ${footerHTML}
-                            </div>
+                              <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm animate__animated animate__fadeIn">
+                                  <div class="flex justify-between items-start mb-2">
+                                      <div>
+                                          <div class="text-xs text-slate-400 uppercase font-bold">Project Name</div>
+                                          <h4 class="text-xl font-bold text-slate-800">${o.shopName}</h4>
+                                      </div>
+                                      <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-md font-mono">
+                                          ${o.timestamp ? new Date(o.timestamp.toDate()).toLocaleDateString() : 'Just now'}
+                                      </span>
+                                  </div>
+                                  
+                                  <div class="timeline-container">
+                                      <div class="timeline-line"></div>
+                                      ${timelineHTML}
+                                  </div>
+                                  ${footerHTML}
+                              </div>
                           `;
                       }).join('');
                   });
             }
         };
 
+        // บรรทัดที่ 503-640: **NEW** Queue Management System
+        // --- 5. QUEUE MANAGEMENT SYSTEM ---
+        const Queue = {
+            currentQueueRef: db.collection('queue_info').doc('current'),
+            waitingQueueRef: db.collection('waiting_queues'),
+
+            // **NEW** Add Queue
+            add: () => {
+                const name = document.getElementById('q-name').value;
+                const service = document.getElementById('q-service').value;
+                const user = auth.currentUser;
+
+                if (!name || !service) return Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
+
+                // 1. หาคิวล่าสุด
+                Queue.waitingQueueRef.orderBy('queueNumber', 'desc').limit(1).get().then(snap => {
+                    let nextQ = 1;
+                    if (!snap.empty) {
+                        nextQ = snap.docs[0].data().queueNumber + 1;
+                    }
+
+                    // 2. เพิ่มคิวใหม่
+                    Queue.waitingQueueRef.add({
+                        name: name,
+                        service: service,
+                        queueNumber: nextQ,
+                        status: 'waiting',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        userId: user ? user.uid : null, // ถ้าลูกค้าล็อกอินอยู่
+                    }).then(() => {
+                        Swal.fire('เพิ่มคิวสำเร็จ', `คิวที่ ${nextQ} ถูกเพิ่มเข้าระบบแล้ว`, 'success');
+                        document.getElementById('q-name').value = '';
+                        document.getElementById('q-service').value = '';
+                    });
+                }).catch(err => Swal.fire('Error', err.message, 'error'));
+            },
+
+            // **NEW** Next Queue (Admin Function)
+            next: () => {
+                // 1. ดึงคิวที่กำลังรอที่ "เก่าที่สุด" และ "ยังไม่ถูกเรียก"
+                Queue.waitingQueueRef
+                    .where('status', '==', 'waiting')
+                    .orderBy('queueNumber', 'asc')
+                    .limit(1)
+                    .get().then(snap => {
+                        if (snap.empty) {
+                            return Swal.fire('แจ้งเตือน', 'ไม่มีคิวที่กำลังรอแล้ว', 'info');
+                        }
+
+                        const nextDoc = snap.docs[0];
+                        const nextData = nextDoc.data();
+
+                        // 2. อัปเดต Current Queue
+                        Queue.currentQueueRef.set({
+                            queueNumber: nextData.queueNumber,
+                            service: nextData.service,
+                            name: nextData.name,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            // 3. เปลี่ยนสถานะคิวที่ถูกเรียกแล้ว
+                            nextDoc.ref.update({ status: 'called' });
+                            Swal.fire('เรียกคิวถัดไป', `เรียกคิวที่ ${nextData.queueNumber} สำหรับ ${nextData.service}`, 'success');
+                        });
+                    }).catch(err => Swal.fire('Error', err.message, 'error'));
+            },
+
+            // **NEW** Load Admin Panel Queue Status (Realtime)
+            loadAdminQueue: () => {
+                // Realtime: Current Queue
+                Queue.currentQueueRef.onSnapshot(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        document.getElementById('current-queue').innerText = data.queueNumber.toString().padStart(2, '0');
+                        document.getElementById('current-service').innerText = data.service;
+                    } else {
+                        document.getElementById('current-queue').innerText = '00';
+                        document.getElementById('current-service').innerText = 'เริ่มต้น';
+                    }
+                });
+
+                // Realtime: Waiting Queue List
+                Queue.waitingQueueRef
+                    .where('status', '==', 'waiting')
+                    .orderBy('queueNumber', 'asc')
+                    .onSnapshot(snap => {
+                        const container = document.getElementById('queue-list-container');
+                        document.getElementById('waiting-count').innerText = snap.size;
+
+                        if (snap.empty) {
+                            container.innerHTML = `<div class="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300 text-slate-400"><i class="fa-solid fa-clock text-3xl mb-2"></i><br>ไม่มีคิวที่กำลังรอ</div>`;
+                            return;
+                        }
+
+                        container.innerHTML = snap.docs.map(doc => {
+                            const o = doc.data();
+                            return `
+                                <div class="queue-card p-4 flex justify-between items-center hover:bg-slate-50">
+                                    <div class="flex items-center gap-4">
+                                        <div class="text-2xl font-bold text-blue-600">${o.queueNumber.toString().padStart(2, '0')}</div>
+                                        <div>
+                                            <div class="font-bold text-slate-800">${o.name}</div>
+                                            <div class="text-sm text-slate-500">${o.service}</div>
+                                        </div>
+                                    </div>
+                                    <button onclick="Queue.callQueue('${doc.id}', ${o.queueNumber}, '${o.service}', '${o.name}')" class="admin-action-btn hover:bg-green-100 text-green-600">
+                                        <i class="fa-solid fa-volume-up"></i> เรียก
+                                    </button>
+                                </div>
+                            `;
+                        }).join('');
+                    });
+            },
+
+            // **NEW** Function to call a specific queue from the list
+            callQueue: (docId, qNum, service, name) => {
+                 Queue.currentQueueRef.set({
+                    queueNumber: qNum,
+                    service: service,
+                    name: name,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    // เปลี่ยนสถานะคิวที่ถูกเรียกแล้ว
+                    Queue.waitingQueueRef.doc(docId).update({ status: 'called' });
+                    Swal.fire('เรียกคิวถัดไป', `เรียกคิวที่ ${qNum} สำหรับ ${service}`, 'success');
+                });
+            },
+
+            // **NEW** Load Customer Queue Status (Realtime)
+            loadCustomerStatus: (uid) => {
+                // 1. หาคิวของตัวเอง
+                Queue.waitingQueueRef
+                    .where('userId', '==', uid)
+                    .where('status', 'in', ['waiting', 'called']) // คิวที่ยังไม่จบ
+                    .orderBy('queueNumber', 'asc')
+                    .onSnapshot(snap => {
+                        const yourQ = snap.docs[0];
+                        if (yourQ) {
+                            const data = yourQ.data();
+                            document.getElementById('status-your-q').innerText = data.queueNumber.toString().padStart(2, '0');
+                            document.getElementById('status-service').innerText = data.service;
+                        } else {
+                            document.getElementById('status-your-q').innerText = 'ไม่มีคิว';
+                            document.getElementById('status-service').innerText = 'สามารถจองคิวใหม่ได้';
+                        }
+                    });
+
+                // 2. ดูสถานะคิวที่เรียกไปแล้ว (Current Queue)
+                Queue.currentQueueRef.onSnapshot(doc => {
+                    const currentQNum = doc.exists ? doc.data().queueNumber : 0;
+                    document.getElementById('status-current-q').innerText = currentQNum.toString().padStart(2, '0');
+
+                    const myQElement = document.getElementById('status-your-q');
+                    const myQNum = parseInt(myQElement.innerText) || 9999;
+
+                    // 3. คำนวณคิวที่รอก่อนหน้า
+                    if (myQNum !== 9999) {
+                         Queue.waitingQueueRef
+                            .where('status', '==', 'waiting')
+                            .where('queueNumber', '<', myQNum)
+                            .onSnapshot(waitingSnap => {
+                                const waitingCount = waitingSnap.size;
+                                document.getElementById('waiting-info').innerHTML = `มีคิวรออยู่ข้างหน้า **${waitingCount}** คิว`;
+                            });
+                    }
+                });
+            }
+        };
+
+        // **NEW** 6. Helper Function (จำลองการสร้าง Admin)
+        const Helper = {
+            // ฟังก์ชันนี้ควรใช้แค่ครั้งเดียวใน Admin Panel จริงเพื่อสร้างสิทธิ์
+            makeAdmin: (email) => {
+                db.collection('users').where('email', '==', email).get().then(snap => {
+                    if (!snap.empty) {
+                        const uid = snap.docs[0].id;
+                        db.collection('users').doc(uid).update({ role: 'admin' })
+                            .then(() => Swal.fire('Success', `${email} is now an Admin`, 'success'));
+                    } else {
+                        Swal.fire('Not Found', 'User email not found in auth system.', 'error');
+                    }
+                }).catch(err => Swal.fire('Error', err.message, 'error'));
+            }
+        }
+        
+        // บรรทัดที่ 711: Start App
         App.init();
     </script>
 </body>
