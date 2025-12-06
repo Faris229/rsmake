@@ -127,8 +127,9 @@
     </div>
 
     <script>
+        <script>
         // --- 1. CONFIG FIREBASE ---
-        // (กรุณาใช้ Config ของคุณเองจะดีที่สุด แต่ถ้าไม่มีให้ใช้ตัวนี้ทดสอบได้)
+        // ⚠️ สำคัญ: ต้องเปลี่ยนตรงนี้เป็น Config ของคุณเองจาก Firebase Console
         const firebaseConfig = {
             apiKey: "AIzaSyAHAkBhypqyJuuL22tLrFKN7ZqdEsqGDTk",
             authDomain: "rsdm-9ca2a.firebaseapp.com",
@@ -138,8 +139,10 @@
             appId: "1:299212700124:web:730160dae6bb1b09cbb719"
         };
 
-        // Initialize (Compat Mode)
-        firebase.initializeApp(firebaseConfig);
+        // Initialize
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const auth = firebase.auth();
         const db = firebase.firestore();
 
@@ -165,7 +168,7 @@
             login: () => {
                 const e = document.getElementById('l-email').value;
                 const p = document.getElementById('l-pass').value;
-                auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
+                auth.signInWithEmailAndPassword(e, p).catch(err => alert("Login Error: " + err.message));
             },
             register: () => {
                 const n = document.getElementById('r-name').value;
@@ -175,12 +178,11 @@
                 
                 auth.createUserWithEmailAndPassword(e, p).then(cred => {
                     cred.user.updateProfile({ displayName: n });
-                    // สร้าง User ใน DB เพื่อให้ Admin เห็น
                     db.collection('users').doc(cred.user.uid).set({
                         name: n, email: e, uid: cred.user.uid, role: 'customer'
                     });
                     alert('สมัครสำเร็จ!');
-                }).catch(err => alert(err.message));
+                }).catch(err => alert("Register Error: " + err.message));
             },
             logout: () => auth.signOut()
         };
@@ -193,22 +195,34 @@
 
                 if(!shop) return alert('ใส่ชื่อโปรเจกต์ด้วยครับ');
 
+                // บันทึกเวลาปัจจุบัน
+                const now = new Date();
+
                 db.collection('web_orders').add({
                     uid: user.uid,
                     customerName: user.displayName || user.email,
                     shopName: shop,
                     description: desc,
-                    status: 'pending', // สถานะเริ่มต้น
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    adminEmail: '', adminPass: '' // ฟิลด์ว่างรอแอดมินใส่
+                    status: 'pending',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(), // ใช้ Server Timestamp
+                    createdAtStr: now.toString(), // กันเหนียว
+                    adminEmail: '', adminPass: ''
                 }).then(() => {
                     document.getElementById('modal-new').classList.add('hidden');
                     document.getElementById('ord-shop').value = '';
                     document.getElementById('ord-desc').value = '';
+                    alert('สั่งงานเรียบร้อย รอแอดมินตรวจสอบ');
+                }).catch(err => {
+                    console.error("Error adding document: ", err);
+                    alert("ส่งงานไม่ผ่าน: " + err.message);
                 });
             },
+            
+            // ⚠️ จุดสำคัญที่แก้: เอา orderBy ออกก่อนเพื่อให้โหลดได้ชัวร์ๆ
             loadData: (uid) => {
-                // 1. โหลดประกาศ
+                console.log("Start loading data for UID:", uid);
+
+                // 1. โหลดประกาศ (แบบง่าย)
                 db.collection('system_announcements').doc('main').onSnapshot(doc => {
                     if(doc.exists && doc.data().isActive) {
                         document.getElementById('annc-box').classList.remove('hidden');
@@ -219,27 +233,40 @@
                     }
                 });
 
-                // 2. โหลดออเดอร์ (ต้องใช้ uid กรอง)
+                // 2. โหลดออเดอร์ (ตัด orderBy ออกเพื่อแก้ปัญหา Index Error)
                 db.collection('web_orders')
                   .where('uid', '==', uid)
-                  .orderBy('timestamp', 'desc')
+                  // .orderBy('timestamp', 'desc') <--- คอมเมนต์บรรทัดนี้ออกไปก่อน ถ้ายังไม่ได้สร้าง Index
                   .onSnapshot(snap => {
                       const list = document.getElementById('orders-list');
+                      console.log("Data received, count:", snap.size);
+                      
                       if(snap.empty) {
                           list.innerHTML = `<div class="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-gray-400">ยังไม่มีรายการงาน</div>`;
                           return;
                       }
 
-                      list.innerHTML = snap.docs.map(doc => {
-                          const d = doc.data();
-                          // คำนวณ % Timeline
+                      // แปลงข้อมูลและเรียงลำดับด้วย JavaScript แทน (แก้ขัด)
+                      let orders = [];
+                      snap.forEach(doc => {
+                          orders.push({ id: doc.id, ...doc.data() });
+                      });
+                      
+                      // เรียงลำดับเอง (ใหม่ไปเก่า)
+                      orders.sort((a, b) => {
+                          const tA = a.timestamp ? a.timestamp.seconds : 0;
+                          const tB = b.timestamp ? b.timestamp.seconds : 0;
+                          return tB - tA;
+                      });
+
+                      list.innerHTML = orders.map(d => {
+                          // คำนวณ Timeline
                           let progress = '0%';
                           if(d.status === 'working') progress = '33%';
                           if(d.status === 'testing') progress = '66%';
                           if(d.status === 'completed') progress = '100%';
                           if(d.status === 'cancelled') progress = '0%';
 
-                          // ส่วนข้อมูลลับ
                           let secretHTML = '';
                           if((d.adminEmail || d.adminPass) && d.status !== 'cancelled') {
                               secretHTML = `
@@ -260,11 +287,11 @@
                                 </div>`;
                           }
 
-                          // Status Badge
                           let statusClass = 'bg-gray-100 text-gray-600';
                           if(d.status === 'completed') statusClass = 'bg-green-100 text-green-700';
                           if(d.status === 'cancelled') statusClass = 'bg-red-100 text-red-700';
                           if(d.status === 'working') statusClass = 'bg-blue-100 text-blue-700';
+                          if(d.status === 'testing') statusClass = 'bg-purple-100 text-purple-700';
 
                           return `
                             <div class="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-shadow">
@@ -272,7 +299,7 @@
                                     <div>
                                         <h3 class="text-xl font-bold">${d.shopName}</h3>
                                         <p class="text-gray-500 text-sm mt-1">${d.description || '-'}</p>
-                                        <div class="text-xs text-gray-300 mt-2"><i class="fa-regular fa-clock"></i> ${d.timestamp ? new Date(d.timestamp.toDate()).toLocaleString('th-TH') : '...'}</div>
+                                        <div class="text-xs text-gray-300 mt-2"><i class="fa-regular fa-clock"></i> ${d.timestamp ? new Date(d.timestamp.toDate()).toLocaleString('th-TH') : 'Processing...'}</div>
                                     </div>
                                     <span class="px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider ${statusClass}">${d.status}</span>
                                 </div>
@@ -288,20 +315,31 @@
                                         <span class="${d.status=='completed'?'text-green-600':''}">เสร็จสิ้น</span>
                                     </div>
                                 </div>
-                                
                                 ${secretHTML}
                             </div>
                           `;
                       }).join('');
+                  }, error => {
+                      console.error("Error loading orders:", error);
+                      // ถ้า Error เรื่อง Index มันจะฟ้องตรงนี้
+                      if(error.message.includes('index')) {
+                          alert("ระบบต้องการ Index: กรุณาแจ้งแอดมิน");
+                      }
                   });
             }
         };
 
         // Main Auth Listener
         auth.onAuthStateChanged(user => {
-            if (user) View.showApp(user);
-            else View.showLogin();
+            if (user) {
+                console.log("User logged in:", user.email);
+                View.showApp(user);
+            } else {
+                console.log("User not logged in");
+                View.showLogin();
+            }
         });
     </script>
 </body>
 </html>
+
