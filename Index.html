@@ -4,430 +4,304 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Portal | ระบบติดตามงาน</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/th.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
-    <script>
-        dayjs.locale('th');
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Prompt', 'sans-serif'] },
-                    colors: {
-                        brand: { black: '#111', gray: '#f5f5f7', border: '#e5e5e5' }
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <style>
-        body { background-color: #ffffff; color: #1d1d1f; -webkit-font-smoothing: antialiased; }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        body { font-family: 'Prompt', sans-serif; background-color: #ffffff; color: #1a1a1a; }
         
-        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(0,0,0,0.05); }
+        /* Minimal Inputs */
         .input-clean {
-            width: 100%; padding: 14px 16px; border-radius: 12px;
-            background: #f5f5f7; border: 1px solid transparent;
-            transition: all 0.3s ease; outline: none; font-size: 0.95rem;
+            width: 100%; padding: 14px; background: #f8f9fa; border: 1px solid #e9ecef;
+            border-radius: 12px; outline: none; transition: 0.3s; font-size: 0.95rem;
         }
-        .input-clean:focus { background: #fff; border-color: #000; box-shadow: 0 0 0 4px rgba(0,0,0,0.05); }
+        .input-clean:focus { background: #fff; border-color: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         
-        .btn-primary {
-            background: #000; color: #fff; border-radius: 12px; padding: 14px;
-            font-weight: 600; transition: transform 0.1s, opacity 0.2s;
-            width: 100%; display: flex; justify-content: center; items-items: center; gap: 8px;
+        /* Buttons */
+        .btn-black {
+            background: #000; color: #fff; padding: 14px; border-radius: 12px;
+            font-weight: 600; width: 100%; transition: 0.2s; cursor: pointer;
+            display: flex; justify-content: center; items-center; gap: 8px;
         }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-primary:hover { opacity: 0.85; }
-
-        /* Loading Skeleton Animation */
-        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 4px; }
-        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-        /* Toast Notification */
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast {
-            background: white; border-left: 4px solid #000; padding: 16px 20px;
-            border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transform: translateX(100%); transition: transform 0.3s ease;
-            display: flex; align-items: center; gap: 12px; min-width: 300px;
-        }
-        .toast.show { transform: translateX(0); }
+        .btn-black:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        
+        /* Timeline */
+        .timeline-track { position: relative; height: 4px; background: #f0f0f0; border-radius: 4px; margin: 30px 0 10px; }
+        .timeline-fill { position: absolute; top: 0; left: 0; height: 100%; background: #000; border-radius: 4px; transition: width 1s ease-in-out; }
+        
+        /* Loading Spinner */
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #000; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="min-h-screen flex flex-col">
 
-    <div id="toast-container"></div>
-
-    <section id="auth-screen" class="fixed inset-0 z-50 bg-white flex items-center justify-center p-6">
-        <div class="w-full max-w-md">
+    <div id="view-auth" class="fixed inset-0 z-50 bg-white flex items-center justify-center p-6">
+        <div class="w-full max-w-sm">
             <div class="text-center mb-10">
-                <div class="w-16 h-16 bg-black text-white rounded-2xl mx-auto flex items-center justify-center text-2xl mb-4 shadow-xl">
-                    <i class="fa-solid fa-layer-group"></i>
-                </div>
-                <h1 class="text-3xl font-bold tracking-tight mb-2">เข้าสู่ระบบบริการ</h1>
-                <p class="text-gray-400">จัดการคำสั่งซื้อและติดตามสถานะงานของคุณ</p>
+                <div class="w-16 h-16 bg-black text-white rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 shadow-lg"><i class="fa-solid fa-layer-group"></i></div>
+                <h1 class="text-3xl font-bold mb-2">เข้าสู่ระบบ</h1>
+                <p class="text-gray-400 text-sm">ระบบติดตามงานสำหรับลูกค้า</p>
             </div>
 
-            <div id="form-login" class="space-y-4 animate-fade-in">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">อีเมล</label>
-                    <input id="l-email" type="email" class="input-clean" placeholder="name@example.com">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">รหัสผ่าน</label>
-                    <input id="l-pass" type="password" class="input-clean" placeholder="••••••••">
-                </div>
-                <button onclick="Auth.login()" class="btn-primary mt-6">
-                    เข้าสู่ระบบ <i class="fa-solid fa-arrow-right"></i>
-                </button>
+            <div id="form-login" class="space-y-4 animate__animated animate__fadeIn">
+                <input id="l-email" type="email" class="input-clean" placeholder="อีเมล">
+                <input id="l-pass" type="password" class="input-clean" placeholder="รหัสผ่าน">
+                <button onclick="Auth.login()" class="btn-black">เข้าใช้งาน</button>
                 <div class="text-center mt-6">
                     <span class="text-gray-400 text-sm">ยังไม่มีบัญชี?</span>
-                    <button onclick="UI.toggleAuth('reg')" class="text-black font-bold text-sm ml-1 hover:underline">สร้างบัญชีใหม่</button>
+                    <button onclick="View.toggleAuth('reg')" class="text-black font-bold text-sm ml-1 hover:underline">สร้างบัญชี</button>
                 </div>
             </div>
 
-            <div id="form-reg" class="space-y-4 hidden animate-fade-in">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">ชื่อ-นามสกุล</label>
-                    <input id="r-name" type="text" class="input-clean" placeholder="ชื่อที่ใช้เรียก">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">อีเมล</label>
-                    <input id="r-email" type="email" class="input-clean" placeholder="name@example.com">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">ตั้งรหัสผ่าน</label>
-                    <input id="r-pass" type="password" class="input-clean" placeholder="อย่างน้อย 6 ตัวอักษร">
-                </div>
-                <button onclick="Auth.register()" class="btn-primary mt-6 bg-gray-800">
-                    สมัครสมาชิก
-                </button>
+            <div id="form-reg" class="space-y-4 hidden animate__animated animate__fadeIn">
+                <input id="r-name" type="text" class="input-clean" placeholder="ชื่อของคุณ">
+                <input id="r-email" type="email" class="input-clean" placeholder="อีเมล">
+                <input id="r-pass" type="password" class="input-clean" placeholder="ตั้งรหัสผ่าน">
+                <button onclick="Auth.register()" class="btn-black bg-gray-800">สมัครสมาชิก</button>
                 <div class="text-center mt-6">
                     <span class="text-gray-400 text-sm">มีบัญชีแล้ว?</span>
-                    <button onclick="UI.toggleAuth('login')" class="text-black font-bold text-sm ml-1 hover:underline">เข้าสู่ระบบ</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="app-screen" class="hidden flex-1 flex flex-col max-w-5xl mx-auto w-full p-4 md:p-8">
-        <nav class="flex justify-between items-center mb-8 glass-panel p-4 rounded-2xl sticky top-4 z-40">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-black text-white rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-cube"></i>
-                </div>
-                <div>
-                    <div class="font-bold text-lg leading-tight">My Service</div>
-                    <div class="text-xs text-gray-400">Customer Portal</div>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden md:block">
-                    <div id="u-name" class="font-bold text-sm">Loading...</div>
-                    <div class="text-xs text-green-500 font-medium">● Online</div>
-                </div>
-                <button onclick="Auth.logout()" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition">
-                    <i class="fa-solid fa-power-off"></i>
-                </button>
-            </div>
-        </nav>
-
-        <div id="announcement-box" class="hidden bg-gradient-to-r from-gray-900 to-gray-800 text-white p-6 rounded-2xl shadow-lg mb-8 relative overflow-hidden">
-            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white opacity-10 rounded-full blur-xl"></div>
-            <div class="relative z-10 flex gap-4 items-start">
-                <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <i class="fa-solid fa-bullhorn"></i>
-                </div>
-                <div>
-                    <h3 id="annc-title" class="font-bold text-lg mb-1">ประกาศจากระบบ</h3>
-                    <p id="annc-msg" class="text-gray-300 text-sm font-light leading-relaxed">...</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
-            <div>
-                <h2 class="text-2xl font-bold">รายการสั่งทำของคุณ</h2>
-                <p class="text-gray-400 text-sm mt-1">ติดตามสถานะและดูรายละเอียดงานทั้งหมด</p>
-            </div>
-            <button onclick="UI.toggleModal('order-modal', true)" class="btn-primary md:w-auto px-6 shadow-lg shadow-gray-200">
-                <i class="fa-solid fa-plus"></i> สั่งงานใหม่
-            </button>
-        </div>
-
-        <div id="orders-container" class="grid grid-cols-1 gap-6 pb-20">
-            <div class="border border-gray-100 p-6 rounded-2xl bg-white shadow-sm">
-                <div class="flex justify-between mb-4">
-                    <div class="skeleton h-6 w-1/3"></div>
-                    <div class="skeleton h-6 w-20"></div>
-                </div>
-                <div class="skeleton h-4 w-1/2 mb-6"></div>
-                <div class="skeleton h-2 w-full rounded-full"></div>
-            </div>
-        </div>
-    </section>
-
-    <div id="order-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-2xl p-6 md:p-8 shadow-2xl transform transition-all scale-100">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold">เริ่มโปรเจกต์ใหม่</h3>
-                <button onclick="UI.toggleModal('order-modal', false)" class="text-gray-400 hover:text-black"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">ชื่อโปรเจกต์ / ร้านค้า</label>
-                    <input id="ord-shop" class="input-clean" placeholder="เช่น เว็บไซต์ร้านกาแฟ A">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">ประเภทงาน</label>
-                    <select id="ord-type" class="input-clean cursor-pointer">
-                        <option value="Website">Website (เว็บไซต์)</option>
-                        <option value="Mobile App">Mobile Application</option>
-                        <option value="Graphic">Graphic Design</option>
-                        <option value="Other">อื่นๆ</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">รายละเอียดเบื้องต้น</label>
-                    <textarea id="ord-desc" class="input-clean h-24 resize-none" placeholder="อธิบายความต้องการคร่าวๆ..."></textarea>
-                </div>
-                
-                <div class="bg-gray-50 p-4 rounded-xl flex gap-3 text-xs text-gray-600 mt-4">
-                    <i class="fa-solid fa-circle-info text-lg"></i>
-                    <p>หลังจากส่งคำสั่งซื้อ แอดมินจะทำการตรวจสอบและประเมินราคา คุณสามารถติดตามสถานะได้ที่หน้าหลัก</p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 mt-6">
-                    <button onclick="UI.toggleModal('order-modal', false)" class="p-3 rounded-xl border border-gray-200 font-bold hover:bg-gray-50">ยกเลิก</button>
-                    <button onclick="Order.create()" class="p-3 rounded-xl bg-black text-white font-bold hover:opacity-90">ยืนยันการสั่ง</button>
+                    <button onclick="View.toggleAuth('log')" class="text-black font-bold text-sm ml-1 hover:underline">เข้าสู่ระบบ</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <div id="view-app" class="hidden flex-1 max-w-5xl mx-auto w-full p-6">
+        <nav class="flex justify-between items-center mb-10 bg-white/90 backdrop-blur sticky top-0 py-4 z-40 border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-black text-white rounded-xl flex items-center justify-center"><i class="fa-solid fa-cube"></i></div>
+                <div>
+                    <div class="font-bold text-lg">My Service</div>
+                    <div id="user-name" class="text-xs text-gray-400">Loading...</div>
+                </div>
+            </div>
+            <button onclick="Auth.logout()" class="text-gray-400 hover:text-red-500 text-sm font-bold"><i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ</button>
+        </nav>
 
-        // --- CONFIGURATION ---
+        <div id="annc-box" class="hidden bg-gray-900 text-white p-6 rounded-2xl shadow-xl mb-10 relative overflow-hidden animate__animated animate__fadeInDown">
+            <div class="relative z-10 flex gap-4 items-start">
+                <div class="bg-white/20 p-3 rounded-lg"><i class="fa-solid fa-bullhorn text-xl"></i></div>
+                <div>
+                    <h3 id="annc-title" class="font-bold text-lg"></h3>
+                    <p id="annc-msg" class="text-gray-300 text-sm mt-1"></p>
+                </div>
+            </div>
+            <div class="absolute -right-10 -top-10 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
+        </div>
+
+        <div class="flex justify-between items-end mb-6">
+            <div>
+                <h2 class="text-2xl font-bold">รายการงานของคุณ</h2>
+                <p class="text-gray-400 text-sm">อัปเดตสถานะล่าสุดแบบ Real-time</p>
+            </div>
+            <button onclick="document.getElementById('modal-new').classList.remove('hidden')" class="btn-black w-auto px-6 shadow-lg">
+                <i class="fa-solid fa-plus"></i> สั่งงานใหม่
+            </button>
+        </div>
+
+        <div id="orders-list" class="grid grid-cols-1 gap-6 pb-20">
+            <div class="text-center py-20 text-gray-400 animate-pulse">กำลังโหลดข้อมูล...</div>
+        </div>
+    </div>
+
+    <div id="modal-new" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md p-8 rounded-2xl shadow-2xl animate__animated animate__zoomIn">
+            <h3 class="text-xl font-bold mb-6">เริ่มงานใหม่</h3>
+            <div class="space-y-4">
+                <input id="ord-shop" class="input-clean" placeholder="ชื่อร้าน / ชื่อโปรเจกต์">
+                <textarea id="ord-desc" class="input-clean h-32 resize-none" placeholder="รายละเอียดงานเบื้องต้น..."></textarea>
+                <div class="flex gap-3 pt-2">
+                    <button onclick="document.getElementById('modal-new').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-bold">ยกเลิก</button>
+                    <button onclick="App.createOrder()" class="flex-1 btn-black">ยืนยัน</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. CONFIG FIREBASE ---
+        // (กรุณาใช้ Config ของคุณเองจะดีที่สุด แต่ถ้าไม่มีให้ใช้ตัวนี้ทดสอบได้)
         const firebaseConfig = {
-             apiKey: "AIzaSyAHAkBhypqyJuuL22tLrFKN7ZqdEsqGDTk",
-             authDomain: "rsdm-9ca2a.firebaseapp.com",
-             projectId: "rsdm-9ca2a",
-             storageBucket: "rsdm-9ca2a.firebasestorage.app",
-             messagingSenderId: "299212700124",
-             appId: "1:299212700124:web:730160dae6bb1b09cbb719"
+            apiKey: "AIzaSyAHAkBhypqyJuuL22tLrFKN7ZqdEsqGDTk",
+            authDomain: "rsdm-9ca2a.firebaseapp.com",
+            projectId: "rsdm-9ca2a",
+            storageBucket: "rsdm-9ca2a.firebasestorage.app",
+            messagingSenderId: "299212700124",
+            appId: "1:299212700124:web:730160dae6bb1b09cbb719"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // Initialize (Compat Mode)
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        // --- UI UTILS ---
-        window.UI = {
-            toast: (msg, type = 'success') => {
-                const container = document.getElementById('toast-container');
-                const el = document.createElement('div');
-                const color = type === 'success' ? 'border-green-500' : 'border-red-500';
-                const icon = type === 'success' ? 'fa-check-circle text-green-500' : 'fa-exclamation-circle text-red-500';
-                
-                el.className = `toast ${color}`;
-                el.innerHTML = `<i class="fa-solid ${icon} text-lg"></i> <span class="font-medium text-sm">${msg}</span>`;
-                container.appendChild(el);
-                
-                setTimeout(() => el.classList.add('show'), 10);
-                setTimeout(() => {
-                    el.classList.remove('show');
-                    setTimeout(() => el.remove(), 300);
-                }, 3000);
-            },
+        // --- 2. LOGIC ---
+        const View = {
             toggleAuth: (mode) => {
-                document.getElementById('form-login').classList.toggle('hidden', mode === 'reg');
-                document.getElementById('form-reg').classList.toggle('hidden', mode === 'login');
+                document.getElementById('form-login').style.display = mode === 'reg' ? 'none' : 'block';
+                document.getElementById('form-reg').style.display = mode === 'reg' ? 'block' : 'none';
             },
-            toggleModal: (id, show) => {
-                const el = document.getElementById(id);
-                if(show) { el.classList.remove('hidden'); el.classList.add('flex'); }
-                else { el.classList.add('hidden'); el.classList.remove('flex'); }
+            showApp: (user) => {
+                document.getElementById('view-auth').classList.add('hidden');
+                document.getElementById('view-app').classList.remove('hidden');
+                document.getElementById('user-name').innerText = user.displayName || user.email;
+                App.loadData(user.uid);
             },
-            renderStatus: (status) => {
-                const map = {
-                    'pending': ['bg-yellow-100 text-yellow-700', 'รอรับเรื่อง', '0%'],
-                    'working': ['bg-blue-100 text-blue-700', 'กำลังดำเนินการ', '40%'],
-                    'testing': ['bg-purple-100 text-purple-700', 'ตรวจสอบ (QC)', '80%'],
-                    'completed': ['bg-green-100 text-green-700', 'เสร็จสิ้น', '100%'],
-                    'cancelled': ['bg-red-100 text-red-700', 'ยกเลิก', '0%']
-                };
-                return map[status] || map['pending'];
+            showLogin: () => {
+                document.getElementById('view-auth').classList.remove('hidden');
+                document.getElementById('view-app').classList.add('hidden');
             }
         };
 
-        // --- AUTH SYSTEM ---
-        window.Auth = {
-            login: async () => {
-                try {
-                    await signInWithEmailAndPassword(auth, document.getElementById('l-email').value, document.getElementById('l-pass').value);
-                    UI.toast('ยินดีต้อนรับกลับครับ');
-                } catch(e) { UI.toast(e.message, 'error'); }
+        const Auth = {
+            login: () => {
+                const e = document.getElementById('l-email').value;
+                const p = document.getElementById('l-pass').value;
+                auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
             },
-            register: async () => {
-                const name = document.getElementById('r-name').value;
-                if(!name) return UI.toast('กรุณาระบุชื่อ', 'error');
-                try {
-                    const cred = await createUserWithEmailAndPassword(auth, document.getElementById('r-email').value, document.getElementById('r-pass').value);
-                    await updateProfile(cred.user, { displayName: name });
-                    UI.toast('สร้างบัญชีสำเร็จ');
-                } catch(e) { UI.toast(e.message, 'error'); }
-            },
-            logout: () => signOut(auth)
-        };
-
-        // --- APP LOGIC ---
-        onAuthStateChanged(auth, user => {
-            if (user) {
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('app-screen').classList.remove('hidden');
-                document.getElementById('app-screen').classList.add('flex');
-                document.getElementById('u-name').innerText = user.displayName || user.email;
-                Data.load(user.uid);
-            } else {
-                document.getElementById('auth-screen').classList.remove('hidden');
-                document.getElementById('app-screen').classList.add('hidden');
-                document.getElementById('app-screen').classList.remove('flex');
-            }
-        });
-
-        // --- DATA HANDLER ---
-        window.Order = {
-            create: async () => {
-                const shop = document.getElementById('ord-shop').value;
-                const type = document.getElementById('ord-type').value;
-                const desc = document.getElementById('ord-desc').value;
-
-                if(!shop) return UI.toast('กรุณาระบุชื่อโปรเจกต์', 'error');
-
-                try {
-                    const user = auth.currentUser;
-                    await addDoc(collection(db, 'web_orders'), {
-                        uid: user.uid,
-                        customerName: user.displayName || user.email,
-                        shopName: shop,
-                        type: type,
-                        description: desc,
-                        status: 'pending',
-                        timestamp: serverTimestamp(),
-                        adminEmail: '', adminPass: '', price: 0
+            register: () => {
+                const n = document.getElementById('r-name').value;
+                const e = document.getElementById('r-email').value;
+                const p = document.getElementById('r-pass').value;
+                if(!n || !e || !p) return alert('กรอกให้ครบทุกช่อง');
+                
+                auth.createUserWithEmailAndPassword(e, p).then(cred => {
+                    cred.user.updateProfile({ displayName: n });
+                    // สร้าง User ใน DB เพื่อให้ Admin เห็น
+                    db.collection('users').doc(cred.user.uid).set({
+                        name: n, email: e, uid: cred.user.uid, role: 'customer'
                     });
-                    UI.toggleModal('order-modal', false);
+                    alert('สมัครสำเร็จ!');
+                }).catch(err => alert(err.message));
+            },
+            logout: () => auth.signOut()
+        };
+
+        const App = {
+            createOrder: () => {
+                const shop = document.getElementById('ord-shop').value;
+                const desc = document.getElementById('ord-desc').value;
+                const user = auth.currentUser;
+
+                if(!shop) return alert('ใส่ชื่อโปรเจกต์ด้วยครับ');
+
+                db.collection('web_orders').add({
+                    uid: user.uid,
+                    customerName: user.displayName || user.email,
+                    shopName: shop,
+                    description: desc,
+                    status: 'pending', // สถานะเริ่มต้น
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    adminEmail: '', adminPass: '' // ฟิลด์ว่างรอแอดมินใส่
+                }).then(() => {
+                    document.getElementById('modal-new').classList.add('hidden');
                     document.getElementById('ord-shop').value = '';
                     document.getElementById('ord-desc').value = '';
-                    UI.toast('ส่งคำสั่งซื้อเรียบร้อย');
-                } catch(e) { UI.toast(e.message, 'error'); }
-            }
-        };
-
-        window.Data = {
-            load: (uid) => {
-                // 1. Load Announcements
-                onSnapshot(query(collection(db, 'system_announcements'), where('isActive', '==', true)), snap => {
-                    const box = document.getElementById('announcement-box');
-                    if(!snap.empty) {
-                        const d = snap.docs[0].data();
-                        document.getElementById('annc-title').innerText = d.title;
-                        document.getElementById('annc-msg').innerText = d.message;
-                        box.classList.remove('hidden');
-                    } else box.classList.add('hidden');
+                });
+            },
+            loadData: (uid) => {
+                // 1. โหลดประกาศ
+                db.collection('system_announcements').doc('main').onSnapshot(doc => {
+                    if(doc.exists && doc.data().isActive) {
+                        document.getElementById('annc-box').classList.remove('hidden');
+                        document.getElementById('annc-title').innerText = doc.data().title;
+                        document.getElementById('annc-msg').innerText = doc.data().message;
+                    } else {
+                        document.getElementById('annc-box').classList.add('hidden');
+                    }
                 });
 
-                // 2. Load Orders
-                onSnapshot(query(collection(db, 'web_orders'), where('uid', '==', uid), orderBy('timestamp', 'desc')), snap => {
-                    const container = document.getElementById('orders-container');
-                    
-                    if(snap.empty) {
-                        container.innerHTML = `
-                            <div class="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                                <i class="fa-solid fa-folder-open text-4xl text-gray-300 mb-4"></i>
-                                <p class="text-gray-500">ยังไม่มีรายการงาน</p>
-                                <button onclick="UI.toggleModal('order-modal', true)" class="text-black font-bold mt-2 hover:underline">เริ่มต้นโปรเจกต์แรก</button>
-                            </div>`;
-                        return;
-                    }
+                // 2. โหลดออเดอร์ (ต้องใช้ uid กรอง)
+                db.collection('web_orders')
+                  .where('uid', '==', uid)
+                  .orderBy('timestamp', 'desc')
+                  .onSnapshot(snap => {
+                      const list = document.getElementById('orders-list');
+                      if(snap.empty) {
+                          list.innerHTML = `<div class="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-200 text-gray-400">ยังไม่มีรายการงาน</div>`;
+                          return;
+                      }
 
-                    container.innerHTML = snap.docs.map(doc => {
-                        const d = doc.data();
-                        const [colorClass, statusLabel, progress] = UI.renderStatus(d.status);
-                        const dateStr = d.timestamp ? dayjs(d.timestamp.toDate()).format('D MMM BB, HH:mm น.') : 'เพิ่งสั่ง';
+                      list.innerHTML = snap.docs.map(doc => {
+                          const d = doc.data();
+                          // คำนวณ % Timeline
+                          let progress = '0%';
+                          if(d.status === 'working') progress = '33%';
+                          if(d.status === 'testing') progress = '66%';
+                          if(d.status === 'completed') progress = '100%';
+                          if(d.status === 'cancelled') progress = '0%';
 
-                        let secretArea = '';
-                        if((d.adminEmail || d.adminPass) && d.status !== 'cancelled') {
-                            secretArea = `
-                                <div class="mt-5 bg-gray-900 text-white p-5 rounded-xl relative overflow-hidden group">
-                                    <div class="absolute top-0 right-0 p-3 opacity-20"><i class="fa-solid fa-lock text-4xl"></i></div>
-                                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Secret Credentials</div>
+                          // ส่วนข้อมูลลับ
+                          let secretHTML = '';
+                          if((d.adminEmail || d.adminPass) && d.status !== 'cancelled') {
+                              secretHTML = `
+                                <div class="mt-6 bg-gray-900 text-white p-5 rounded-xl border border-gray-800 animate__animated animate__fadeIn">
+                                    <div class="flex items-center gap-2 mb-3 text-gray-400 text-xs font-bold uppercase tracking-widest">
+                                        <i class="fa-solid fa-key"></i> ข้อมูลเข้าใช้งาน (Credentials)
+                                    </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <div class="text-xs text-gray-500">Username / Email</div>
-                                            <div class="font-mono text-lg font-bold select-all cursor-copy hover:text-green-400 transition">${d.adminEmail || '-'}</div>
+                                        <div class="bg-black/50 p-3 rounded-lg">
+                                            <div class="text-xs text-gray-500 mb-1">Username / Email</div>
+                                            <div class="font-mono text-green-400 font-bold tracking-wide">${d.adminEmail || '-'}</div>
                                         </div>
-                                        <div>
-                                            <div class="text-xs text-gray-500">Password</div>
-                                            <div class="font-mono text-lg font-bold select-all cursor-copy hover:text-green-400 transition">${d.adminPass || '-'}</div>
+                                        <div class="bg-black/50 p-3 rounded-lg">
+                                            <div class="text-xs text-gray-500 mb-1">Password</div>
+                                            <div class="font-mono text-green-400 font-bold tracking-wide">${d.adminPass || '-'}</div>
                                         </div>
                                     </div>
-                                    <div class="mt-3 pt-3 border-t border-gray-700 text-xs text-gray-400 flex items-center gap-2">
-                                        <i class="fa-solid fa-shield-halved"></i> ข้อมูลนี้เห็นเฉพาะคุณเท่านั้น
-                                    </div>
-                                </div>
-                            `;
-                        }
+                                </div>`;
+                          }
 
-                        return `
-                            <div class="bg-white border border-gray-100 p-6 md:p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300">
+                          // Status Badge
+                          let statusClass = 'bg-gray-100 text-gray-600';
+                          if(d.status === 'completed') statusClass = 'bg-green-100 text-green-700';
+                          if(d.status === 'cancelled') statusClass = 'bg-red-100 text-red-700';
+                          if(d.status === 'working') statusClass = 'bg-blue-100 text-blue-700';
+
+                          return `
+                            <div class="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-shadow">
                                 <div class="flex flex-col md:flex-row justify-between items-start mb-6 gap-4">
                                     <div>
-                                        <div class="flex items-center gap-3 mb-1">
-                                            <h3 class="font-bold text-xl">${d.shopName}</h3>
-                                            <span class="text-[10px] bg-gray-100 px-2 py-1 rounded text-gray-500 font-bold uppercase">${d.type || 'General'}</span>
-                                        </div>
-                                        <div class="text-sm text-gray-400 flex items-center gap-2">
-                                            <i class="fa-regular fa-calendar"></i> ${dateStr}
-                                        </div>
-                                        <p class="text-sm text-gray-600 mt-2 bg-gray-50 p-2 rounded-lg inline-block max-w-md line-clamp-2">${d.description || 'ไม่มีรายละเอียด'}</p>
+                                        <h3 class="text-xl font-bold">${d.shopName}</h3>
+                                        <p class="text-gray-500 text-sm mt-1">${d.description || '-'}</p>
+                                        <div class="text-xs text-gray-300 mt-2"><i class="fa-regular fa-clock"></i> ${d.timestamp ? new Date(d.timestamp.toDate()).toLocaleString('th-TH') : '...'}</div>
                                     </div>
-                                    <span class="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-2 ${colorClass}">
-                                        <div class="w-2 h-2 rounded-full bg-current animate-pulse"></div> ${statusLabel}
-                                    </span>
+                                    <span class="px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider ${statusClass}">${d.status}</span>
                                 </div>
 
-                                <div class="mb-6 relative pt-2">
-                                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                        <div class="h-full bg-black transition-all duration-1000 ease-out" style="width: ${progress}"></div>
+                                <div class="relative py-2 mb-2">
+                                    <div class="timeline-track">
+                                        <div class="timeline-fill" style="width: ${progress}"></div>
                                     </div>
-                                    <div class="flex justify-between text-[10px] uppercase font-bold text-gray-400 mt-2 tracking-wider">
-                                        <span class="${d.status!='cancelled'?'text-black':''}">Start</span>
-                                        <span class="${['working','testing','completed'].includes(d.status)?'text-black':''}">Working</span>
-                                        <span class="${['testing','completed'].includes(d.status)?'text-black':''}">QC</span>
-                                        <span class="${d.status=='completed'?'text-green-600':''}">Done</span>
+                                    <div class="flex justify-between text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+                                        <span class="${d.status!='cancelled'?'text-black':''}">รับเรื่อง</span>
+                                        <span class="${['working','testing','completed'].includes(d.status)?'text-black':''}">กำลังทำ</span>
+                                        <span class="${['testing','completed'].includes(d.status)?'text-black':''}">ตรวจสอบ</span>
+                                        <span class="${d.status=='completed'?'text-green-600':''}">เสร็จสิ้น</span>
                                     </div>
                                 </div>
-
-                                ${secretArea}
+                                
+                                ${secretHTML}
                             </div>
-                        `;
-                    }).join('');
-                });
+                          `;
+                      }).join('');
+                  });
             }
         };
+
+        // Main Auth Listener
+        auth.onAuthStateChanged(user => {
+            if (user) View.showApp(user);
+            else View.showLogin();
+        });
     </script>
 </body>
 </html>
