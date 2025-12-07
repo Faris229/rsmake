@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เดิม เป่า XO bu rs</title>
+    <title>เดิม เป่า XO by rs</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;600;800&family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
@@ -444,7 +444,7 @@
             },
             renderRooms: (rooms) => {
                 const list = document.getElementById('room-list');
-                if(rooms.length === 0) { list.innerHTML = `<div class="col-span-full py-20 text-center text-slate-500 text-lg tracking-widest font-light">NO ROOMS FOUND</div>`; return; }
+                if(rooms.length === 0) { list.innerHTML = `<div class="col-span-full py-20 text-center text-slate-500 text-lg tracking-widest font-light">ไม่มีห้องสำหรับเล่น</div>`; return; }
                 
                 list.innerHTML = rooms.map(r => {
                     const isFull = r.players.length >= 2;
