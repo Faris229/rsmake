@@ -1,1 +1,693 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เดิม เป่า XO bu rs</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;600;800&family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Prompt', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        neon: { purple: '#d946ef', blue: '#4f46e5', cyan: '#06b6d4', dark: '#020617' }
+                    },
+                    animation: { 
+                        'blob': 'blob 7s infinite', 
+                        'float': 'float 3s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        glow: {
+                            'from': { boxShadow: '0 0 10px #fff, 0 0 20px #fff, 0 0 30px #d946ef' },
+                            'to': { boxShadow: '0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #020617; color: #fff; overflow-x: hidden; }
+        
+        .bg-grid {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            position: fixed; inset: 0; z-index: -2;
+        }
+        .bg-glow {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 100%; max-width: 800px; aspect-ratio: 1; 
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1; animation: blob 15s infinite;
+        }
+
+        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); }
+        .glass-card { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-card:hover { border-color: #d946ef; box-shadow: 0 0 30px rgba(217, 70, 239, 0.15); transform: translateY(-5px) scale(1.01); }
+
+        .input-cyber { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #334155; padding: 14px 18px; border-radius: 12px; color: white; outline: none; transition: 0.3s; }
+        .input-cyber:focus { border-color: #d946ef; box-shadow: 0 0 15px rgba(217, 70, 239, 0.3); background: rgba(0,0,0,0.6); }
+        
+        .btn-grad { background: linear-gradient(135deg, #4f46e5, #d946ef); color: white; padding: 12px; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; width: 100%; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-grad:hover { box-shadow: 0 0 25px rgba(217, 70, 239, 0.6); transform: scale(1.02); }
+
+        .xo-cell { height: 100px; background: rgba(255,255,255,0.03); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: 900; cursor: pointer; border: 2px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .xo-cell:hover { background: rgba(255,255,255,0.08); border-color: #d946ef; }
+        .xo-cell.X { color: #d946ef; text-shadow: 0 0 15px #d946ef; animation: zoomIn 0.3s; }
+        .xo-cell.O { color: #06b6d4; text-shadow: 0 0 15px #06b6d4; animation: zoomIn 0.3s; }
+
+        .rps-btn { width: 90px; height: 90px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
+        .rps-btn:hover { border-color: #d946ef; transform: scale(1.1); box-shadow: 0 0 20px rgba(217, 70, 239, 0.4); }
+        .rps-btn.selected { background: #d946ef; border-color: white; color: white; box-shadow: 0 0 40px #d946ef; transform: scale(1.1); animation: glow 2s infinite; }
+
+        .timer-container { width: 100%; height: 8px; background: #1e293b; border-radius: 99px; overflow: hidden; margin-top: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        .timer-bar { height: 100%; background: linear-gradient(90deg, #f43f5e, #e11d48); width: 100%; transition: width 0.1s linear; border-radius: 99px; box-shadow: 0 0 10px #f43f5e; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(12px); z-index: 100; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-box { background: #0f172a; border: 1px solid #334155; width: 100%; max-width: 500px; border-radius: 24px; padding: 30px; position: relative; animation: zoomIn 0.3s; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div id="maintenance-view" class="fixed inset-0 z-[999] bg-[#020617] flex flex-col items-center justify-center hidden">
+        <div class="relative mb-8">
+            <div class="absolute inset-0 bg-blue-500 blur-2xl opacity-20 rounded-full animate-pulse"></div>
+            <i class="fa-solid fa-gear text-7xl text-slate-400 relative z-10 animate-spin-slow"></i>
+        </div>
+        <h1 class="text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 mb-4 tracking-tight">SYSTEM MAINTENANCE</h1>
+        <p class="text-slate-400 text-lg" id="maint-msg">ปิดปรับปรุงชั่วคราว</p>
+    </div>
+
+    <div id="view-auth" class="fixed inset-0 z-50 flex items-center justify-center p-6 backdrop-blur-sm hidden">
+        <div class="w-full max-w-md glass p-10 rounded-[2.5rem] border border-white/10 shadow-2xl animate__animated animate__fadeInDown">
+            <div class="text-center mb-10">
+                <h1 class="text-6xl font-black font-display tracking-tighter text-white mb-2 drop-shadow-lg" id="auth-site-name">ZONE.</h1>
+                <p class="text-slate-400">เข้าสู่ระบบเพื่อเริ่มเดิมพัน</p>
+            </div>
+            
+            <div id="login-form" class="space-y-5">
+                <div class="group"><input id="l-email" class="input-cyber pl-4" placeholder="อีเมล"></div>
+                <div class="group"><input id="l-pass" type="password" class="input-cyber pl-4" placeholder="รหัสผ่าน"></div>
+                <button onclick="Auth.login()" class="btn-grad h-14 text-lg shadow-lg shadow-purple-500/20">เข้าสู่ระบบ</button>
+                <div class="text-center mt-6">
+                    <span class="text-slate-500 text-sm">ยังไม่มีบัญชี?</span>
+                    <button onclick="UI.toggleAuth('reg')" class="text-purple-400 text-sm font-bold hover:underline ml-1">สมัครสมาชิก</button>
+                </div>
+            </div>
+
+            <div id="reg-form" class="space-y-5 hidden">
+                <input id="r-nick" class="input-cyber" placeholder="ชื่อเล่น">
+                <input id="r-email" class="input-cyber" placeholder="อีเมล">
+                <input id="r-pass" type="password" class="input-cyber" placeholder="รหัสผ่าน (6+ ตัว)">
+                <button onclick="Auth.register()" class="btn-grad h-14 text-lg">ยืนยันการสมัคร</button>
+                <button onclick="UI.toggleAuth('log')" class="w-full text-slate-500 text-sm mt-4 hover:text-white transition">กลับไปหน้าล็อกอิน</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-app" class="hidden flex-1 flex flex-col min-h-screen">
+        
+        <nav class="sticky top-0 z-40 glass border-b border-white/5 px-4 py-4">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center font-bold text-xl shadow-lg shadow-purple-500/30 transform rotate-3"><i class="fa-solid fa-gamepad"></i></div>
+                    <div>
+                        <div id="nav-site-name" class="font-bold text-2xl font-display tracking-wider">ZONE.</div>
+                        <div class="text-[10px] text-emerald-400 font-bold tracking-widest animate-pulse">● ONLINE</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <div class="hidden md:block text-right">
+                        <div class="text-[10px] text-slate-400 font-bold tracking-wider">ยอดเงินคงเหลือ</div>
+                        <div class="font-mono text-2xl font-bold text-yellow-400 drop-shadow-md">฿<span id="u-credit">0</span></div>
+                    </div>
+                    
+                    <div class="relative group">
+                        <button class="w-12 h-12 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center hover:border-purple-500 transition overflow-hidden">
+                            <i class="fa-solid fa-user text-slate-400 text-xl"></i>
+                        </button>
+                        <div class="absolute right-0 top-14 w-72 bg-[#0f172a] border border-slate-700 rounded-2xl shadow-2xl p-2 hidden group-hover:block animate__animated animate__fadeInUp animate__faster">
+                            <div class="p-4 border-b border-slate-800 mb-2">
+                                <div id="u-name" class="font-bold text-lg text-white">Guest</div>
+                                <div class="text-xs text-slate-500 font-mono">ID: <span id="u-id-short">...</span></div>
+                            </div>
+                            <button onclick="UI.modal('profile')" class="w-full text-left p-3 rounded-xl hover:bg-white/5 text-sm text-slate-300 flex items-center gap-3 transition">
+                                <i class="fa-solid fa-wallet text-purple-500"></i> บัญชีธนาคาร
+                            </button>
+                            <button onclick="UI.modal('history')" class="w-full text-left p-3 rounded-xl hover:bg-white/5 text-sm text-slate-300 flex items-center gap-3 transition">
+                                <i class="fa-solid fa-clock-rotate-left text-blue-500"></i> ประวัติการทำรายการ
+                            </button>
+                            <div class="h-px bg-slate-800 my-2"></div>
+                            <button onclick="Auth.logout()" class="w-full text-left p-3 rounded-xl hover:bg-red-500/10 text-sm text-red-500 font-bold flex items-center gap-3 transition">
+                                <i class="fa-solid fa-power-off"></i> ออกจากระบบ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-1 max-w-7xl mx-auto w-full p-4 md:p-8">
+            <div class="grid md:grid-cols-3 gap-6 mb-10">
+                <div class="md:col-span-2 relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-blue-900 via-slate-900 to-black border border-white/10 p-8 shadow-2xl group">
+                    <div class="absolute top-0 right-0 p-6 opacity-20 transition group-hover:scale-110 duration-700"><i class="fa-solid fa-bullhorn text-9xl text-white"></i></div>
+                    <div class="relative z-10">
+                        <span class="bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase mb-3 inline-block">ประกาศ</span>
+                        <h3 class="text-2xl font-bold mb-3">ข่าวสาร UPDATE</h3>
+                        <p id="annc-text" class="text-slate-300 text-sm leading-relaxed max-w-lg">Loading announcements...</p>
+                    </div>
+                </div>
+                <a id="btn-contact" href="#" target="_blank" class="glass-card p-6 flex flex-col items-center justify-center text-center cursor-pointer group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    <div class="w-20 h-20 bg-gradient-to-tr from-blue-600 to-cyan-500 rounded-full flex items-center justify-center text-4xl mb-4 shadow-lg shadow-blue-600/30 group-hover:scale-110 transition duration-300">
+                        <i class="fa-brands fa-facebook-messenger text-white"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-1">ฝาก - ถอน เงิน</h3>
+                    <p class="text-xs text-slate-400">ติดต่อแอดมินผ่านแชท</p>
+                </a>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-8">
+                <div>
+                    <h2 class="text-4xl font-display font-black text-white mb-2 tracking-tight">GAME LOBBY</h2>
+                    <p class="text-slate-400 text-sm flex items-center gap-2"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> เลือกห้องที่ต้องการเดิมพัน</p>
+                </div>
+                <div class="relative w-full md:w-96 group">
+                    <i class="fa-solid fa-search absolute top-4 left-5 text-slate-500 group-hover:text-purple-400 transition"></i>
+                    <input id="search-input" onkeyup="Game.filterRooms()" class="input-cyber pl-14 h-14" placeholder="ค้นหาห้อง / ราคา...">
+                </div>
+            </div>
+
+            <div id="room-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+                <div class="col-span-full py-20 text-center text-slate-500 animate-pulse">CONNECTING TO SERVER...</div>
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-profile" class="modal-overlay">
+        <div class="modal-box">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-bold flex items-center gap-3"><i class="fa-solid fa-wallet text-purple-500"></i> บัญชีธนาคาร</h3>
+                <button onclick="UI.closeModal('profile')" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-5">
+                <div><label class="text-xs text-slate-500 font-bold ml-1 mb-1 block uppercase">ชื่อเล่น</label><input id="p-nick" class="input-cyber"></div>
+                <div>
+                    <label class="text-xs text-slate-500 font-bold ml-1 mb-1 block uppercase">ธนาคาร</label>
+                    <select id="p-bank" class="input-cyber cursor-pointer text-slate-300 bg-[#0f172a]">
+                        <option value="KBANK">กสิกรไทย (KBANK)</option>
+                        <option value="SCB">ไทยพาณิชย์ (SCB)</option>
+                        <option value="KTB">กรุงไทย (KTB)</option>
+                        <option value="BBL">กรุงเทพ (BBL)</option>
+                        <option value="TRUE">TrueMoney Wallet</option>
+                    </select>
+                </div>
+                <div><label class="text-xs text-slate-500 font-bold ml-1 mb-1 block uppercase">เลขบัญชี</label><input id="p-acc" class="input-cyber" placeholder="xxx-x-xxxxx-x"></div>
+                <div><label class="text-xs text-slate-500 font-bold ml-1 mb-1 block uppercase">ชื่อบัญชี</label><input id="p-own" class="input-cyber" placeholder="ชื่อ-นามสกุล"></div>
+                <button onclick="User.saveProfile()" class="btn-grad h-12 mt-4 shadow-lg shadow-purple-500/20">บันทึกข้อมูล</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-history" class="modal-overlay">
+        <div class="modal-box max-w-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold flex items-center gap-3"><i class="fa-solid fa-clock-rotate-left text-blue-500"></i> ประวัติการเล่น</h3>
+                <button onclick="UI.closeModal('history')" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="max-h-[400px] overflow-y-auto pr-2 custom-scroll">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="text-xs text-slate-500 uppercase bg-white/5 sticky top-0 backdrop-blur">
+                        <tr><th class="p-4 rounded-l-lg">รายการ</th><th class="p-4 text-right">จำนวน</th><th class="p-4 text-right rounded-r-lg">เวลา</th></tr>
+                    </thead>
+                    <tbody id="history-list" class="divide-y divide-slate-800">
+                        <tr><td colspan="3" class="p-6 text-center text-slate-500">กำลังโหลด...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-game" class="fixed inset-0 z-[200] bg-[#020617] hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-[#0f172a] shadow-2xl z-20">
+            <button onclick="Game.leave()" class="text-slate-400 hover:text-white flex items-center gap-2 font-bold transition hover:scale-105">
+                <i class="fa-solid fa-arrow-left-long"></i> LOBBY
+            </button>
+            <div class="text-center">
+                <div id="g-room-name" class="font-bold text-2xl text-white font-display tracking-widest uppercase drop-shadow-md">ชื่อห้อง</div>
+                <div class="text-xs text-purple-400 font-mono font-bold mt-1 bg-purple-500/10 px-3 py-1 rounded-full inline-block border border-purple-500/20">BET: <span id="g-bet">0</span></div>
+            </div>
+            <div class="w-24 text-right text-xs text-slate-500 font-mono">LIVE</div>
+        </div>
+
+        <div class="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+            <div class="absolute w-[600px] h-[600px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none animate-pulse"></div>
+
+            <div id="g-waiting" class="text-center z-10 animate__animated animate__fadeIn">
+                <div class="relative inline-block mb-8">
+                    <div class="absolute inset-0 bg-blue-500 blur-xl opacity-30 animate-ping"></div>
+                    <div class="w-24 h-24 bg-[#1e293b] rounded-full flex items-center justify-center border border-white/10 relative z-10">
+                        <i class="fa-solid fa-user-group text-4xl text-slate-300"></i>
+                    </div>
+                </div>
+                <h2 class="text-4xl font-black mb-3 tracking-tight">WAITING FOR OPPONENT</h2>
+                <p class="text-slate-400 mb-8 font-light">รอคู่ต่อสู้เข้าร่วมห้อง</p>
+                <div class="bg-[#0f172a] border border-slate-700 p-6 rounded-2xl inline-block min-w-[280px] shadow-lg">
+                    <div class="text-[10px] text-slate-500 mb-2 uppercase font-bold tracking-widest">รหัสห้อง</div>
+                    <div id="g-pass" class="font-mono text-3xl font-bold text-white select-all group-hover:text-purple-400 transition">---</div>
+                </div>
+            </div>
+
+            <div id="g-playing" class="hidden w-full max-w-lg z-10">
+                <div class="flex justify-between items-center mb-12 bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-xl shadow-2xl relative">
+                    <div class="text-center w-1/3">
+                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">คุณ</div>
+                        <div id="p1-score" class="text-6xl font-black text-cyan-400 drop-shadow-[0_0_15px_rgba(6,182,212,0.6)]">0</div>
+                    </div>
+                    <div class="text-3xl font-black text-slate-700 italic opacity-50">VS</div>
+                    <div class="text-center w-1/3">
+                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">คู่เเข่ง</div>
+                        <div id="p2-score" class="text-6xl font-black text-pink-500 drop-shadow-[0_0_15px_rgba(236,72,153,0.6)]">0</div>
+                    </div>
+                </div>
+
+                <div id="area-xo" class="hidden animate__animated animate__zoomIn">
+                    <div class="grid grid-cols-3 gap-3 mx-auto max-w-[340px]" id="xo-board"></div>
+                    <div id="xo-turn-msg" class="text-center mt-8 text-xl font-bold text-white animate-pulse"></div>
+                </div>
+
+                <div id="area-rps" class="hidden text-center animate__animated animate__fadeInUp">
+                    <div class="flex justify-center gap-6 mb-10">
+                        <div onclick="Game.moveRPS('rock')" id="btn-rock" class="rps-btn"><i class="fa-regular fa-hand-back-fist"></i></div>
+                        <div onclick="Game.moveRPS('paper')" id="btn-paper" class="rps-btn"><i class="fa-regular fa-hand"></i></div>
+                        <div onclick="Game.moveRPS('scissors')" id="btn-scissors" class="rps-btn"><i class="fa-regular fa-hand-scissors"></i></div>
+                    </div>
+                    <div id="rps-status" class="text-2xl font-bold text-white mb-6 tracking-wide drop-shadow-md">เลือก ว่าจะ ออกอะไร</div>
+                    <div id="rps-timer-box" class="hidden w-full max-w-xs mx-auto">
+                        <div class="timer-container"><div id="rps-bar" class="timer-bar"></div></div>
+                        <div class="text-red-500 font-bold text-sm mt-3 animate-pulse">AUTO PICK IN: <span id="rps-count">5.0</span>s</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIG (Replace with your keys)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAHAkBhypqyJuuL22tLrFKN7ZqdEsqGDTk",
+            authDomain: "rsdm-9ca2a.firebaseapp.com",
+            projectId: "rsdm-9ca2a",
+            storageBucket: "rsdm-9ca2a.firebasestorage.app",
+            messagingSenderId: "299212700124",
+            appId: "1:299212700124:web:730160dae6bb1b09cbb719"
+        };
+        if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null, userDoc = null, currentRoomId = null, unsubRoom = null, rpsInterval = null;
+        let allRooms = [];
+
+        // SYSTEM
+        db.collection('config').doc('settings').onSnapshot(doc => {
+            const c = doc.data() || {};
+            const maint = document.getElementById('maintenance-view');
+            if(c.isOpen === false) {
+                maint.classList.remove('hidden');
+                document.getElementById('maint-msg').innerText = c.maintenanceMsg || 'ปิดปรับปรุงชั่วคราว';
+            } else {
+                maint.classList.add('hidden');
+            }
+            document.getElementById('auth-site-name').innerText = c.siteName || 'ZONE.';
+            document.getElementById('nav-site-name').innerText = c.siteName || 'ZONE.';
+            document.getElementById('annc-text').innerText = c.announcement || 'Welcome Player';
+            document.getElementById('btn-contact').href = c.fbLink || '#';
+        });
+
+        // UI & AUTH
+        const UI = {
+            toggleAuth: (m) => {
+                document.getElementById('login-form').style.display = m=='reg'?'none':'block';
+                document.getElementById('reg-form').style.display = m=='reg'?'block':'none';
+            },
+            modal: (id, show=true) => document.getElementById(`modal-${id}`).style.display = show ? 'flex':'none',
+            closeModal: (id) => document.getElementById(`modal-${id}`).style.display = 'none',
+            toast: (msg, icon='success') => Swal.fire({ title: msg, icon: icon, toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, background: '#1e293b', color: '#fff' })
+        };
+
+        const Auth = {
+            login: () => auth.signInWithEmailAndPassword(document.getElementById('l-email').value, document.getElementById('l-pass').value).catch(e => UI.toast(e.message, 'error')),
+            register: () => {
+                const n = document.getElementById('r-nick').value, e = document.getElementById('r-email').value, p = document.getElementById('r-pass').value;
+                if(!n||!e||!p) return UI.toast('กรอกข้อมูลให้ครบ', 'warning');
+                auth.createUserWithEmailAndPassword(e, p).then(c => {
+                    db.collection('users').doc(c.user.uid).set({ nickname: n, email: e, uid: c.user.uid, credit: 0, role: 'user', createdAt: new Date() });
+                    UI.toast('สมัครสำเร็จ!');
+                }).catch(e => UI.toast(e.message, 'error'));
+            },
+            logout: () => auth.signOut()
+        };
+
+        const User = {
+            init: (u) => {
+                currentUser = u;
+                document.getElementById('view-auth').classList.add('hidden');
+                document.getElementById('view-app').classList.remove('hidden');
+                
+                db.collection('users').doc(u.uid).onSnapshot(doc => {
+                    userDoc = doc.data();
+                    document.getElementById('u-name').innerText = userDoc.nickname;
+                    document.getElementById('u-id-short').innerText = u.uid.slice(0,6);
+                    document.getElementById('u-credit').innerText = userDoc.credit.toLocaleString();
+                    document.getElementById('p-nick').value = userDoc.nickname;
+                    document.getElementById('p-bank').value = userDoc.bankName || 'KBANK';
+                    document.getElementById('p-acc').value = userDoc.bankAcc || '';
+                    document.getElementById('p-own').value = userDoc.bankOwner || '';
+                });
+                
+                Game.loadLobby();
+                User.loadHistory();
+            },
+            saveProfile: () => {
+                db.collection('users').doc(currentUser.uid).update({
+                    nickname: document.getElementById('p-nick').value,
+                    bankName: document.getElementById('p-bank').value,
+                    bankAcc: document.getElementById('p-acc').value,
+                    bankOwner: document.getElementById('p-own').value
+                }).then(() => {
+                    UI.toast('บันทึกข้อมูลแล้ว');
+                    UI.closeModal('profile');
+                });
+            },
+            loadHistory: () => {
+                // FIXED BUG: Client-side sorting
+                db.collection('transactions').where('uid', '==', currentUser.uid).onSnapshot(snap => {
+                    let trans = [];
+                    snap.forEach(d => trans.push(d.data()));
+                    trans.sort((a,b) => b.timestamp - a.timestamp); // เรียงจากใหม่ไปเก่า
+                    
+                    const list = document.getElementById('history-list');
+                    if(trans.length === 0) { list.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-500">ยังไม่มีประวัติ</td></tr>`; return; }
+                    
+                    list.innerHTML = trans.slice(0, 30).map(t => {
+                        const isPlus = t.amount > 0;
+                        const color = isPlus ? 'text-green-400' : 'text-red-400';
+                        const mapType = { 'deposit':'เติมเงิน', 'withdraw':'ถอนเงิน', 'bet_win':'ชนะเดิมพัน', 'bet_loss':'แพ้เดิมพัน', 'admin_adj':'ปรับยอด' };
+                        return `<tr class="border-b border-slate-800/50 hover:bg-white/5 transition"><td class="p-4"><div class="font-bold text-slate-200">${mapType[t.type]||t.type}</div><div class="text-xs text-slate-500">${t.note||''}</div></td><td class="p-4 text-right font-mono font-bold ${color}">${isPlus?'+':''}${t.amount}</td><td class="p-4 text-right text-xs text-slate-500">${t.timestamp ? new Date(t.timestamp.toDate()).toLocaleString() : '-'}</td></tr>`;
+                    }).join('');
+                });
+            }
+        };
+
+        const Game = {
+            loadLobby: () => {
+                db.collection('rooms').onSnapshot(snap => {
+                    allRooms = [];
+                    snap.forEach(doc => allRooms.push({id: doc.id, ...doc.data()}));
+                    allRooms.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
+                    Game.filterRooms();
+                });
+            },
+            filterRooms: () => {
+                const txt = document.getElementById('search-input').value.toLowerCase();
+                const filtered = allRooms.filter(r => r.roomName.toLowerCase().includes(txt) || r.betAmount.toString().includes(txt));
+                Game.renderRooms(filtered);
+            },
+            renderRooms: (rooms) => {
+                const list = document.getElementById('room-list');
+                if(rooms.length === 0) { list.innerHTML = `<div class="col-span-full py-20 text-center text-slate-500 text-lg tracking-widest font-light">NO ROOMS FOUND</div>`; return; }
+                
+                list.innerHTML = rooms.map(r => {
+                    const isFull = r.players.length >= 2;
+                    const style = r.gameType === 'xo' ? 'from-blue-900/40 to-slate-900/40 border-blue-500/20' : 'from-pink-900/40 to-slate-900/40 border-pink-500/20';
+                    const icon = r.gameType === 'xo' ? 'fa-x' : 'fa-hand-scissors';
+                    const bgGlow = r.gameType === 'xo' ? 'group-hover:bg-blue-600/10' : 'group-hover:bg-pink-600/10';
+                    return `
+                    <div onclick="Game.join('${r.id}', ${r.betAmount}, '${r.password}')" class="glass-card p-6 cursor-pointer bg-gradient-to-br ${style} group relative overflow-hidden h-40 flex flex-col justify-between ${bgGlow}">
+                        <div class="absolute -right-6 -top-6 p-4 opacity-10 group-hover:opacity-20 group-hover:scale-125 transition duration-700">
+                            <i class="fa-solid ${icon} text-9xl text-white"></i>
+                        </div>
+                        <div class="relative z-10 flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-2xl text-white group-hover:text-purple-400 transition font-display tracking-tight">${r.roomName}</h3>
+                                <span class="text-[10px] font-bold uppercase px-2 py-1 rounded border border-white/10 mt-2 inline-block backdrop-blur">${r.gameType}</span>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 font-mono">฿${r.betAmount}</div>
+                            </div>
+                        </div>
+                        <div class="relative z-10 flex justify-between items-center text-xs font-bold uppercase tracking-widest text-slate-400">
+                            <span>Best of ${r.maxWins}</span>
+                            <span class="${isFull ? 'text-red-500' : 'text-emerald-400'} flex items-center gap-1"><i class="fa-solid fa-users"></i> ${r.players.length}/2</span>
+                        </div>
+                    </div>`;
+                }).join('');
+            },
+            join: async (id, bet, realPass) => {
+                if(userDoc.credit < bet) return UI.toast('ยอดเงินไม่เพียงพอ', 'error');
+                const { value: pass } = await Swal.fire({ title: 'Enter Password', input: 'text', background: '#1e293b', color: '#fff', confirmButtonColor: '#d946ef' });
+                if(pass !== realPass) return UI.toast('รหัสผ่านผิด', 'error');
+
+                const ref = db.collection('rooms').doc(id);
+                const r = (await ref.get()).data();
+                if(!r.players.includes(currentUser.uid)) {
+                    if(r.players.length >= 2) return UI.toast('ห้องเต็มแล้ว', 'warning');
+                    await ref.update({ players: firebase.firestore.FieldValue.arrayUnion(currentUser.uid) });
+                }
+                Game.enter(id, r.gameType);
+            },
+            enter: (id, type) => {
+                currentRoomId = id;
+                document.getElementById('view-game').classList.remove('hidden');
+                document.getElementById('area-xo').classList.add('hidden');
+                document.getElementById('area-rps').classList.add('hidden');
+                document.getElementById(`area-${type}`).classList.remove('hidden');
+
+                unsubRoom = db.collection('rooms').doc(id).onSnapshot(snap => {
+                    if(!snap.exists) { Game.leave(); return; }
+                    const r = snap.data();
+                    
+                    document.getElementById('g-room-name').innerText = r.roomName;
+                    document.getElementById('g-bet').innerText = r.betAmount;
+                    document.getElementById('g-pass').innerText = r.password;
+
+                    if(r.players.length < 2) {
+                        document.getElementById('g-waiting').classList.remove('hidden');
+                        document.getElementById('g-playing').classList.add('hidden');
+                    } else {
+                        document.getElementById('g-waiting').classList.add('hidden');
+                        document.getElementById('g-playing').classList.remove('hidden');
+                    }
+
+                    const p1 = r.players[0], p2 = r.players[1];
+                    const myIdx = (currentUser.uid === p1) ? 0 : 1;
+                    document.getElementById('p1-score').innerText = (myIdx===0) ? (r.scores[p1]||0) : (r.scores[p2]||0);
+                    document.getElementById('p2-score').innerText = (myIdx===0) ? (r.scores[p2]||0) : (r.scores[p1]||0);
+
+                    // Win Check
+                    const s1 = r.scores[p1]||0, s2 = r.scores[p2]||0;
+                    if(s1 >= r.maxWins || s2 >= r.maxWins) {
+                        const winner = (s1 > s2) ? p1 : p2;
+                        const isWin = winner === currentUser.uid;
+                        Swal.fire({
+                            title: isWin ? 'VICTORY!' : 'DEFEAT!',
+                            text: isWin ? `+${r.betAmount} Credits` : `-${r.betAmount} Credits`,
+                            icon: isWin ? 'success' : 'error',
+                            background: '#0f172a', color: '#fff', confirmButtonColor: '#d946ef', allowOutsideClick: false
+                        }).then(() => {
+                            if(isWin) { 
+                                db.collection('users').doc(p1).update({ credit: firebase.firestore.FieldValue.increment(winner===p1?r.betAmount:-r.betAmount) });
+                                db.collection('users').doc(p2).update({ credit: firebase.firestore.FieldValue.increment(winner===p2?r.betAmount:-r.betAmount) });
+                                db.collection('transactions').add({ uid: p1, type: winner===p1?'bet_win':'bet_loss', amount: winner===p1?r.betAmount:-r.betAmount, note: `Game: ${r.roomName}`, timestamp: new Date() });
+                                db.collection('transactions').add({ uid: p2, type: winner===p2?'bet_win':'bet_loss', amount: winner===p2?r.betAmount:-r.betAmount, note: `Game: ${r.roomName}`, timestamp: new Date() });
+                                db.collection('rooms').doc(id).delete();
+                            }
+                            Game.leave();
+                        });
+                        return;
+                    }
+
+                    if(type === 'xo') Game.renderXO(r);
+                    if(type === 'rps') Game.renderRPS(r);
+                });
+            },
+            leave: () => {
+                if(unsubRoom) unsubRoom();
+                document.getElementById('view-game').classList.add('hidden');
+                currentRoomId = null;
+                clearInterval(rpsInterval); rpsInterval = null;
+            },
+
+            // --- XO GAME (FIXED TURN DISPLAY) ---
+            renderXO: (r) => {
+                const b = document.getElementById('area-xo');
+                b.innerHTML = '';
+                
+                // Turn Indicator Logic
+                const p1 = r.players[0], p2 = r.players[1];
+                let isMyTurn = false;
+                let turnMsg = "";
+                
+                if(!r.currentTurn) {
+                    // First turn always P1
+                    isMyTurn = currentUser.uid === p1;
+                    turnMsg = isMyTurn ? "ตาของคุณ! (X)" : "รอคู่แข่ง... (X)";
+                } else {
+                    isMyTurn = r.currentTurn === currentUser.uid;
+                    turnMsg = isMyTurn ? "ตาของคุณ!" : "รอคู่แข่ง...";
+                }
+                
+                const statusEl = document.getElementById('xo-turn-msg');
+                statusEl.innerText = turnMsg;
+                statusEl.className = `text-center mt-8 text-xl font-bold uppercase tracking-widest ${isMyTurn ? 'text-green-400 animate-bounce' : 'text-slate-500'}`;
+
+                r.board.forEach((c, i) => {
+                    const el = document.createElement('div');
+                    el.className = `xo-cell ${c ? c.toLowerCase() : ''}`;
+                    el.innerText = c || '';
+                    el.onclick = () => {
+                        if(c) return;
+                        if(r.currentTurn && r.currentTurn !== currentUser.uid) return;
+                        if(!r.currentTurn && currentUser.uid !== r.players[0]) return;
+                        
+                        const sym = (currentUser.uid === r.players[0]) ? 'X' : 'O';
+                        let nb = [...r.board]; nb[i] = sym;
+                        
+                        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+                        const isWin = wins.some(w => w.every(x => nb[x] === sym));
+                        
+                        let upd = { board: nb, currentTurn: r.players.find(x => x!==currentUser.uid) };
+                        if(isWin) {
+                            upd[`scores.${currentUser.uid}`] = firebase.firestore.FieldValue.increment(1);
+                            upd.board = Array(9).fill(null);
+                        } else if(!nb.includes(null)) {
+                            upd.board = Array(9).fill(null);
+                        }
+                        db.collection('rooms').doc(currentRoomId).update(upd);
+                    };
+                    b.appendChild(el);
+                });
+            },
+
+            // --- RPS GAME (FIXED BUG & TIMER) ---
+            renderRPS: (r) => {
+                const myMove = r.moves ? r.moves[currentUser.uid] : null;
+                const status = document.getElementById('rps-status');
+                const timerBox = document.getElementById('rps-timer-box');
+                const bar = document.getElementById('rps-bar');
+                const countTxt = document.getElementById('rps-count');
+
+                ['rock','paper','scissors'].forEach(m => {
+                    const btn = document.getElementById(`btn-${m}`);
+                    btn.classList.remove('selected');
+                    if(myMove === m) btn.classList.add('selected');
+                });
+
+                if(!myMove) {
+                    status.innerText = "CHOOSE YOUR WEAPON";
+                    
+                    // Fixed Bug: Timer Logic starts only when 2 players exist
+                    if(r.players.length === 2) {
+                        if(r.roundState === 'idle') {
+                            // Only P1 triggers timer start to avoid double set
+                            if(currentUser.uid === r.players[0]) {
+                                db.collection('rooms').doc(currentRoomId).update({ roundState: 'selecting', roundStart: Date.now(), moves: {} });
+                            }
+                        } else if(r.roundState === 'selecting') {
+                            timerBox.classList.remove('hidden');
+                            
+                            // Client-side Timer Sync
+                            const now = Date.now();
+                            const elapsed = (now - r.roundStart) / 1000;
+                            const timeLeft = 5 - elapsed;
+
+                            if(timeLeft > 0) {
+                                bar.style.width = (timeLeft/5)*100 + '%';
+                                countTxt.innerText = timeLeft.toFixed(1);
+                                
+                                // Smooth visual update
+                                if(!rpsInterval) {
+                                    rpsInterval = setInterval(() => {
+                                        const t = 5 - ((Date.now() - r.roundStart) / 1000);
+                                        if(t > 0) {
+                                            bar.style.width = (t/5)*100 + '%';
+                                            countTxt.innerText = t.toFixed(1);
+                                        } else {
+                                            clearInterval(rpsInterval); rpsInterval = null;
+                                            // Time up: Auto Pick Random IF haven't moved
+                                            const rand = ['rock','paper','scissors'][Math.floor(Math.random()*3)];
+                                            Game.moveRPS(rand);
+                                        }
+                                    }, 100);
+                                }
+                            } else {
+                                // Fallback if interval missed
+                                if(rpsInterval) { clearInterval(rpsInterval); rpsInterval = null; }
+                                const rand = ['rock','paper','scissors'][Math.floor(Math.random()*3)];
+                                Game.moveRPS(rand);
+                            }
+                        }
+                    }
+                } else {
+                    status.innerText = "WAITING FOR OPPONENT...";
+                    timerBox.classList.add('hidden');
+                    if(rpsInterval) { clearInterval(rpsInterval); rpsInterval = null; }
+                }
+
+                // Check Result
+                if(r.players[0] === currentUser.uid && r.moves && Object.keys(r.moves).length === 2) {
+                    const p1 = r.players[0], p2 = r.players[1];
+                    const m1 = r.moves[p1], m2 = r.moves[p2];
+                    let w = null;
+                    if(m1!==m2) {
+                        if((m1=='rock'&&m2=='scissors')||(m1=='paper'&&m2=='rock')||(m1=='scissors'&&m2=='paper')) w = p1;
+                        else w = p2;
+                    }
+                    setTimeout(() => {
+                        let up = { moves: {}, roundState: 'idle' }; // Reset moves immediately for next round
+                        if(w) up[`scores.${w}`] = firebase.firestore.FieldValue.increment(1);
+                        db.collection('rooms').doc(currentRoomId).update(up);
+                        Swal.fire({ title: w===currentUser.uid?'WIN!':'LOSE!', timer:1000, showConfirmButton:false, icon: w===currentUser.uid?'success':'error', background: '#1e293b', color: '#fff' });
+                    }, 1000);
+                }
+            },
+            moveRPS: (m) => {
+                if(rpsInterval) { clearInterval(rpsInterval); rpsInterval = null; }
+                db.collection('rooms').doc(currentRoomId).update({ [`moves.${currentUser.uid}`]: m });
+            }
+        };
+
+        // Init
+        auth.onAuthStateChanged(u => u ? User.init(u) : document.getElementById('view-auth').classList.remove('hidden'));
+    </script>
+</body>
+</html>
