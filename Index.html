@@ -52,7 +52,6 @@
     <style>
         body { background-color: #020617; color: #fff; overflow-x: hidden; }
         
-        /* Background FX */
         .bg-grid {
             background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
             linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
@@ -66,35 +65,28 @@
             z-index: -1; animation: blob 15s infinite;
         }
 
-        /* Glass Components */
         .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); }
         .glass-card { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-card:hover { border-color: #d946ef; box-shadow: 0 0 30px rgba(217, 70, 239, 0.15); transform: translateY(-5px) scale(1.01); }
 
-        /* Inputs & Buttons */
         .input-cyber { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #334155; padding: 14px 18px; border-radius: 12px; color: white; outline: none; transition: 0.3s; }
         .input-cyber:focus { border-color: #d946ef; box-shadow: 0 0 15px rgba(217, 70, 239, 0.3); background: rgba(0,0,0,0.6); }
         
         .btn-grad { background: linear-gradient(135deg, #4f46e5, #d946ef); color: white; padding: 12px; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; width: 100%; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .btn-grad:hover { box-shadow: 0 0 25px rgba(217, 70, 239, 0.6); transform: scale(1.02); }
-        .btn-grad::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%); transform: rotate(45deg); transition: 0.5s; opacity: 0; }
-        .btn-grad:hover::after { left: 100%; top: 100%; opacity: 1; transition: 0.7s; }
 
-        /* Game UI */
-        .xo-cell { height: 100px; background: rgba(255,255,255,0.03); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: 900; cursor: pointer; border: 2px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .xo-cell { height: 100px; background: rgba(255,255,255,0.03); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: 900; cursor: pointer; border: 2px solid rgba(255,255,255,0.05); transition: 0.2s; }
         .xo-cell:hover { background: rgba(255,255,255,0.08); border-color: #d946ef; }
-        .xo-cell.X { color: #d946ef; text-shadow: 0 0 20px #d946ef; animation: zoomIn 0.3s; }
-        .xo-cell.O { color: #06b6d4; text-shadow: 0 0 20px #06b6d4; animation: zoomIn 0.3s; }
+        .xo-cell.X { color: #d946ef; text-shadow: 0 0 15px #d946ef; animation: zoomIn 0.3s; }
+        .xo-cell.O { color: #06b6d4; text-shadow: 0 0 15px #06b6d4; animation: zoomIn 0.3s; }
 
         .rps-btn { width: 90px; height: 90px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
         .rps-btn:hover { border-color: #d946ef; transform: scale(1.1); box-shadow: 0 0 20px rgba(217, 70, 239, 0.4); }
         .rps-btn.selected { background: #d946ef; border-color: white; color: white; box-shadow: 0 0 40px #d946ef; transform: scale(1.1); animation: glow 2s infinite; }
 
-        /* Timer */
         .timer-container { width: 100%; height: 8px; background: #1e293b; border-radius: 99px; overflow: hidden; margin-top: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
         .timer-bar { height: 100%; background: linear-gradient(90deg, #f43f5e, #e11d48); width: 100%; transition: width 0.1s linear; border-radius: 99px; box-shadow: 0 0 10px #f43f5e; }
 
-        /* Modals */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(12px); z-index: 100; display: none; justify-content: center; align-items: center; padding: 20px; }
         .modal-box { background: #0f172a; border: 1px solid #334155; width: 100%; max-width: 500px; border-radius: 24px; padding: 30px; position: relative; animation: zoomIn 0.3s; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
     </style>
@@ -110,7 +102,7 @@
             <i class="fa-solid fa-gear text-7xl text-slate-400 relative z-10 animate-spin-slow"></i>
         </div>
         <h1 class="text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 mb-4 tracking-tight">SYSTEM MAINTENANCE</h1>
-        <p class="text-slate-400 text-lg" id="maint-msg">ระบบกำลังปิดปรับปรุงชั่วคราว</p>
+        <p class="text-slate-400 text-lg" id="maint-msg">ปิดปรับปรุงชั่วคราว</p>
     </div>
 
     <div id="view-auth" class="fixed inset-0 z-50 flex items-center justify-center p-6 backdrop-blur-sm hidden">
@@ -121,13 +113,9 @@
             </div>
             
             <div id="login-form" class="space-y-5">
-                <div class="group">
-                    <input id="l-email" class="input-cyber pl-4" placeholder="Email Address">
-                </div>
-                <div class="group">
-                    <input id="l-pass" type="password" class="input-cyber pl-4" placeholder="Password">
-                </div>
-                <button onclick="Auth.login()" class="btn-grad h-14 text-lg shadow-lg shadow-purple-500/20">LOGIN NOW</button>
+                <div class="group"><input id="l-email" class="input-cyber pl-4" placeholder="อีเมล"></div>
+                <div class="group"><input id="l-pass" type="password" class="input-cyber pl-4" placeholder="รหัสผ่าน"></div>
+                <button onclick="Auth.login()" class="btn-grad h-14 text-lg shadow-lg shadow-purple-500/20">เข้าสู่ระบบ</button>
                 <div class="text-center mt-6">
                     <span class="text-slate-500 text-sm">ยังไม่มีบัญชี?</span>
                     <button onclick="UI.toggleAuth('reg')" class="text-purple-400 text-sm font-bold hover:underline ml-1">สมัครสมาชิก</button>
@@ -135,10 +123,10 @@
             </div>
 
             <div id="reg-form" class="space-y-5 hidden">
-                <input id="r-nick" class="input-cyber" placeholder="Nickname (ชื่อเล่น)">
-                <input id="r-email" class="input-cyber" placeholder="Email Address">
-                <input id="r-pass" type="password" class="input-cyber" placeholder="Password (6+ ตัว)">
-                <button onclick="Auth.register()" class="btn-grad h-14 text-lg">CREATE ACCOUNT</button>
+                <input id="r-nick" class="input-cyber" placeholder="ชื่อเล่น">
+                <input id="r-email" class="input-cyber" placeholder="อีเมล">
+                <input id="r-pass" type="password" class="input-cyber" placeholder="รหัสผ่าน (6+ ตัว)">
+                <button onclick="Auth.register()" class="btn-grad h-14 text-lg">ยืนยันการสมัคร</button>
                 <button onclick="UI.toggleAuth('log')" class="w-full text-slate-500 text-sm mt-4 hover:text-white transition">กลับไปหน้าล็อกอิน</button>
             </div>
         </div>
@@ -172,17 +160,14 @@
                                 <div class="text-xs text-slate-500 font-mono">ID: <span id="u-id-short">...</span></div>
                             </div>
                             <button onclick="UI.modal('profile')" class="w-full text-left p-3 rounded-xl hover:bg-white/5 text-sm text-slate-300 flex items-center gap-3 transition">
-                                <div class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400"><i class="fa-solid fa-wallet"></i></div>
-                                บัญชีธนาคาร
+                                <i class="fa-solid fa-wallet text-purple-500"></i> บัญชีธนาคาร
                             </button>
                             <button onclick="UI.modal('history')" class="w-full text-left p-3 rounded-xl hover:bg-white/5 text-sm text-slate-300 flex items-center gap-3 transition">
-                                <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                                ประวัติการทำรายการ
+                                <i class="fa-solid fa-clock-rotate-left text-blue-500"></i> ประวัติการทำรายการ
                             </button>
                             <div class="h-px bg-slate-800 my-2"></div>
                             <button onclick="Auth.logout()" class="w-full text-left p-3 rounded-xl hover:bg-red-500/10 text-sm text-red-500 font-bold flex items-center gap-3 transition">
-                                <div class="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center"><i class="fa-solid fa-power-off"></i></div>
-                                ออกจากระบบ
+                                <i class="fa-solid fa-power-off"></i> ออกจากระบบ
                             </button>
                         </div>
                     </div>
@@ -191,12 +176,11 @@
         </nav>
 
         <main class="flex-1 max-w-7xl mx-auto w-full p-4 md:p-8">
-            
             <div class="grid md:grid-cols-3 gap-6 mb-10">
                 <div class="md:col-span-2 relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-blue-900 via-slate-900 to-black border border-white/10 p-8 shadow-2xl group">
                     <div class="absolute top-0 right-0 p-6 opacity-20 transition group-hover:scale-110 duration-700"><i class="fa-solid fa-bullhorn text-9xl text-white"></i></div>
                     <div class="relative z-10">
-                        <span class="bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase mb-3 inline-block">Announcement</span>
+                        <span class="bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase mb-3 inline-block">ประกาศ</span>
                         <h3 class="text-2xl font-bold mb-3">NEWS UPDATE</h3>
                         <p id="annc-text" class="text-slate-300 text-sm leading-relaxed max-w-lg">Loading announcements...</p>
                     </div>
@@ -218,16 +202,13 @@
                 </div>
                 <div class="relative w-full md:w-96 group">
                     <i class="fa-solid fa-search absolute top-4 left-5 text-slate-500 group-hover:text-purple-400 transition"></i>
-                    <input id="search-input" onkeyup="Game.filterRooms()" class="input-cyber pl-14 h-14" placeholder="Search Room...">
+                    <input id="search-input" onkeyup="Game.filterRooms()" class="input-cyber pl-14 h-14" placeholder="ค้นหาห้อง / ราคา...">
                 </div>
             </div>
 
             <div id="room-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
-                <div class="col-span-full py-20 text-center text-slate-500 animate-pulse">
-                    CONNECTING TO SERVER...
-                </div>
+                <div class="col-span-full py-20 text-center text-slate-500 animate-pulse">CONNECTING TO SERVER...</div>
             </div>
-
         </main>
     </div>
 
@@ -235,10 +216,10 @@
         <div class="modal-box">
             <div class="flex justify-between items-center mb-8">
                 <h3 class="text-2xl font-bold flex items-center gap-3"><i class="fa-solid fa-wallet text-purple-500"></i> บัญชีธนาคาร</h3>
-                <button onclick="UI.closeModal('profile')" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="UI.closeModal('profile')" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="space-y-5">
-                <div><label class="text-xs text-slate-500 font-bold ml-1 mb-1 block uppercase">ชื่อเล่นในเกม</label><input id="p-nick" class="input-cyber"></div>
+                <div><label class="text-xs text-slate-500 font-bold ml-1 mb-1 block uppercase">ชื่อเล่น</label><input id="p-nick" class="input-cyber"></div>
                 <div>
                     <label class="text-xs text-slate-500 font-bold ml-1 mb-1 block uppercase">ธนาคาร</label>
                     <select id="p-bank" class="input-cyber cursor-pointer text-slate-300 bg-[#0f172a]">
@@ -260,7 +241,7 @@
         <div class="modal-box max-w-2xl">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold flex items-center gap-3"><i class="fa-solid fa-clock-rotate-left text-blue-500"></i> ประวัติการเล่น</h3>
-                <button onclick="UI.closeModal('history')" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="UI.closeModal('history')" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="max-h-[400px] overflow-y-auto pr-2 custom-scroll">
                 <table class="w-full text-left text-sm text-slate-300">
@@ -288,7 +269,7 @@
         </div>
 
         <div class="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden">
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none animate-pulse"></div>
+            <div class="absolute w-[600px] h-[600px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none animate-pulse"></div>
 
             <div id="g-waiting" class="text-center z-10 animate__animated animate__fadeIn">
                 <div class="relative inline-block mb-8">
@@ -298,8 +279,8 @@
                     </div>
                 </div>
                 <h2 class="text-4xl font-black mb-3 tracking-tight">WAITING FOR OPPONENT</h2>
-                <p class="text-slate-400 mb-8 font-light">รอคู่ต่อสู้เข้าร่วมห้อง หรือแชร์รหัสห้องให้เพื่อน</p>
-                <div class="bg-[#0f172a] border border-slate-700 p-6 rounded-2xl inline-block min-w-[280px] shadow-lg group hover:border-purple-500 transition cursor-pointer">
+                <p class="text-slate-400 mb-8 font-light">รอคู่ต่อสู้เข้าร่วมห้อง</p>
+                <div class="bg-[#0f172a] border border-slate-700 p-6 rounded-2xl inline-block min-w-[280px] shadow-lg">
                     <div class="text-[10px] text-slate-500 mb-2 uppercase font-bold tracking-widest">Room Password</div>
                     <div id="g-pass" class="font-mono text-3xl font-bold text-white select-all group-hover:text-purple-400 transition">---</div>
                 </div>
@@ -318,7 +299,10 @@
                     </div>
                 </div>
 
-                <div id="area-xo" class="hidden grid grid-cols-3 gap-3 mx-auto max-w-[340px] animate__animated animate__zoomIn"></div>
+                <div id="area-xo" class="hidden animate__animated animate__zoomIn">
+                    <div class="grid grid-cols-3 gap-3 mx-auto max-w-[340px]" id="xo-board"></div>
+                    <div id="xo-turn-msg" class="text-center mt-8 text-xl font-bold text-white animate-pulse"></div>
+                </div>
 
                 <div id="area-rps" class="hidden text-center animate__animated animate__fadeInUp">
                     <div class="flex justify-center gap-6 mb-10">
@@ -326,11 +310,10 @@
                         <div onclick="Game.moveRPS('paper')" id="btn-paper" class="rps-btn"><i class="fa-regular fa-hand"></i></div>
                         <div onclick="Game.moveRPS('scissors')" id="btn-scissors" class="rps-btn"><i class="fa-regular fa-hand-scissors"></i></div>
                     </div>
-                    <div id="rps-status" class="text-2xl font-bold text-white mb-6 tracking-wide drop-shadow-md">CHOOSE YOUR WEAPON</div>
-                    
+                    <div id="rps-status" class="text-2xl font-bold text-white mb-6 tracking-wide drop-shadow-md">CHOOSE WEAPON</div>
                     <div id="rps-timer-box" class="hidden w-full max-w-xs mx-auto">
                         <div class="timer-container"><div id="rps-bar" class="timer-bar"></div></div>
-                        <div class="text-red-500 font-bold text-sm mt-3 animate-pulse">TIME LEFT: <span id="rps-count">5.0</span>s</div>
+                        <div class="text-red-500 font-bold text-sm mt-3 animate-pulse">AUTO PICK IN: <span id="rps-count">5.0</span>s</div>
                     </div>
                 </div>
             </div>
@@ -338,7 +321,7 @@
     </div>
 
     <script>
-        // CONFIG
+        // CONFIG (Replace with your keys)
         const firebaseConfig = {
             apiKey: "AIzaSyAHAkBhypqyJuuL22tLrFKN7ZqdEsqGDTk",
             authDomain: "rsdm-9ca2a.firebaseapp.com",
@@ -370,6 +353,7 @@
             document.getElementById('btn-contact').href = c.fbLink || '#';
         });
 
+        // UI & AUTH
         const UI = {
             toggleAuth: (m) => {
                 document.getElementById('login-form').style.display = m=='reg'?'none':'block';
@@ -425,11 +409,11 @@
                 });
             },
             loadHistory: () => {
-                // FIXED: Client-Side Sort
+                // FIXED BUG: Client-side sorting
                 db.collection('transactions').where('uid', '==', currentUser.uid).onSnapshot(snap => {
                     let trans = [];
                     snap.forEach(d => trans.push(d.data()));
-                    trans.sort((a,b) => b.timestamp - a.timestamp); 
+                    trans.sort((a,b) => b.timestamp - a.timestamp); // เรียงจากใหม่ไปเก่า
                     
                     const list = document.getElementById('history-list');
                     if(trans.length === 0) { list.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-500">ยังไม่มีประวัติ</td></tr>`; return; }
@@ -467,7 +451,6 @@
                     const style = r.gameType === 'xo' ? 'from-blue-900/40 to-slate-900/40 border-blue-500/20' : 'from-pink-900/40 to-slate-900/40 border-pink-500/20';
                     const icon = r.gameType === 'xo' ? 'fa-x' : 'fa-hand-scissors';
                     const bgGlow = r.gameType === 'xo' ? 'group-hover:bg-blue-600/10' : 'group-hover:bg-pink-600/10';
-                    
                     return `
                     <div onclick="Game.join('${r.id}', ${r.betAmount}, '${r.password}')" class="glass-card p-6 cursor-pointer bg-gradient-to-br ${style} group relative overflow-hidden h-40 flex flex-col justify-between ${bgGlow}">
                         <div class="absolute -right-6 -top-6 p-4 opacity-10 group-hover:opacity-20 group-hover:scale-125 transition duration-700">
@@ -530,7 +513,7 @@
                     document.getElementById('p1-score').innerText = (myIdx===0) ? (r.scores[p1]||0) : (r.scores[p2]||0);
                     document.getElementById('p2-score').innerText = (myIdx===0) ? (r.scores[p2]||0) : (r.scores[p1]||0);
 
-                    // Win Condition
+                    // Win Check
                     const s1 = r.scores[p1]||0, s2 = r.scores[p2]||0;
                     if(s1 >= r.maxWins || s2 >= r.maxWins) {
                         const winner = (s1 > s2) ? p1 : p2;
@@ -539,8 +522,7 @@
                             title: isWin ? 'VICTORY!' : 'DEFEAT!',
                             text: isWin ? `+${r.betAmount} Credits` : `-${r.betAmount} Credits`,
                             icon: isWin ? 'success' : 'error',
-                            background: '#0f172a', color: '#fff', confirmButtonColor: '#d946ef',
-                            allowOutsideClick: false
+                            background: '#0f172a', color: '#fff', confirmButtonColor: '#d946ef', allowOutsideClick: false
                         }).then(() => {
                             if(isWin) { 
                                 db.collection('users').doc(p1).update({ credit: firebase.firestore.FieldValue.increment(winner===p1?r.betAmount:-r.betAmount) });
@@ -562,24 +544,44 @@
                 if(unsubRoom) unsubRoom();
                 document.getElementById('view-game').classList.add('hidden');
                 currentRoomId = null;
-                clearInterval(rpsInterval);
-                rpsInterval = null;
+                clearInterval(rpsInterval); rpsInterval = null;
             },
 
-            // --- XO ---
+            // --- XO GAME (FIXED TURN DISPLAY) ---
             renderXO: (r) => {
                 const b = document.getElementById('area-xo');
                 b.innerHTML = '';
+                
+                // Turn Indicator Logic
+                const p1 = r.players[0], p2 = r.players[1];
+                let isMyTurn = false;
+                let turnMsg = "";
+                
+                if(!r.currentTurn) {
+                    // First turn always P1
+                    isMyTurn = currentUser.uid === p1;
+                    turnMsg = isMyTurn ? "ตาของคุณ! (X)" : "รอคู่แข่ง... (X)";
+                } else {
+                    isMyTurn = r.currentTurn === currentUser.uid;
+                    turnMsg = isMyTurn ? "ตาของคุณ!" : "รอคู่แข่ง...";
+                }
+                
+                const statusEl = document.getElementById('xo-turn-msg');
+                statusEl.innerText = turnMsg;
+                statusEl.className = `text-center mt-8 text-xl font-bold uppercase tracking-widest ${isMyTurn ? 'text-green-400 animate-bounce' : 'text-slate-500'}`;
+
                 r.board.forEach((c, i) => {
                     const el = document.createElement('div');
                     el.className = `xo-cell ${c ? c.toLowerCase() : ''}`;
                     el.innerText = c || '';
                     el.onclick = () => {
-                        if(c || (r.currentTurn && r.currentTurn !== currentUser.uid)) return;
+                        if(c) return;
+                        if(r.currentTurn && r.currentTurn !== currentUser.uid) return;
                         if(!r.currentTurn && currentUser.uid !== r.players[0]) return;
                         
                         const sym = (currentUser.uid === r.players[0]) ? 'X' : 'O';
                         let nb = [...r.board]; nb[i] = sym;
+                        
                         const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
                         const isWin = wins.some(w => w.every(x => nb[x] === sym));
                         
@@ -596,7 +598,7 @@
                 });
             },
 
-            // --- RPS (FIXED FAIRNESS) ---
+            // --- RPS GAME (FIXED BUG & TIMER) ---
             renderRPS: (r) => {
                 const myMove = r.moves ? r.moves[currentUser.uid] : null;
                 const status = document.getElementById('rps-status');
@@ -612,38 +614,47 @@
 
                 if(!myMove) {
                     status.innerText = "CHOOSE YOUR WEAPON";
-                    if(r.roundState === 'idle') {
-                        if(currentUser.uid === r.players[0]) db.collection('rooms').doc(currentRoomId).update({ roundState: 'selecting', roundStart: Date.now() });
-                    } else if(r.roundState === 'selecting') {
-                        timerBox.classList.remove('hidden');
-                        
-                        // Sync Timer with Server Start Time
-                        const now = Date.now();
-                        const elapsed = (now - r.roundStart) / 1000;
-                        const timeLeft = 5 - elapsed;
-
-                        if(timeLeft > 0) {
-                            bar.style.width = (timeLeft/5)*100 + '%';
-                            countTxt.innerText = timeLeft.toFixed(1);
-                            
-                            // Continue animating
-                            if(!rpsInterval) {
-                                rpsInterval = setInterval(() => {
-                                    // Just trigger update to check sync time again on next snapshot or local visual update
-                                    // But actual logic is driven by snapshot updates mostly.
-                                    // Local visual smoother:
-                                    const t = 5 - ((Date.now() - r.roundStart) / 1000);
-                                    if(t > 0) {
-                                        bar.style.width = (t/5)*100 + '%';
-                                        countTxt.innerText = t.toFixed(1);
-                                    }
-                                }, 100);
+                    
+                    // Fixed Bug: Timer Logic starts only when 2 players exist
+                    if(r.players.length === 2) {
+                        if(r.roundState === 'idle') {
+                            // Only P1 triggers timer start to avoid double set
+                            if(currentUser.uid === r.players[0]) {
+                                db.collection('rooms').doc(currentRoomId).update({ roundState: 'selecting', roundStart: Date.now(), moves: {} });
                             }
-                        } else {
-                            // TIME UP: Auto Pick Random
-                            if(rpsInterval) { clearInterval(rpsInterval); rpsInterval = null; }
-                            const rand = ['rock','paper','scissors'][Math.floor(Math.random()*3)];
-                            Game.moveRPS(rand);
+                        } else if(r.roundState === 'selecting') {
+                            timerBox.classList.remove('hidden');
+                            
+                            // Client-side Timer Sync
+                            const now = Date.now();
+                            const elapsed = (now - r.roundStart) / 1000;
+                            const timeLeft = 5 - elapsed;
+
+                            if(timeLeft > 0) {
+                                bar.style.width = (timeLeft/5)*100 + '%';
+                                countTxt.innerText = timeLeft.toFixed(1);
+                                
+                                // Smooth visual update
+                                if(!rpsInterval) {
+                                    rpsInterval = setInterval(() => {
+                                        const t = 5 - ((Date.now() - r.roundStart) / 1000);
+                                        if(t > 0) {
+                                            bar.style.width = (t/5)*100 + '%';
+                                            countTxt.innerText = t.toFixed(1);
+                                        } else {
+                                            clearInterval(rpsInterval); rpsInterval = null;
+                                            // Time up: Auto Pick Random IF haven't moved
+                                            const rand = ['rock','paper','scissors'][Math.floor(Math.random()*3)];
+                                            Game.moveRPS(rand);
+                                        }
+                                    }, 100);
+                                }
+                            } else {
+                                // Fallback if interval missed
+                                if(rpsInterval) { clearInterval(rpsInterval); rpsInterval = null; }
+                                const rand = ['rock','paper','scissors'][Math.floor(Math.random()*3)];
+                                Game.moveRPS(rand);
+                            }
                         }
                     }
                 } else {
@@ -652,6 +663,7 @@
                     if(rpsInterval) { clearInterval(rpsInterval); rpsInterval = null; }
                 }
 
+                // Check Result
                 if(r.players[0] === currentUser.uid && r.moves && Object.keys(r.moves).length === 2) {
                     const p1 = r.players[0], p2 = r.players[1];
                     const m1 = r.moves[p1], m2 = r.moves[p2];
@@ -661,7 +673,7 @@
                         else w = p2;
                     }
                     setTimeout(() => {
-                        let up = { moves: {}, roundState: 'idle' };
+                        let up = { moves: {}, roundState: 'idle' }; // Reset moves immediately for next round
                         if(w) up[`scores.${w}`] = firebase.firestore.FieldValue.increment(1);
                         db.collection('rooms').doc(currentRoomId).update(up);
                         Swal.fire({ title: w===currentUser.uid?'WIN!':'LOSE!', timer:1000, showConfirmButton:false, icon: w===currentUser.uid?'success':'error', background: '#1e293b', color: '#fff' });
@@ -674,6 +686,7 @@
             }
         };
 
+        // Init
         auth.onAuthStateChanged(u => u ? User.init(u) : document.getElementById('view-auth').classList.remove('hidden'));
     </script>
 </body>
