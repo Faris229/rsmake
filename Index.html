@@ -3,131 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Zone</title>
+    <title>CYBER BET | เดิมพันออนไลน์</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Kanit', 'sans-serif'] },
+                    colors: {
+                        neon: { purple: '#b026ff', blue: '#4f46e5', green: '#00ff9d', red: '#ff0055' },
+                        dark: { bg: '#09090b', card: '#18181b', border: '#27272a' }
+                    },
+                    animation: { 'pulse-slow': 'pulse 3s infinite' }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { font-family: 'Prompt', sans-serif; background: #ffffff; color: #1a1a1a; }
-        .input-clean { width: 100%; padding: 12px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; outline: none; }
-        .input-clean:focus { border-color: #000; }
-        .btn-black { background: #000; color: #fff; padding: 12px; border-radius: 10px; width: 100%; font-weight: 600; transition: 0.2s; }
-        .btn-black:hover { transform: scale(0.98); }
-        .xo-cell { height: 90px; background: #f9fafb; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 800; cursor: pointer; border: 2px solid transparent; }
-        .xo-cell:hover { border-color: #e5e7eb; }
-        .xo-cell.X { color: #ef4444; } .xo-cell.O { color: #3b82f6; }
-        .rps-btn { width: 80px; height: 80px; border-radius: 50%; background: #fff; border: 4px solid #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; transition: 0.2s; }
-        .rps-btn:hover { border-color: #000; transform: scale(1.1); }
-        .rps-btn.selected { background: #000; color: #fff; border-color: #000; }
+        body { background-color: #050505; color: #fff; background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #000 70%); min-height: 100vh; }
         
-        /* Timer Bar */
-        .timer-wrap { width: 100%; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; margin-top: 10px; display: none; }
-        .timer-bar { height: 100%; background: #ef4444; width: 100%; transition: width 1s linear; }
+        /* Glassmorphism */
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-panel { background: rgba(20, 20, 23, 0.9); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+        
+        /* Inputs */
+        .input-cyber { width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px solid #333; border-radius: 12px; color: white; outline: none; transition: 0.3s; }
+        .input-cyber:focus { border-color: #b026ff; box-shadow: 0 0 15px rgba(176, 38, 255, 0.2); }
+        
+        /* Buttons */
+        .btn-neon { background: linear-gradient(90deg, #7c3aed, #db2777); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; position: relative; overflow: hidden; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-neon:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(219, 39, 119, 0.5); }
+        .btn-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); transition: 0.2s; cursor: pointer; }
+        .btn-icon:hover { background: rgba(255,255,255,0.2); color: #b026ff; }
+
+        /* Game Elements */
+        .xo-cell { height: 100px; background: rgba(255,255,255,0.03); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: 900; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+        .xo-cell:hover { background: rgba(255,255,255,0.08); border-color: #b026ff; }
+        .xo-cell.X { color: #ff0055; text-shadow: 0 0 10px #ff0055; }
+        .xo-cell.O { color: #00ff9d; text-shadow: 0 0 10px #00ff9d; }
+
+        .rps-btn { width: 90px; height: 90px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; transition: 0.3s; position: relative; }
+        .rps-btn:hover { transform: scale(1.1); border-color: #b026ff; box-shadow: 0 0 20px rgba(176, 38, 255, 0.4); }
+        .rps-btn.selected { background: #b026ff; color: white; border-color: #fff; box-shadow: 0 0 30px #b026ff; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b026ff; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 100; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-box { background: #111; border: 1px solid #333; width: 100%; max-width: 500px; border-radius: 24px; padding: 30px; position: relative; animation: zoomIn 0.3s; }
     </style>
 </head>
-<body>
+<body class="flex flex-col">
 
-    <div id="maintenance-view" class="fixed inset-0 bg-white z-[999] flex flex-col items-center justify-center hidden">
-        <i class="fa-solid fa-screwdriver-wrench text-6xl mb-4 text-gray-300"></i>
-        <h1 class="text-3xl font-bold">ปิดปรับปรุงระบบ</h1>
-        <p class="text-gray-500 mt-2">กรุณากลับมาใหม่ภายหลัง</p>
-    </div>
-
-    <div id="auth-view" class="fixed inset-0 bg-white z-50 flex items-center justify-center p-6 hidden">
-        <div class="w-full max-w-sm text-center">
-            <h1 class="text-4xl font-bold mb-2 tracking-tighter" id="site-name-auth">GAME ZONE.</h1>
-            <p class="text-gray-400 mb-8">เข้าสู่ระบบเพื่อเดิมพัน</p>
-            <div id="login-form" class="space-y-4">
-                <input id="l-email" class="input-clean" placeholder="Email">
-                <input id="l-pass" type="password" class="input-clean" placeholder="Password">
-                <button onclick="Auth.login()" class="btn-black">เข้าสู่ระบบ</button>
-                <div class="mt-4 text-xs text-gray-500 cursor-pointer hover:underline" onclick="UI.toggleAuth('reg')">สมัครสมาชิกใหม่</div>
+    <div id="view-auth" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black">
+        <div class="absolute inset-0 bg-[url('https://media.giphy.com/media/26tn33aiTi1jkl6H6/giphy.gif')] bg-cover opacity-20 pointer-events-none"></div>
+        <div class="w-full max-w-md glass-panel p-8 rounded-3xl relative z-10">
+            <div class="text-center mb-8">
+                <h1 class="text-5xl font-black italic tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 mb-2">CYBER BET</h1>
+                <p class="text-gray-400 text-sm">แพลตฟอร์มเดิมพันแห่งอนาคต</p>
             </div>
+            
+            <div id="login-form" class="space-y-4">
+                <div class="relative">
+                    <i class="fa-solid fa-envelope absolute left-4 top-4 text-gray-500"></i>
+                    <input id="l-email" class="input-cyber pl-12" placeholder="Email Address">
+                </div>
+                <div class="relative">
+                    <i class="fa-solid fa-lock absolute left-4 top-4 text-gray-500"></i>
+                    <input id="l-pass" type="password" class="input-cyber pl-12" placeholder="Password">
+                </div>
+                <button onclick="Auth.login()" class="btn-neon mt-4">เข้าสู่ระบบ <i class="fa-solid fa-rocket"></i></button>
+                <div class="text-center mt-6">
+                    <span class="text-gray-500 text-sm">ยังไม่มีบัญชี?</span>
+                    <button onclick="UI.toggleAuth('reg')" class="text-purple-400 font-bold hover:underline ml-1">สมัครสมาชิก</button>
+                </div>
+            </div>
+
             <div id="reg-form" class="space-y-4 hidden">
-                <input id="r-name" class="input-clean" placeholder="ชื่อเล่น">
-                <input id="r-email" class="input-clean" placeholder="Email">
-                <input id="r-pass" type="password" class="input-clean" placeholder="Password">
-                <button onclick="Auth.register()" class="btn-black bg-gray-800">ยืนยันสมัคร</button>
-                <div class="mt-4 text-xs text-gray-500 cursor-pointer hover:underline" onclick="UI.toggleAuth('log')">กลับไปล็อกอิน</div>
+                <input id="r-nick" class="input-cyber" placeholder="ชื่อเล่น (ในเกม)">
+                <input id="r-email" class="input-cyber" placeholder="Email">
+                <input id="r-pass" type="password" class="input-cyber" placeholder="ตั้งรหัสผ่าน">
+                <button onclick="Auth.register()" class="btn-neon bg-gradient-to-r from-blue-500 to-cyan-500">ยืนยันการสมัคร</button>
+                <button onclick="UI.toggleAuth('log')" class="w-full text-gray-500 text-sm mt-2 hover:text-white">กลับไปเข้าสู่ระบบ</button>
             </div>
         </div>
     </div>
 
-    <div id="app-view" class="hidden min-h-screen flex flex-col">
-        <nav class="flex justify-between items-center p-4 md:p-8 border-b border-gray-100 bg-white/80 backdrop-blur sticky top-0 z-40">
+    <div id="view-app" class="hidden flex-1 flex flex-col max-w-6xl mx-auto w-full px-4">
+        
+        <nav class="flex justify-between items-center py-6 sticky top-0 z-40 bg-[#050505]/80 backdrop-blur-md border-b border-white/5">
             <div class="flex items-center gap-4">
-                <div class="font-bold text-xl tracking-tighter" id="site-name-nav">ZONE.</div>
-                <div class="hidden md:block">
-                    <div id="u-name" class="font-bold text-sm">...</div>
-                    <div class="text-xs text-gray-400">Credit: <span id="u-credit" class="text-black font-bold">0</span></div>
+                <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center text-2xl shadow-lg shadow-purple-500/30">
+                    <i class="fa-solid fa-gamepad"></i>
+                </div>
+                <div>
+                    <div class="font-bold text-xl tracking-wide">CYBER ZONE</div>
+                    <div class="text-xs text-green-400 font-mono animate-pulse">● System Online</div>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <a id="btn-contact" href="#" target="_blank" class="bg-black text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-gray-800">
-                    <i class="fa-brands fa-facebook-messenger"></i> ติดต่อแอดมิน
-                </a>
-                <button onclick="Auth.logout()" class="w-10 h-10 rounded-lg bg-gray-100 hover:bg-red-50 hover:text-red-500"><i class="fa-solid fa-power-off"></i></button>
+
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col text-right mr-4">
+                    <span class="text-xs text-gray-400">CREDIT BALANCE</span>
+                    <span class="text-xl font-bold font-mono text-yellow-400">฿<span id="u-credit">0.00</span></span>
+                </div>
+
+                <div class="relative group">
+                    <div onclick="UI.toggleProfileMenu()" class="flex items-center gap-3 cursor-pointer p-2 rounded-xl hover:bg-white/5 transition">
+                        <div class="w-10 h-10 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center overflow-hidden">
+                            <i class="fa-solid fa-user text-gray-400"></i>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-xs text-gray-500"></i>
+                    </div>
+                    
+                    <div id="profile-dropdown" class="absolute right-0 top-14 w-64 bg-[#18181b] border border-gray-800 rounded-xl shadow-2xl p-2 hidden animate__animated animate__fadeInUp animate__faster">
+                        <div class="p-3 border-b border-gray-800 mb-2">
+                            <div id="u-name" class="font-bold text-white">User</div>
+                            <div class="text-xs text-gray-500">Player</div>
+                        </div>
+                        <a onclick="UI.openModal('profile')" class="block p-3 rounded-lg hover:bg-white/5 cursor-pointer text-sm"><i class="fa-solid fa-id-card mr-2 text-purple-500"></i> ข้อมูลส่วนตัว / ธนาคาร</a>
+                        <a onclick="UI.openModal('history')" class="block p-3 rounded-lg hover:bg-white/5 cursor-pointer text-sm"><i class="fa-solid fa-clock-rotate-left mr-2 text-blue-500"></i> ประวัติการทำรายการ</a>
+                        <div class="h-px bg-gray-800 my-2"></div>
+                        <a onclick="Auth.logout()" class="block p-3 rounded-lg hover:bg-red-500/10 text-red-500 cursor-pointer text-sm"><i class="fa-solid fa-power-off mr-2"></i> ออกจากระบบ</a>
+                    </div>
+                </div>
             </div>
         </nav>
 
-        <div class="flex-1 max-w-5xl mx-auto w-full p-4 md:p-8">
-            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 mb-8 text-sm text-gray-600">
-                <div class="font-bold text-black mb-1"><i class="fa-solid fa-book-open"></i> กติกาการเล่น</div>
-                <p id="site-rules">...</p>
+        <div class="mt-8 flex flex-col md:flex-row justify-between items-end gap-4 mb-8">
+            <div class="w-full md:w-auto">
+                <h2 class="text-3xl font-bold mb-2">LOBBY</h2>
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-500"></i>
+                    <input id="search-room" onkeyup="Game.filterRooms()" class="input-cyber pl-10 w-full md:w-80" placeholder="ค้นหาชื่อห้อง / ราคา...">
+                </div>
             </div>
+            <div class="flex gap-3 w-full md:w-auto">
+                <a href="https://m.me/faris12naka" target="_blank" class="flex-1 bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 border border-gray-700 transition">
+                    <i class="fa-brands fa-facebook-messenger"></i> ฝาก/ถอน (แชท)
+                </a>
+            </div>
+        </div>
 
-            <div id="lobby-view">
-                <h2 class="text-2xl font-bold mb-6">ห้องเดิมพัน</h2>
-                <div id="room-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="room-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+            <div class="col-span-full text-center py-20 text-gray-600 animate-pulse">กำลังเชื่อมต่อเซิร์ฟเวอร์...</div>
+        </div>
+
+    </div>
+
+    <div id="modal-profile" class="modal-overlay">
+        <div class="modal-box">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold"><i class="fa-solid fa-wallet text-purple-500"></i> จัดการบัญชี</h3>
+                <button onclick="UI.closeModal('profile')" class="text-gray-500 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold">ชื่อเล่น</label>
+                    <input id="edit-nick" class="input-cyber" placeholder="ชื่อเล่น">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold">ธนาคาร</label>
+                    <select id="edit-bank" class="input-cyber cursor-pointer">
+                        <option value="">เลือกธนาคาร</option>
+                        <option value="kbank">กสิกรไทย (KBank)</option>
+                        <option value="scb">ไทยพาณิชย์ (SCB)</option>
+                        <option value="ktb">กรุงไทย (KTB)</option>
+                        <option value="bbl">กรุงเทพ (BBL)</option>
+                        <option value="truemoney">TrueMoney Wallet</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold">เลขบัญชี</label>
+                    <input id="edit-acc-num" class="input-cyber" placeholder="xxx-x-xxxxx-x">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold">ชื่อบัญชี</label>
+                    <input id="edit-acc-name" class="input-cyber" placeholder="ชื่อ-นามสกุล">
+                </div>
+                <button onclick="User.saveProfile()" class="btn-neon mt-4">บันทึกข้อมูล</button>
             </div>
         </div>
     </div>
 
-    <div id="game-view" class="fixed inset-0 bg-white z-[100] hidden flex flex-col">
-        <div class="p-4 border-b flex justify-between items-center">
-            <button onclick="Game.leave()" class="text-gray-400 hover:text-black font-bold"><i class="fa-solid fa-arrow-left"></i> ออกจากห้อง</button>
-            <div class="text-right"><div id="g-name" class="font-bold">Room</div><div class="text-xs text-gray-400">Bet: <span id="g-bet">0</span></div></div>
+    <div id="modal-history" class="modal-overlay">
+        <div class="modal-box max-w-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold"><i class="fa-solid fa-list text-blue-500"></i> ประวัติธุรกรรม & การเล่น</h3>
+                <button onclick="UI.closeModal('history')" class="text-gray-500 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="h-96 overflow-y-auto pr-2">
+                <table class="w-full text-left text-sm text-gray-300">
+                    <thead class="text-xs text-gray-500 uppercase bg-white/5 sticky top-0">
+                        <tr><th class="p-3">รายการ</th><th class="p-3">จำนวน</th><th class="p-3">เวลา</th></tr>
+                    </thead>
+                    <tbody id="history-list" class="divide-y divide-gray-800">
+                        <tr><td colspan="3" class="p-4 text-center text-gray-600">โหลดข้อมูล...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        
-        <div class="flex-1 flex flex-col items-center justify-center p-4">
-            <div id="g-waiting" class="text-center">
-                <div class="text-5xl mb-4 animate-bounce">⏳</div>
-                <h3 class="text-xl font-bold">รอผู้เล่น...</h3>
-                <p class="text-gray-500 text-sm mt-2">รหัสห้อง: <span id="g-pass" class="font-mono bg-gray-100 px-2 rounded font-bold text-black select-all"></span></p>
+    </div>
+
+    <div id="view-game" class="fixed inset-0 z-[100] bg-[#050505] flex flex-col hidden">
+        <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-[#09090b]">
+            <button onclick="Game.leave()" class="text-gray-400 hover:text-red-500 flex items-center gap-2 font-bold transition">
+                <i class="fa-solid fa-chevron-left"></i> LOBBY
+            </button>
+            <div class="text-center">
+                <div id="g-room-name" class="font-bold text-lg text-white tracking-widest">ROOM NAME</div>
+                <div class="text-xs text-purple-400 font-mono">BET: <span id="g-bet">0</span></div>
+            </div>
+            <div class="w-20"></div> </div>
+
+        <div class="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+            <div id="g-waiting" class="text-center z-10">
+                <div class="inline-block p-6 rounded-full bg-white/5 border border-white/10 mb-6 animate-pulse-slow">
+                    <i class="fa-solid fa-hourglass-half text-4xl text-purple-400"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-2">WAITING FOR PLAYER...</h2>
+                <p class="text-gray-500 mb-6">รอคู่ต่อสู้เข้าร่วมห้อง</p>
+                <div class="bg-[#111] border border-gray-800 p-4 rounded-xl inline-block min-w-[200px]">
+                    <div class="text-xs text-gray-500 mb-1">ROOM PASSWORD</div>
+                    <div id="g-pass" class="font-mono text-xl font-bold text-white select-all cursor-copy">---</div>
+                </div>
             </div>
 
-            <div id="g-playing" class="hidden w-full max-w-lg">
-                <div class="flex justify-between mb-8 bg-black text-white p-4 rounded-xl">
-                    <div class="text-center w-1/3"><div class="text-xs text-gray-400">YOU</div><div id="p1-score" class="text-3xl font-bold">0</div></div>
-                    <div class="font-bold text-gray-500 pt-2">VS</div>
-                    <div class="text-center w-1/3"><div class="text-xs text-gray-400">OPPONENT</div><div id="p2-score" class="text-3xl font-bold">0</div></div>
+            <div id="g-playing" class="hidden w-full max-w-lg z-10">
+                <div class="flex justify-between items-center mb-12 bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-md">
+                    <div class="text-center w-1/3">
+                        <div class="text-xs text-gray-400 font-bold mb-1">YOU</div>
+                        <div id="p1-score" class="text-5xl font-black text-blue-400">0</div>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-600 italic">VS</div>
+                    <div class="text-center w-1/3">
+                        <div class="text-xs text-gray-400 font-bold mb-1">ENEMY</div>
+                        <div id="p2-score" class="text-5xl font-black text-red-500">0</div>
+                    </div>
                 </div>
 
-                <div id="area-xo" class="hidden grid grid-cols-3 gap-2 max-w-[300px] mx-auto"></div>
+                <div id="area-xo" class="hidden grid grid-cols-3 gap-3 mx-auto max-w-[320px]"></div>
 
                 <div id="area-rps" class="hidden text-center">
-                    <div class="flex justify-center gap-4 mb-4">
+                    <div class="flex justify-center gap-6 mb-8">
                         <div onclick="Game.moveRPS('rock')" id="btn-rock" class="rps-btn"><i class="fa-regular fa-hand-back-fist"></i></div>
                         <div onclick="Game.moveRPS('paper')" id="btn-paper" class="rps-btn"><i class="fa-regular fa-hand"></i></div>
                         <div onclick="Game.moveRPS('scissors')" id="btn-scissors" class="rps-btn"><i class="fa-regular fa-hand-scissors"></i></div>
                     </div>
-                    <div id="rps-status" class="font-bold text-xl mb-2">เลือกเลย!</div>
+                    <div id="rps-status" class="text-2xl font-bold text-white animate-pulse">CHOOSE YOUR WEAPON</div>
                     
-                    <div class="timer-wrap" id="rps-timer-wrap">
-                        <div class="timer-bar" id="rps-timer-bar"></div>
+                    <div id="rps-timer-box" class="hidden mt-6">
+                        <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+                            <div id="rps-bar" class="bg-red-500 h-full w-full transition-all duration-100 ease-linear"></div>
+                        </div>
+                        <div id="rps-count" class="text-red-500 font-bold mt-2">5</div>
                     </div>
-                    <div id="rps-timer-text" class="text-red-500 font-bold mt-1 h-6"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // --- CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyAHAkBhypqyJuuL22tLrFKN7ZqdEsqGDTk",
             authDomain: "rsdm-9ca2a.firebaseapp.com",
@@ -136,106 +291,169 @@
             messagingSenderId: "299212700124",
             appId: "1:299212700124:web:730160dae6bb1b09cbb719"
         };
-        firebase.initializeApp(firebaseConfig);
+        if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        let user = null, userData = null, currentRoomId = null, unsubRoom = null, rpsTimer = null;
+        let currentUser = null, userDoc = null, currentRoomId = null, unsubRoom = null, rpsInterval = null;
+        let allRooms = []; // For filtering
 
+        // --- UI ---
         const UI = {
-            toggleAuth: (mode) => {
-                document.getElementById('login-form').style.display = mode === 'reg' ? 'none' : 'block';
-                document.getElementById('reg-form').style.display = mode === 'reg' ? 'block' : 'none';
+            toggleAuth: (m) => {
+                document.getElementById('login-form').style.display = m=='reg'?'none':'block';
+                document.getElementById('reg-form').style.display = m=='reg'?'block':'none';
             },
-            showApp: () => {
-                document.getElementById('auth-view').classList.add('hidden');
-                document.getElementById('app-view').classList.remove('hidden');
+            toggleProfileMenu: () => {
+                const el = document.getElementById('profile-dropdown');
+                el.classList.toggle('hidden');
             },
-            loadConfig: () => {
-                db.collection('config').doc('settings').onSnapshot(doc => {
-                    const d = doc.data() || {};
-                    if(d.isOpen === false) {
-                        document.getElementById('maintenance-view').classList.remove('hidden');
-                    } else {
-                        document.getElementById('maintenance-view').classList.add('hidden');
-                    }
-                    
-                    const name = d.siteName || 'GAME ZONE.';
-                    document.getElementById('site-name-auth').innerText = name;
-                    document.getElementById('site-name-nav').innerText = name;
-                    document.getElementById('site-rules').innerText = d.rules || 'ไม่มีกติกาพิเศษ';
-                    document.getElementById('btn-contact').href = d.fbLink || '#';
-                });
-            }
+            openModal: (id) => {
+                document.getElementById(`modal-${id}`).style.display = 'flex';
+                document.getElementById('profile-dropdown').classList.add('hidden');
+            },
+            closeModal: (id) => document.getElementById(`modal-${id}`).style.display = 'none',
+            toast: (msg, icon='success') => Swal.fire({ title: msg, icon: icon, toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, background: '#18181b', color: '#fff' })
         };
 
+        // --- AUTH ---
         const Auth = {
-            login: () => {
-                const e = document.getElementById('l-email').value;
-                const p = document.getElementById('l-pass').value;
-                auth.signInWithEmailAndPassword(e, p).catch(e => Swal.fire('Error', e.message, 'error'));
-            },
+            login: () => auth.signInWithEmailAndPassword(document.getElementById('l-email').value, document.getElementById('l-pass').value).catch(e=>UI.toast(e.message,'error')),
             register: () => {
-                const n = document.getElementById('r-name').value;
-                const e = document.getElementById('r-email').value;
-                const p = document.getElementById('r-pass').value;
-                if(!n || !e || !p) return Swal.fire('!', 'กรอกให้ครบ', 'warning');
-                auth.createUserWithEmailAndPassword(e, p).then(cred => {
-                    db.collection('users').doc(cred.user.uid).set({ nickname: n, email: e, uid: cred.user.uid, credit: 0 });
-                    Swal.fire('Success', 'สมัครสำเร็จ', 'success');
-                }).catch(e => Swal.fire('Error', e.message, 'error'));
+                const n = document.getElementById('r-nick').value, e = document.getElementById('r-email').value, p = document.getElementById('r-pass').value;
+                if(!n||!e||!p) return UI.toast('กรอกให้ครบ','warning');
+                auth.createUserWithEmailAndPassword(e,p).then(cred => {
+                    db.collection('users').doc(cred.user.uid).set({ nickname: n, email: e, uid: cred.user.uid, credit: 0, role: 'user', createdAt: new Date() });
+                    UI.toast('Welcome!');
+                }).catch(e=>UI.toast(e.message,'error'));
             },
             logout: () => auth.signOut()
         };
 
-        const Game = {
-            loadLobby: () => {
-                db.collection('rooms').onSnapshot(snap => {
-                    const list = document.getElementById('room-list');
-                    if(snap.empty) { list.innerHTML = '<div class="col-span-full text-center text-gray-400">ไม่มีห้อง</div>'; return; }
+        // --- USER & HISTORY ---
+        const User = {
+            init: (u) => {
+                currentUser = u;
+                document.getElementById('view-auth').style.display = 'none';
+                document.getElementById('view-app').classList.remove('hidden');
+                
+                db.collection('users').doc(u.uid).onSnapshot(doc => {
+                    userDoc = doc.data();
+                    document.getElementById('u-name').innerText = userDoc.nickname;
+                    document.getElementById('u-credit').innerText = userDoc.credit.toLocaleString();
                     
-                    let rooms = [];
-                    snap.forEach(doc => rooms.push({id: doc.id, ...doc.data()}));
-                    rooms.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
+                    // Fill Edit Form
+                    document.getElementById('edit-nick').value = userDoc.nickname;
+                    document.getElementById('edit-bank').value = userDoc.bankName || '';
+                    document.getElementById('edit-acc-num').value = userDoc.bankAcc || '';
+                    document.getElementById('edit-acc-name').value = userDoc.bankOwner || '';
+                });
 
-                    list.innerHTML = rooms.map(r => `
-                        <div onclick="Game.join('${r.id}', ${r.betAmount}, '${r.password}')" class="bg-white p-6 rounded-xl border hover:border-black cursor-pointer transition shadow-sm">
-                            <div class="flex justify-between mb-2">
-                                <div class="font-bold text-lg">${r.roomName}</div>
-                                <div class="font-bold">฿${r.betAmount}</div>
-                            </div>
-                            <div class="flex justify-between text-xs font-bold text-gray-400 uppercase">
-                                <span>${r.gameType.toUpperCase()}</span>
-                                <span class="${r.players.length>=2?'text-red-500':'text-green-500'}">${r.players.length}/2</span>
-                            </div>
-                        </div>`).join('');
+                User.loadHistory();
+                Game.loadLobby();
+            },
+            saveProfile: () => {
+                db.collection('users').doc(currentUser.uid).update({
+                    nickname: document.getElementById('edit-nick').value,
+                    bankName: document.getElementById('edit-bank').value,
+                    bankAcc: document.getElementById('edit-acc-num').value,
+                    bankOwner: document.getElementById('edit-acc-name').value
+                }).then(() => {
+                    UI.toast('บันทึกข้อมูลแล้ว');
+                    UI.closeModal('profile');
                 });
             },
-            join: async (id, bet, realPass) => {
-                if(userData.credit < bet) return Swal.fire('!', 'เครดิตไม่พอ', 'error');
-                const { value: pass } = await Swal.fire({ title: 'ใส่รหัสห้อง', input: 'text', showCancelButton: true });
-                if(pass !== realPass) return Swal.fire('!', 'รหัสผิด', 'error');
+            loadHistory: () => {
+                // Load from 'transactions' collection (created by admin or game result)
+                db.collection('transactions').where('uid', '==', currentUser.uid).orderBy('timestamp', 'desc').limit(20).onSnapshot(snap => {
+                    const list = document.getElementById('history-list');
+                    if(snap.empty) { list.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-gray-600">ยังไม่มีรายการ</td></tr>`; return; }
+                    
+                    list.innerHTML = snap.docs.map(doc => {
+                        const d = doc.data();
+                        let color = 'text-white';
+                        if(d.type.includes('win') || d.type === 'deposit') color = 'text-green-400';
+                        if(d.type.includes('loss') || d.type === 'withdraw') color = 'text-red-400';
+                        
+                        return `<tr class="border-b border-gray-800">
+                            <td class="p-3"><span class="bg-gray-800 px-2 py-1 rounded text-xs text-gray-400 uppercase">${d.type}</span> <br> ${d.note||''}</td>
+                            <td class="p-3 font-mono ${color}">${d.amount > 0 ? '+' : ''}${d.amount}</td>
+                            <td class="p-3 text-xs text-gray-500">${d.timestamp ? new Date(d.timestamp.toDate()).toLocaleString() : '-'}</td>
+                        </tr>`;
+                    }).join('');
+                });
+            }
+        };
+
+        // --- GAME SYSTEM ---
+        const Game = {
+            filterRooms: () => {
+                const txt = document.getElementById('search-room').value.toLowerCase();
+                const filtered = allRooms.filter(r => r.roomName.toLowerCase().includes(txt) || r.betAmount.toString().includes(txt));
+                Game.renderRooms(filtered);
+            },
+            renderRooms: (rooms) => {
+                const list = document.getElementById('room-list');
+                if(rooms.length === 0) { list.innerHTML = `<div class="col-span-full text-center py-20 text-gray-600">ไม่พบห้องที่ค้นหา</div>`; return; }
+                
+                list.innerHTML = rooms.map(r => {
+                    const isFull = r.players.length >= 2;
+                    const typeColor = r.gameType === 'xo' ? 'text-blue-400 border-blue-500/30' : 'text-pink-400 border-pink-500/30';
+                    const icon = r.gameType === 'xo' ? 'fa-x' : 'fa-hand-scissors';
+                    
+                    return `
+                    <div onclick="Game.join('${r.id}', ${r.betAmount}, '${r.password}')" class="glass p-6 rounded-2xl cursor-pointer group hover:bg-white/5 transition relative overflow-hidden">
+                        <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:scale-125 transition duration-500">
+                            <i class="fa-solid ${icon} text-6xl text-white"></i>
+                        </div>
+                        <div class="flex justify-between items-start mb-4 relative z-10">
+                            <div>
+                                <h3 class="font-bold text-xl text-white group-hover:text-purple-400 transition">${r.roomName}</h3>
+                                <div class="text-xs text-gray-400 mt-1">Best of ${r.maxWins}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-black text-yellow-400 italic font-mono">฿${r.betAmount}</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-xs font-bold uppercase tracking-wider relative z-10">
+                            <span class="border px-2 py-1 rounded ${typeColor}">${r.gameType}</span>
+                            <span class="${isFull ? 'text-red-500' : 'text-green-400'} flex items-center gap-1"><i class="fa-solid fa-users"></i> ${r.players.length}/2</span>
+                        </div>
+                    </div>`;
+                }).join('');
+            },
+            loadLobby: () => {
+                db.collection('rooms').onSnapshot(snap => {
+                    allRooms = [];
+                    snap.forEach(doc => allRooms.push({id: doc.id, ...doc.data()}));
+                    // Client Sort (Fix Index Error)
+                    allRooms.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
+                    Game.filterRooms(); // Initial render
+                });
+            },
+            join: async (id, bet, pass) => {
+                if(userDoc.credit < bet) return UI.toast('เครดิตไม่พอ','error');
+                const { value: p } = await Swal.fire({ title: 'Enter Password', input: 'text', background: '#18181b', color: '#fff' });
+                if(p !== pass) return UI.toast('รหัสผิด','error');
 
                 const ref = db.collection('rooms').doc(id);
                 const r = (await ref.get()).data();
-                if(!r.players.includes(user.uid)) {
-                    if(r.players.length >= 2) return Swal.fire('!', 'ห้องเต็ม', 'error');
-                    await ref.update({ players: firebase.firestore.FieldValue.arrayUnion(user.uid) });
+                if(!r.players.includes(currentUser.uid)) {
+                    if(r.players.length >= 2) return UI.toast('ห้องเต็ม','warning');
+                    await ref.update({ players: firebase.firestore.FieldValue.arrayUnion(currentUser.uid) });
                 }
-                Game.enterRoom(id, r.gameType);
+                Game.enter(id, r.gameType);
             },
-            enterRoom: (id, type) => {
+            enter: (id, type) => {
                 currentRoomId = id;
-                document.getElementById('game-view').classList.remove('hidden');
-                document.getElementById('area-xo').classList.add('hidden');
-                document.getElementById('area-rps').classList.add('hidden');
+                document.getElementById('view-game').classList.remove('hidden');
                 document.getElementById(`area-${type}`).classList.remove('hidden');
-
+                
                 unsubRoom = db.collection('rooms').doc(id).onSnapshot(snap => {
                     if(!snap.exists) { Game.leave(); return; }
                     const r = snap.data();
                     
-                    document.getElementById('g-name').innerText = r.roomName;
+                    document.getElementById('g-room-name').innerText = r.roomName;
                     document.getElementById('g-bet').innerText = r.betAmount;
                     document.getElementById('g-pass').innerText = r.password;
 
@@ -248,23 +466,30 @@
                     }
 
                     // Scores
-                    const p1 = r.players[0];
-                    const p2 = r.players[1];
-                    const myIdx = user.uid === p1 ? 0 : 1;
-                    document.getElementById('p1-score').innerText = myIdx===0 ? (r.scores[p1]||0) : (r.scores[p2]||0);
-                    document.getElementById('p2-score').innerText = myIdx===0 ? (r.scores[p2]||0) : (r.scores[p1]||0);
+                    const p1 = r.players[0], p2 = r.players[1];
+                    const myIdx = (currentUser.uid === p1) ? 0 : 1;
+                    document.getElementById('p1-score').innerText = (myIdx===0) ? (r.scores[p1]||0) : (r.scores[p2]||0);
+                    document.getElementById('p2-score').innerText = (myIdx===0) ? (r.scores[p2]||0) : (r.scores[p1]||0);
 
                     // Win Check
-                    const sc1 = r.scores[p1]||0; const sc2 = r.scores[p2]||0;
-                    if(sc1 >= r.maxWins || sc2 >= r.maxWins) {
-                        const win = sc1 > sc2 ? p1 : p2;
+                    const s1 = r.scores[p1]||0, s2 = r.scores[p2]||0;
+                    if(s1 >= r.maxWins || s2 >= r.maxWins) {
+                        const win = s1 > s2 ? p1 : p2;
+                        const isWin = win === currentUser.uid;
                         Swal.fire({
-                            title: win===user.uid ? 'YOU WIN!' : 'YOU LOSE!',
-                            icon: win===user.uid ? 'success':'error'
+                            title: isWin ? 'YOU WIN!' : 'YOU LOSE!',
+                            text: isWin ? `+${r.betAmount}` : `-${r.betAmount}`,
+                            icon: isWin ? 'success':'error', background: '#111', color: '#fff', confirmButtonColor: '#b026ff'
                         }).then(() => {
-                            if(win===user.uid) {
-                                db.collection('users').doc(p1).update({credit: firebase.firestore.FieldValue.increment(win===p1 ? r.betAmount : -r.betAmount)});
-                                db.collection('users').doc(p2).update({credit: firebase.firestore.FieldValue.increment(win===p2 ? r.betAmount : -r.betAmount)});
+                            if(isWin) {
+                                // Update Winner & Log
+                                db.collection('users').doc(p1).update({ credit: firebase.firestore.FieldValue.increment(win===p1?r.betAmount:-r.betAmount) });
+                                db.collection('users').doc(p2).update({ credit: firebase.firestore.FieldValue.increment(win===p2?r.betAmount:-r.betAmount) });
+                                
+                                // Create Transaction Logs
+                                db.collection('transactions').add({ uid: p1, type: win===p1?'bet_win':'bet_loss', amount: win===p1?r.betAmount:-r.betAmount, note: `Room: ${r.roomName}`, timestamp: new Date() });
+                                db.collection('transactions').add({ uid: p2, type: win===p2?'bet_win':'bet_loss', amount: win===p2?r.betAmount:-r.betAmount, note: `Room: ${r.roomName}`, timestamp: new Date() });
+                                
                                 db.collection('rooms').doc(id).delete();
                             }
                             Game.leave();
@@ -272,19 +497,19 @@
                         return;
                     }
 
-                    // Game Specific
                     if(type === 'xo') Game.renderXO(r);
                     if(type === 'rps') Game.renderRPS(r);
                 });
             },
             leave: () => {
                 if(unsubRoom) unsubRoom();
-                document.getElementById('game-view').classList.add('hidden');
-                currentRoomId = null;
-                clearInterval(rpsTimer);
+                document.getElementById('view-game').classList.add('hidden');
+                document.getElementById('area-xo').classList.add('hidden');
+                document.getElementById('area-rps').classList.add('hidden');
+                clearInterval(rpsInterval);
             },
             
-            // --- XO Logic ---
+            // --- XO LOGIC ---
             renderXO: (r) => {
                 const b = document.getElementById('area-xo');
                 b.innerHTML = '';
@@ -293,22 +518,22 @@
                     el.className = `xo-cell ${c||''}`;
                     el.innerText = c || '';
                     el.onclick = () => {
-                        if(c || r.currentTurn && r.currentTurn !== user.uid) return;
-                        if(!r.currentTurn && user.uid !== r.players[0]) return; // P1 starts
+                        if(c || (r.currentTurn && r.currentTurn !== currentUser.uid)) return;
+                        if(!r.currentTurn && currentUser.uid !== r.players[0]) return;
                         
-                        const sym = user.uid === r.players[0] ? 'X' : 'O';
+                        const sym = (currentUser.uid === r.players[0]) ? 'X' : 'O';
                         let nb = [...r.board]; nb[i] = sym;
                         
-                        // Simple win check
+                        // Check win
                         const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
                         const isWin = wins.some(w => w.every(x => nb[x] === sym));
                         
-                        let upd = { board: nb, currentTurn: r.players.find(x => x!==user.uid) };
+                        let upd = { board: nb, currentTurn: r.players.find(x => x!==currentUser.uid) };
                         if(isWin) {
-                            upd[`scores.${user.uid}`] = firebase.firestore.FieldValue.increment(1);
+                            upd[`scores.${currentUser.uid}`] = firebase.firestore.FieldValue.increment(1);
                             upd.board = Array(9).fill(null);
                         } else if(!nb.includes(null)) {
-                            upd.board = Array(9).fill(null); // Draw
+                            upd.board = Array(9).fill(null);
                         }
                         db.collection('rooms').doc(currentRoomId).update(upd);
                     };
@@ -316,9 +541,9 @@
                 });
             },
 
-            // --- RPS Logic with 5s Timer ---
+            // --- RPS LOGIC ---
             renderRPS: (r) => {
-                const myMove = r.moves ? r.moves[user.uid] : null;
+                const myMove = r.moves ? r.moves[currentUser.uid] : null;
                 const status = document.getElementById('rps-status');
                 
                 ['rock','paper','scissors'].forEach(m => {
@@ -327,83 +552,62 @@
                     if(myMove === m) btn.classList.add('selected');
                 });
 
+                // Timer Logic
+                const timerBox = document.getElementById('rps-timer-box');
+                const bar = document.getElementById('rps-bar');
+                const txt = document.getElementById('rps-count');
+
                 if(!myMove) {
-                    status.innerText = "เลือกภายใน 5 วินาที!";
-                    // Start Timer logic if not already moved
+                    status.innerText = "CHOOSE WEAPON!";
+                    // Start Timer check
                     if(r.roundState === 'idle') {
-                        // Start round logic (Usually 1 person triggers status change to 'selecting')
-                        if(user.uid === r.players[0]) db.collection('rooms').doc(currentRoomId).update({ roundState: 'selecting', roundStart: Date.now() });
-                    }
-                    if(r.roundState === 'selecting') {
-                        Game.startRPSTimer();
+                        if(currentUser.uid === r.players[0]) db.collection('rooms').doc(currentRoomId).update({ roundState: 'selecting', roundStart: Date.now() });
+                    } else if(r.roundState === 'selecting') {
+                        timerBox.classList.remove('hidden');
+                        // Calculate remaining time based on server start time (simplified here)
+                        // In real production, sync with server time. Here use local interval for UX.
+                        if(!rpsInterval) {
+                            let left = 5;
+                            rpsInterval = setInterval(() => {
+                                left -= 0.1;
+                                txt.innerText = Math.ceil(left);
+                                bar.style.width = (left/5)*100 + '%';
+                                if(left <= 0) {
+                                    clearInterval(rpsInterval);
+                                    rpsInterval = null;
+                                    const m = ['rock','paper','scissors'][Math.floor(Math.random()*3)];
+                                    Game.moveRPS(m);
+                                }
+                            }, 100);
+                        }
                     }
                 } else {
-                    status.innerText = "รอผล...";
-                    document.getElementById('rps-timer-wrap').style.display = 'none';
+                    status.innerText = "WAITING FOR OPPONENT...";
+                    timerBox.classList.add('hidden');
+                    clearInterval(rpsInterval); rpsInterval = null;
                 }
 
-                // Check Result
-                if(r.players[0] === user.uid && r.moves && Object.keys(r.moves).length === 2) {
-                    const p1 = r.players[0]; const p2 = r.players[1];
-                    const m1 = r.moves[p1]; const m2 = r.moves[p2];
-                    let winner = null;
+                // Check Result (P1 triggers)
+                if(r.players[0] === currentUser.uid && r.moves && Object.keys(r.moves).length === 2) {
+                    const p1 = r.players[0], p2 = r.players[1];
+                    const m1 = r.moves[p1], m2 = r.moves[p2];
+                    let w = null;
                     if(m1!==m2) {
-                        if((m1==='rock'&&m2==='scissors')||(m1==='paper'&&m2==='rock')||(m1==='scissors'&&m2==='paper')) winner = p1;
-                        else winner = p2;
+                        if((m1=='rock'&&m2=='scissors')||(m1=='paper'&&m2=='rock')||(m1=='scissors'&&m2=='paper')) w = p1;
+                        else w = p2;
                     }
                     setTimeout(() => {
                         let up = { moves: {}, roundState: 'idle' };
-                        if(winner) up[`scores.${winner}`] = firebase.firestore.FieldValue.increment(1);
+                        if(w) up[`scores.${w}`] = firebase.firestore.FieldValue.increment(1);
                         db.collection('rooms').doc(currentRoomId).update(up);
-                        Swal.fire({ title: winner===user.uid?'WIN':'LOSE', timer:1000, showConfirmButton:false });
+                        Swal.fire({ title: w===currentUser.uid?'WIN':'LOSE', timer:1000, showConfirmButton:false, background:'#111', color:'#fff' });
                     }, 1000);
                 }
             },
-            startRPSTimer: () => {
-                const bar = document.getElementById('rps-timer-bar');
-                const wrap = document.getElementById('rps-timer-wrap');
-                const txt = document.getElementById('rps-timer-text');
-                
-                wrap.style.display = 'block';
-                let left = 5;
-                bar.style.width = '100%';
-                
-                clearInterval(rpsTimer);
-                rpsTimer = setInterval(() => {
-                    left--;
-                    txt.innerText = left;
-                    bar.style.width = (left/5)*100 + '%';
-                    
-                    if(left <= 0) {
-                        clearInterval(rpsTimer);
-                        // Auto pick random
-                        const moves = ['rock','paper','scissors'];
-                        const rand = moves[Math.floor(Math.random()*3)];
-                        Game.moveRPS(rand);
-                    }
-                }, 1000);
-            },
-            moveRPS: (m) => {
-                clearInterval(rpsTimer);
-                db.collection('rooms').doc(currentRoomId).update({ [`moves.${user.uid}`]: m });
-            }
+            moveRPS: (m) => db.collection('rooms').doc(currentRoomId).update({ [`moves.${currentUser.uid}`]: m })
         };
 
-        // Init
-        UI.loadConfig();
-        auth.onAuthStateChanged(u => {
-            if(u) {
-                user = u;
-                db.collection('users').doc(u.uid).onSnapshot(doc => {
-                    userData = doc.data();
-                    document.getElementById('u-name').innerText = userData.nickname;
-                    document.getElementById('u-credit').innerText = userData.credit;
-                });
-                UI.showApp();
-            } else {
-                document.getElementById('auth-view').classList.remove('hidden');
-            }
-        });
+        auth.onAuthStateChanged(u => u ? User.init(u) : document.getElementById('view-auth').style.display = 'flex');
     </script>
 </body>
 </html>
