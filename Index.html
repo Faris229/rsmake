@@ -22,13 +22,14 @@
                 extend: {
                     fontFamily: { sans: ['Prompt', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
                     colors: { neon: { purple: '#d946ef', blue: '#4f46e5', cyan: '#06b6d4', dark: '#020617' } },
-                    animation: { 'pulse-slow': 'pulse 3s infinite', 'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both' },
+                    animation: { 
+                        'pulse-slow': 'pulse 3s infinite',
+                        'marquee': 'marquee 20s linear infinite'
+                    },
                     keyframes: {
-                        shake: {
-                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
-                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
-                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        marquee: {
+                            '0%': { transform: 'translateX(100%)' },
+                            '100%': { transform: 'translateX(-100%)' }
                         }
                     }
                 }
@@ -44,6 +45,13 @@
             background-size: 40px 40px; position: fixed; inset: 0; z-index: -2;
         }
         
+        /* Maintenance Overlay */
+        #maintenance-view {
+            position: fixed; inset: 0; z-index: 9999;
+            background: #020617;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        
         /* Full Page Overlay */
         .full-page { position: fixed; inset: 0; background: #020617; z-index: 200; overflow-y: auto; display: none; flex-direction: column; }
         .full-page.active { display: flex; animation: fadeIn 0.3s ease-out; }
@@ -55,47 +63,22 @@
         .input-cyber { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #334155; padding: 14px; border-radius: 12px; color: white; outline: none; transition: 0.3s; }
         .input-cyber:focus { border-color: #d946ef; background: rgba(0,0,0,0.5); }
         
-        /* --- Realistic Cup Game --- */
-        .cup-scene { perspective: 800px; display: flex; justify-content: center; gap: 20px; height: 160px; align-items: flex-end; }
-        .cup-container { 
-            position: relative; width: 90px; height: 120px; cursor: pointer; 
-            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bouncy transition */
-            transform-style: preserve-3d;
-        }
-        .cup-container:hover { transform: translateY(-10px); }
-        
+        /* Game Elements */
+        .cup-container { position: relative; width: 80px; height: 100px; cursor: pointer; transition: transform 0.3s; }
+        .cup-container:hover { transform: translateY(-5px); }
         .cup-body {
             width: 100%; height: 100%;
-            background: linear-gradient(135deg, #ef4444, #991b1b); /* Red Cup Color */
-            border-radius: 15px 15px 50px 50px;
-            position: relative; z-index: 20;
-            box-shadow: 
-                inset -5px -5px 15px rgba(0,0,0,0.5), /* Inner shadow */
-                inset 5px 5px 15px rgba(255,255,255,0.2), /* Highlight */
-                0 10px 20px rgba(0,0,0,0.6); /* Drop shadow */
-            border: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(135deg, #f43f5e, #be123c);
+            border-radius: 10px 10px 40px 40px; position: relative; z-index: 10;
+            transition: transform 0.5s ease-in-out; border: 2px solid rgba(255,255,255,0.15);
         }
-        /* Cup Rim */
-        .cup-body::before { 
-            content: ''; position: absolute; top: -5px; left: -2px; right: -2px; height: 15px; 
-            background: #fca5a5; border-radius: 50px; border: 1px solid #7f1d1d;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-
         .ball {
-            width: 35px; height: 35px; 
-            background: radial-gradient(circle at 30% 30%, #fcd34d, #d97706);
-            border-radius: 50%; position: absolute; bottom: 10px; left: 50%; 
-            transform: translateX(-50%); z-index: 10;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+            width: 30px; height: 30px; background: #fbbf24; border-radius: 50%;
+            position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); z-index: 1;
         }
+        .cup-container.lifted .cup-body { transform: translateY(-60px); }
+        .cup-container.disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Animations */
-        .cup-container.lifted { transform: translateY(-80px) rotateX(10deg); }
-        .cup-container.shuffling { animation: shuffle 0.5s infinite alternate; }
-        @keyframes shuffle { from { transform: translateX(-5px); } to { transform: translateX(5px); } }
-        
-        /* Game: XO & RPS */
         .xo-cell { height: 90px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 900; cursor: pointer; border: 2px solid transparent; }
         .xo-cell:hover { background: rgba(255,255,255,0.1); }
         .xo-cell.X { color: #d946ef; } .xo-cell.O { color: #06b6d4; }
@@ -112,13 +95,23 @@
 
     <div class="bg-grid"></div>
 
+    <div id="maintenance-view" class="hidden">
+        <div class="text-center p-8">
+            <div class="inline-block p-6 rounded-full bg-red-500/10 mb-6 animate-pulse">
+                <i class="fa-solid fa-screwdriver-wrench text-6xl text-red-500"></i>
+            </div>
+            <h1 class="text-4xl font-black text-white mb-2 tracking-tight">ระบบปิดปรับปรุง</h1>
+            <p id="maint-msg" class="text-slate-400 text-lg">กรุณากลับมาใหม่ภายหลัง</p>
+        </div>
+    </div>
+
     <div id="view-auth" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[#020617]/90 backdrop-blur-sm hidden">
         <div class="w-full max-w-sm glass p-8 rounded-3xl border border-white/10 shadow-2xl animate__animated animate__zoomIn">
             <h1 class="text-5xl font-black text-center mb-2 text-white tracking-tighter">ZONE.</h1>
             <p class="text-center text-slate-400 mb-8 text-sm">เข้าสู่ระบบเพื่อเริ่มเดิมพัน</p>
             <div id="login-form" class="space-y-4">
-                <input id="l-email" class="input-cyber" placeholder="อีเมล">
-                <input id="l-pass" type="password" class="input-cyber" placeholder="รหัสผ่าน">
+                <input id="l-email" class="input-cyber pl-5" placeholder="อีเมล">
+                <input id="l-pass" type="password" class="input-cyber pl-5" placeholder="รหัสผ่าน">
                 <button onclick="Auth.login()" class="w-full py-3 bg-blue-600 rounded-xl font-bold shadow-lg hover:bg-blue-500 transition">เข้าสู่ระบบ</button>
                 <div class="text-center text-xs text-slate-500 mt-4 cursor-pointer hover:text-white" onclick="UI.toggleAuth('reg')">สมัครสมาชิกใหม่</div>
             </div>
@@ -133,6 +126,13 @@
     </div>
 
     <div id="view-app" class="hidden flex-1 flex flex-col min-h-screen">
+        <div class="bg-gradient-to-r from-blue-900 to-purple-900 text-white text-xs py-2 overflow-hidden relative border-b border-white/10">
+            <div class="whitespace-nowrap animate-marquee flex items-center gap-4">
+                <span class="bg-red-500 text-white px-2 py-0.5 rounded text-[10px] font-bold">ประกาศ</span>
+                <span id="annc-marquee">ยินดีต้อนรับสู่ ZONE. เดิมพันมั่นคง ปลอดภัย 100% | ฝาก-ถอน ทักแชทแอดมิน</span>
+            </div>
+        </div>
+
         <nav class="sticky top-0 z-40 glass border-b border-white/5 px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-xl text-white shadow-lg">Z</div>
@@ -148,7 +148,7 @@
                             <div id="u-name" class="font-bold text-white">Guest</div>
                             <div class="text-xs text-slate-500 font-mono">ID: <span id="u-id-short">...</span></div>
                         </div>
-                        <button onclick="UI.openPage('profile')" class="w-full text-left p-3 rounded-xl hover:bg-white/5 text-sm text-slate-300 flex items-center gap-3"><i class="fa-solid fa-wallet text-purple-500"></i> บัญชีธนาคาร / โปรไฟล์</button>
+                        <button onclick="UI.openPage('profile')" class="w-full text-left p-3 rounded-xl hover:bg-white/5 text-sm text-slate-300 flex items-center gap-3"><i class="fa-solid fa-wallet text-purple-500"></i> บัญชีธนาคาร</button>
                         <button onclick="UI.openPage('history')" class="w-full text-left p-3 rounded-xl hover:bg-white/5 text-sm text-slate-300 flex items-center gap-3"><i class="fa-solid fa-clock-rotate-left text-blue-500"></i> ประวัติการเล่น</button>
                         <a href="https://kodrs.netlify.app/" target="_blank" class="w-full text-left p-3 rounded-xl hover:bg-white/5 text-sm text-slate-300 flex items-center gap-3 block"><i class="fa-solid fa-book text-yellow-500"></i> คู่มือการเล่น</a>
                         <div class="h-px bg-slate-700 my-2"></div>
@@ -176,24 +176,18 @@
 
     <div id="page-profile" class="full-page">
         <div class="max-w-xl mx-auto w-full p-6 pt-10 relative">
-            
             <button onclick="UI.closePage('profile')" class="absolute top-6 right-6 w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition z-50">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
-
             <h2 class="text-3xl font-bold mb-6 text-white">บัญชี & โปรไฟล์</h2>
-            
             <div class="space-y-4 glass-card p-6">
                 <div class="bg-slate-900/50 p-4 rounded-xl border border-white/5 flex justify-between items-center mb-4">
                     <div>
                         <div class="text-[10px] text-slate-500 uppercase font-bold">User ID (สำหรับแจ้งแอดมิน)</div>
                         <div id="p-uid-full" class="font-mono text-sm text-yellow-400 break-all">...</div>
                     </div>
-                    <button onclick="UI.copyUid()" class="bg-white/10 hover:bg-white/20 p-2 rounded-lg text-slate-300 transition" title="คัดลอก">
-                        <i class="fa-regular fa-copy"></i>
-                    </button>
+                    <button onclick="UI.copyUid()" class="bg-white/10 hover:bg-white/20 p-2 rounded-lg text-slate-300 transition" title="คัดลอก"><i class="fa-regular fa-copy"></i></button>
                 </div>
-
                 <div><label class="text-xs text-slate-400 font-bold ml-1 mb-1 block uppercase">ชื่อเล่น (ในเกม)</label><input id="p-nick" class="input-cyber"></div>
                 <div><label class="text-xs text-slate-400 font-bold ml-1 mb-1 block uppercase">ธนาคาร</label>
                     <select id="p-bank" class="input-cyber bg-[#0f172a]"><option value="KBANK">กสิกรไทย</option><option value="SCB">ไทยพาณิชย์</option><option value="TRUE">TrueMoney</option></select>
@@ -210,7 +204,6 @@
              <button onclick="UI.closePage('history')" class="absolute top-6 right-6 w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition z-50">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
-
             <h2 class="text-3xl font-bold mb-6 text-white">ประวัติการเล่น</h2>
             <div class="glass-card p-0 overflow-hidden">
                 <table class="w-full text-left text-sm text-slate-300">
@@ -269,19 +262,10 @@
                     <div id="area-cup" class="hidden text-center">
                         <div class="mb-8 inline-block bg-slate-900 px-5 py-2 rounded-lg border border-white/10 text-base font-bold shadow-lg" id="cup-role"></div>
                         
-                        <div class="cup-scene flex justify-center gap-6">
-                            <div class="cup-container group" onclick="Game.cupAction(0)" id="cup-con-0">
-                                <div class="cup-body"></div>
-                                <div class="ball hidden" id="ball-0"></div>
-                            </div>
-                            <div class="cup-container group" onclick="Game.cupAction(1)" id="cup-con-1">
-                                <div class="cup-body"></div>
-                                <div class="ball hidden" id="ball-1"></div>
-                            </div>
-                            <div class="cup-container group" onclick="Game.cupAction(2)" id="cup-con-2">
-                                <div class="cup-body"></div>
-                                <div class="ball hidden" id="ball-2"></div>
-                            </div>
+                        <div class="flex justify-center gap-6 h-32 items-end perspective-1000">
+                            <div class="cup-container group" onclick="Game.cupAction(0)" id="cup-con-0"><div class="cup-body" id="cup-0"></div><div class="ball hidden" id="ball-0"></div></div>
+                            <div class="cup-container group" onclick="Game.cupAction(1)" id="cup-con-1"><div class="cup-body" id="cup-1"></div><div class="ball hidden" id="ball-1"></div></div>
+                            <div class="cup-container group" onclick="Game.cupAction(2)" id="cup-con-2"><div class="cup-body" id="cup-2"></div><div class="ball hidden" id="ball-2"></div></div>
                         </div>
                     </div>
 
@@ -308,6 +292,21 @@
 
         let currentUser = null, userDoc = null, currentRoomId = null, unsubRoom = null, gameInterval = null;
         let allRooms = [];
+
+        // SYSTEM
+        db.collection('config').doc('settings').onSnapshot(doc => {
+            const c = doc.data() || {};
+            const maint = document.getElementById('maintenance-view');
+            // Maintenance Mode
+            if(c.isOpen === false) {
+                maint.classList.remove('hidden');
+                document.getElementById('maint-msg').innerText = c.maintenanceMsg || 'ปิดปรับปรุงชั่วคราว';
+            } else {
+                maint.classList.add('hidden');
+            }
+            // Announcement
+            if(c.announcement) document.getElementById('annc-marquee').innerText = c.announcement;
+        });
 
         // UI UTILS
         const UI = {
@@ -344,7 +343,6 @@
                     if(!userDoc) return;
                     document.getElementById('u-name').innerText = userDoc.nickname;
                     document.getElementById('u-id-short').innerText = u.uid.slice(0,6);
-                    // Set Full UID for Profile
                     document.getElementById('p-uid-full').innerText = u.uid; 
                     
                     document.getElementById('u-credit').innerText = userDoc.credit.toLocaleString();
@@ -396,21 +394,19 @@
                 if(!filtered.length) { list.innerHTML = `<div class="col-span-full py-10 text-center text-slate-500">ไม่พบห้อง</div>`; return; }
                 list.innerHTML = filtered.map(r => {
                     const isFull = r.players.length >= 2;
-                    const typeMap = {'xo':'XO', 'rps':'เป่ายิงฉุบ', 'cup':'ซ่อนลูกบอล'};
-                    const typeIcon = r.gameType==='cup'?'🥤':(r.gameType==='xo'?'❌':'✊');
+                    const typeMap = {'xo':'XO', 'rps':'เป่ายิงฉุบ', 'cup':'ซ่อนบอล'};
                     return `
-                    <div onclick="Game.join('${r.id}', ${r.betAmount}, '${r.password}')" class="glass-card p-5 cursor-pointer relative overflow-hidden group">
-                        <div class="absolute -right-5 -top-5 text-8xl opacity-5 group-hover:opacity-10 transition pointer-events-none">${typeIcon}</div>
-                        <div class="flex justify-between items-start mb-3 relative z-10">
+                    <div onclick="Game.join('${r.id}', ${r.betAmount}, '${r.password}')" class="glass-card p-4 cursor-pointer relative overflow-hidden group">
+                        <div class="flex justify-between items-start mb-2">
                             <div>
                                 <span class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded border border-purple-500/30 uppercase font-bold">${typeMap[r.gameType]}</span>
-                                <h3 class="text-xl font-bold text-white truncate w-40 mt-1">${r.roomName}</h3>
+                                <h3 class="text-lg font-bold text-white truncate w-32 mt-1">${r.roomName}</h3>
                             </div>
-                            <span class="text-yellow-400 font-mono font-bold text-xl drop-shadow">฿${r.betAmount}</span>
+                            <span class="text-yellow-400 font-mono font-bold text-lg">฿${r.betAmount}</span>
                         </div>
-                        <div class="flex justify-between items-center text-xs text-slate-400 relative z-10 border-t border-white/5 pt-3 mt-1">
-                            <span><i class="fa-solid fa-trophy text-yellow-500"></i> ชนะ ${r.maxWins} ตา</span>
-                            <span class="${isFull?'text-red-400':'text-emerald-400'} font-bold flex items-center gap-1"><i class="fa-solid fa-users"></i> ${r.players.length}/2</span>
+                        <div class="flex justify-between text-xs text-slate-400 border-t border-white/5 pt-2">
+                            <span><i class="fa-solid fa-trophy text-yellow-500"></i> ชนะ ${r.maxWins}</span>
+                            <span class="${isFull?'text-red-400':'text-emerald-400'} font-bold"><i class="fa-solid fa-users"></i> ${r.players.length}/2</span>
                         </div>
                     </div>`;
                 }).join('');
@@ -599,20 +595,19 @@
                 [0,1,2].forEach(i => {
                     const c = document.getElementById(`cup-con-${i}`);
                     const b = document.getElementById(`ball-${i}`);
-                    c.classList.remove('lifted','shuffling');
+                    c.classList.remove('lifted','selected','disabled');
                     b.classList.add('hidden');
                 });
 
                 if(r.roundState === 'hiding') {
                     status.innerText = isHider ? "เลือกแก้วเพื่อซ่อน (10s)" : "คู่แข่งกำลังซ่อน...";
+                    if(!isHider) [0,1,2].forEach(i => document.getElementById(`cup-con-${i}`).classList.add('disabled'));
                     Game.handleTimer(r.roundStart, 10, () => {
                         if(isHider && currentUser.uid===p1) db.collection('rooms').doc(currentRoomId).update({ hiddenBall: Math.floor(Math.random()*3), roundState:'seeking', roundStart:Date.now() });
                     });
                 } else if(r.roundState === 'seeking') {
                     status.innerText = isHider ? "คู่แข่งกำลังทาย..." : "ลูกบอลอยู่ไหน? ทายเลย! (10s)";
-                    // Shuffle Animation for seeker phase start
-                    if(!isHider) [0,1,2].forEach(i => document.getElementById(`cup-con-${i}`).classList.add('shuffling'));
-
+                    if(isHider) [0,1,2].forEach(i => document.getElementById(`cup-con-${i}`).classList.add('disabled'));
                     Game.handleTimer(r.roundStart, 10, () => {
                         if(!isHider && currentUser.uid!==p1) Game.cupAction(Math.floor(Math.random()*3)); 
                     });
