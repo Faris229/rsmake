@@ -450,7 +450,16 @@
     </div>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyAHAkBhypqyJuuL22tLrFKN7ZqdEsqGDTk", authDomain: "rsdm-9ca2a.firebaseapp.com", projectId: "rsdm-9ca2a", storageBucket: "rsdm-9ca2a.firebasestorage.app", messagingSenderId: "299212700124", appId: "1:299212700124:web:730160dae6bb1b09cbb719" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAHAkBhypqyJuuL22tLrFKN7ZqdEsqGDTk", 
+            authDomain: "rsdm-9ca2a.firebaseapp.com", 
+            databaseURL: "https://rsdm-9ca2a-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "rsdm-9ca2a", 
+            storageBucket: "rsdm-9ca2a.firebasestorage.app", 
+            messagingSenderId: "299212700124", 
+            appId: "1:299212700124:web:730160dae6bb1b09cbb719",
+            measurementId: "G-CMX9GKW7FF"
+        };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
@@ -473,6 +482,10 @@
             if(c.isOpen === false) { maint.classList.remove('hidden'); maint.style.display='flex'; if(c.maintenanceMsg) document.getElementById('maint-msg').innerText=c.maintenanceMsg; } else { maint.classList.add('hidden'); maint.style.display='none'; }
             if(c.siteName) { document.title = c.siteName; document.querySelectorAll('.site-name-display').forEach(el => el.innerText = c.siteName); }
             if(c.announcement) marquee.innerText = c.announcement;
+        }, (error) => {
+            console.log("Config load error (likely permission/empty):", error);
+            // Fallback: If error, assume system is OPEN to avoid sticking on Maintenance view
+            document.getElementById('maintenance-view').classList.add('hidden');
         });
 
         // --- UI ---
@@ -534,17 +547,26 @@
                 document.getElementById('view-auth').classList.add('hidden');
                 document.getElementById('view-app').classList.remove('hidden');
                 db.collection('users').doc(u.uid).onSnapshot(doc => {
-                    userDoc = doc.data(); if(!userDoc) return;
+                    // FIX: Check doc exists, fallback to dummy data if DB empty/error
+                    if(doc.exists) userDoc = doc.data();
+                    else userDoc = { nickname: 'Guest', credit: 0, isFreeCredit: false }; 
+                    
+                    if(!userDoc) return;
                     document.getElementById('u-name').innerText = userDoc.nickname;
                     document.getElementById('p-uid-full').innerText = u.uid; 
-                    document.getElementById('u-credit').innerText = userDoc.credit.toLocaleString();
-                    document.getElementById('p-credit-show').innerText = userDoc.credit.toLocaleString();
-                    document.getElementById('p-nick').value = userDoc.nickname;
+                    document.getElementById('u-credit').innerText = (userDoc.credit || 0).toLocaleString();
+                    document.getElementById('p-credit-show').innerText = (userDoc.credit || 0).toLocaleString();
+                    document.getElementById('p-nick').value = userDoc.nickname || '';
                     if(userDoc.bankName) document.getElementById('p-bank').value = userDoc.bankName;
                     document.getElementById('p-acc').value = userDoc.bankAcc || '';
                     document.getElementById('p-own').value = userDoc.bankOwner || '';
                     if(userDoc.isFreeCredit) { document.getElementById('p-free-warn').classList.remove('hidden'); document.getElementById('withdraw-lock-msg').classList.remove('hidden'); }
                     else { document.getElementById('p-free-warn').classList.add('hidden'); document.getElementById('withdraw-lock-msg').classList.add('hidden'); }
+                }, (error) => {
+                    console.log("User load error:", error);
+                    // Critical Fallback
+                    userDoc = { nickname: 'System Error', credit: 0 };
+                    document.getElementById('u-name').innerText = 'Error';
                 });
                 Game.loadLobby();
             },
@@ -565,7 +587,12 @@
 
         // --- GAME LOGIC ---
         const Game = {
-            loadLobby: () => db.collection('rooms').orderBy('createdAt','desc').onSnapshot(s => { allRooms=[]; s.forEach(d => allRooms.push({id:d.id, ...d.data()})); Game.filterRooms(); }),
+            loadLobby: () => db.collection('rooms').orderBy('createdAt','desc').onSnapshot(s => { 
+                allRooms=[]; s.forEach(d => allRooms.push({id:d.id, ...d.data()})); Game.filterRooms(); 
+            }, (error) => {
+                console.log("Room load error:", error);
+                document.getElementById('room-list').innerHTML = `<div class="col-span-full py-20 text-center text-slate-500">ไม่พบข้อมูลห้อง (Check DB/Rules)</div>`;
+            }),
             filterRooms: () => {
                 const txt = document.getElementById('search-input').value.toLowerCase();
                 const list = document.getElementById('room-list');
@@ -581,8 +608,10 @@
             },
             join: async (id, bet, realPass) => {
                 if(bet > 0 && userDoc.credit < bet) return UI.toast('เครดิตไม่พอ', 'error');
-                const { value: pass } = await Swal.fire({ title: 'รหัสห้อง', input: 'text', background: '#111827', color: '#fff', confirmButtonColor: '#6366f1' });
-                if(pass !== realPass) return UI.toast('รหัสผิด', 'error');
+                if(realPass) {
+                    const { value: pass } = await Swal.fire({ title: 'รหัสห้อง', input: 'text', background: '#111827', color: '#fff', confirmButtonColor: '#6366f1' });
+                    if(pass !== realPass) return UI.toast('รหัสผิด', 'error');
+                }
                 const ref = db.collection('rooms').doc(id); const r = (await ref.get()).data();
                 if(!r.players.includes(currentUser.uid)) {
                     if(r.players.length >= 2) return UI.toast('ห้องเต็ม', 'warning');
@@ -599,7 +628,6 @@
                     if(!snap.exists) { Game.leave(); return; }
                     const r = snap.data();
                     document.getElementById('g-room-name').innerText = r.roomName;
-                    document.getElementById('g-bet-badge').innerText = r.betAmount === 0 ? 'TRIAL' : `BET: ${r.betAmount}`;
                     
                     const isFull = r.players.length === 2;
                     document.getElementById('g-waiting').classList.toggle('hidden', isFull);
@@ -610,8 +638,8 @@
                         const isMeP1 = currentUser.uid === p1;
                         document.getElementById('p1-name').innerText = isMeP1 ? (r.playerNames?.[p1]||"Me") : (r.playerNames?.[p2]||"Enemy");
                         document.getElementById('p2-name').innerText = isMeP1 ? (r.playerNames?.[p2]||"Enemy") : (r.playerNames?.[p1]||"Me");
-                        document.getElementById('p1-score').innerText = isMeP1 ? (r.scores[p1]||0) : (r.scores[p2]||0);
-                        document.getElementById('p2-score').innerText = isMeP1 ? (r.scores[p2]||0) : (r.scores[p1]||0);
+                        document.getElementById('p1-score').innerText = isMeP1 ? (r.scores?.[p1]||0) : (r.scores?.[p2]||0);
+                        document.getElementById('p2-score').innerText = isMeP1 ? (r.scores?.[p2]||0) : (r.scores?.[p1]||0);
 
                         const r1 = r.readyStatus?.[p1], r2 = r.readyStatus?.[p2], myR = isMeP1 ? r1 : r2, enR = isMeP1 ? r2 : r1;
                         const setBadge=(el,rd)=>{ el.innerText=rd?"พร้อม":"รอ..."; el.className=`ready-badge ${rd?'is-ready':'not-ready'} mx-auto w-max mb-3 shadow-lg`; }
@@ -623,7 +651,7 @@
                             document.getElementById('game-active-area').classList.remove('hidden');
                             document.getElementById(`area-${type}`).classList.remove('hidden');
 
-                            const s1 = r.scores[p1]||0, s2 = r.scores[p2]||0;
+                            const s1 = r.scores?.[p1]||0, s2 = r.scores?.[p2]||0;
                             if(s1 >= r.maxWins || s2 >= r.maxWins) {
                                 const w=s1>s2?p1:p2, isWin=w===currentUser.uid;
                                 if(isWin) { confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } }); sounds.win.play(); } else { sounds.lose.play(); }
