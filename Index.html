@@ -3,21 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0f0518">
+    <meta name="theme-color" content="#050b14">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>เป่าฉุบ XO BY RS</title>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>กลาง เป่า ฉุบ by rs</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/th.min.js"></script>
 
@@ -35,29 +41,31 @@
                         tech: ['Orbitron', 'sans-serif']
                     },
                     colors: { 
-                        brand: {
-                            bg: '#05020a',
-                            card: '#130821',
-                            primary: '#ec4899', // Pink
-                            secondary: '#8b5cf6', // Purple
-                            accent: '#06b6d4', // Cyan
-                            gold: '#fbbf24',
-                            success: '#10b981',
-                            danger: '#ef4444'
-                        }
+                        brand: { 
+                            bg: '#05020a',          // ดำม่วงลึก
+                            card: '#130821',        // พื้นหลังการ์ด
+                            primary: '#ec4899',     // ชมพู Neon
+                            secondary: '#8b5cf6',   // ม่วง Neon
+                            accent: '#06b6d4',      // ฟ้า Neon
+                            gold: '#fbbf24',        // ทอง
+                            success: '#10b981',     // เขียว
+                            danger: '#ef4444'       // แดง
+                        } 
                     },
                     animation: { 
                         'marquee': 'marquee 30s linear infinite', 
                         'pulse-glow': 'pulseGlow 2s infinite', 
                         'bounce-in': 'bounceIn 0.6s cubic-bezier(0.8, -0.6, 0.2, 1.5) forwards',
                         'float': 'float 4s ease-in-out infinite',
-                        'spin-slow': 'spin 8s linear infinite'
+                        'spin-slow': 'spin 8s linear infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both'
                     },
                     keyframes: {
                         marquee: { '0%': { transform: 'translateX(100%)' }, '100%': { transform: 'translateX(-100%)' } },
                         pulseGlow: { '0%, 100%': { boxShadow: '0 0 5px #ec4899' }, '50%': { boxShadow: '0 0 25px #ec4899' } },
                         bounceIn: { '0%': { transform: 'scale(0)' }, '50%': { transform: 'scale(1.05)' }, '100%': { transform: 'scale(1)' } },
-                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } }
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+                        shake: { '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' }, '20%, 80%': { transform: 'translate3d(2px, 0, 0)' }, '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' }, '40%, 60%': { transform: 'translate3d(4px, 0, 0)' } }
                     }
                 }
             }
@@ -65,22 +73,25 @@
     </script>
 
     <style>
-        /* Base */
+        /* --- GLOBAL RESET --- */
         body { 
             background-color: #05020a; 
             color: #e2e8f0; 
             overflow-x: hidden; 
             -webkit-tap-highlight-color: transparent; 
-            padding-bottom: 90px;
+            padding-bottom: 95px; /* เว้นที่ให้เมนูล่าง */
+            user-select: none;
         }
 
-        /* Scrollbar */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #ec4899; }
+        ::-webkit-scrollbar-thumb { background: #ec4899; border-radius: 4px; }
         
-        /* Backgrounds */
+        /* Background & Particles */
+        #particle-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
+        }
         .bg-cyber { position: fixed; inset: 0; z-index: -2; background: radial-gradient(circle at 50% -10%, #312e81 0%, #05020a 70%); }
         .bg-grid { 
             position: fixed; inset: 0; z-index: -1; 
@@ -95,9 +106,9 @@
             background: linear-gradient(160deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.9)); 
             backdrop-filter: blur(16px); 
             border: 1px solid rgba(255, 255, 255, 0.08); 
-            border-radius: 20px; 
-            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 24px; 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
         }
         .glass-card:active { transform: scale(0.98); }
         
@@ -107,11 +118,11 @@
             border-bottom: 1px solid rgba(255,255,255,0.05); 
         }
         
-        /* Bottom Nav */
+        /* Bottom Navigation */
         .bottom-nav { 
-            position: fixed; bottom: 0; left: 0; right: 0; height: 80px; 
+            position: fixed; bottom: 0; left: 0; right: 0; height: 85px; 
             background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(20px); 
-            border-top: 1px solid rgba(255,255,255,0.05); 
+            border-top: 1px solid rgba(236, 72, 153, 0.2); 
             display: flex; justify-content: space-around; align-items: center; 
             z-index: 50; padding-bottom: 15px; 
             box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
@@ -120,16 +131,16 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             color: #64748b; font-size: 0.7rem; transition: 0.3s; width: 100%; height: 100%; cursor: pointer;
         }
-        .nav-item i { font-size: 1.5rem; margin-bottom: 4px; transition: 0.3s; }
+        .nav-item i { font-size: 1.6rem; margin-bottom: 4px; transition: 0.3s; }
         .nav-item.active { color: #d946ef; }
-        .nav-item.active i { transform: translateY(-5px); filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.8)); }
+        .nav-item.active i { transform: translateY(-5px); filter: drop-shadow(0 0 10px #d946ef); }
 
-        /* Inputs & Buttons */
+        /* Buttons & Inputs */
         .input-cyber { 
-            width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid #334155; 
-            padding: 14px 20px; border-radius: 12px; color: white; outline: none; transition: 0.3s; 
+            width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid #4c1d95; 
+            padding: 14px 20px; border-radius: 14px; color: white; outline: none; transition: 0.3s; 
         }
-        .input-cyber:focus { border-color: #d946ef; background: rgba(236, 72, 153, 0.05); }
+        .input-cyber:focus { border-color: #d946ef; background: rgba(236, 72, 153, 0.05); box-shadow: 0 0 15px rgba(236, 72, 153, 0.2); }
         
         .btn-gradient { 
             background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; font-weight: 700; 
@@ -145,18 +156,19 @@
             transition: opacity 0.5s;
         }
 
-        /* --- GAME: XO --- */
+        /* --- GAME 1: XO --- */
         .xo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 320px; margin: 0 auto; }
         .xo-cell { 
             height: 90px; background: rgba(255,255,255,0.05); border-radius: 16px; 
             display: flex; align-items: center; justify-content: center; font-size: 3.5rem; 
             font-weight: 900; cursor: pointer; transition: 0.2s; border: 2px solid transparent; 
         }
-        .xo-cell:hover { background: rgba(255,255,255,0.1); }
+        .xo-cell:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
         .xo-cell.X { color: #ec4899; text-shadow: 0 0 20px #ec4899; }
         .xo-cell.O { color: #22d3ee; text-shadow: 0 0 20px #22d3ee; }
+        .xo-cell.win { background: rgba(16, 185, 129, 0.2); border-color: #10b981; }
         
-        /* --- GAME: RPS --- */
+        /* --- GAME 2: RPS --- */
         .rps-btn { 
             width: 80px; height: 80px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); 
             border: 2px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; 
@@ -168,92 +180,104 @@
             box-shadow: 0 0 30px rgba(251, 191, 36, 0.4); transform: scale(1.15); 
         }
 
-        /* --- GAME: PENALTY (FIXED) --- */
+        /* --- GAME 3: PENALTY (FIXED LAYOUT) --- */
+        /* สนามบอล */
         .penalty-wrapper {
-            position: relative; width: 100%; height: 350px;
+            position: relative; width: 100%; height: 250px;
             margin-bottom: 20px; border-radius: 20px; overflow: hidden;
             border: 2px solid #34d399; box-shadow: 0 0 30px rgba(52, 211, 153, 0.2);
         }
         .penalty-scene { 
-            perspective: 800px; width: 100%; height: 100%; 
+            perspective: 600px; width: 100%; height: 100%; 
             position: absolute; top: 0; left: 0;
-            background: radial-gradient(circle at center, #1e293b 0%, #064e3b 80%); 
+            background: radial-gradient(circle at center, #1e293b 0%, #064e3b 90%); 
         }
         .penalty-scene::after { /* Grass */
-            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 35%;
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 40%;
             background: linear-gradient(to top, #065f46, transparent); z-index: 1;
         }
         .goal-post { 
-            position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); 
-            width: 220px; height: 110px; 
-            border-top: 8px solid #e2e8f0; border-left: 8px solid #e2e8f0; border-right: 8px solid #e2e8f0;
+            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); 
+            width: 180px; height: 100px; 
+            border-top: 6px solid #e2e8f0; border-left: 6px solid #e2e8f0; border-right: 6px solid #e2e8f0;
             box-shadow: 0 0 20px rgba(255,255,255,0.3); z-index: 2;
         }
-        .net { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px); background-size: 8px 8px; opacity: 0.3; z-index: 1; }
+        .net { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 6px 6px; opacity: 0.3; z-index: 1; }
+        
         .keeper { 
-            position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); 
-            font-size: 4rem; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 5; 
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.6));
+            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); 
+            font-size: 3.5rem; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            z-index: 5; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.6));
         }
         .soccer-ball { 
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); 
-            font-size: 2.5rem; transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); z-index: 20; 
-            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); 
+            font-size: 2rem; transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            z-index: 20; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
         }
+
+        /* ปุ่มควบคุมแบบ Grid ใหญ่ๆ ด้านล่าง (ไม่จม) */
         .penalty-controls {
-            position: absolute; bottom: 15px; left: 0; width: 100%;
-            display: flex; justify-content: center; gap: 8px; z-index: 50; padding: 0 10px;
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+            padding: 10px; background: rgba(0,0,0,0.3); border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         .penalty-btn {
-            background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(255,255,255,0.2); 
-            flex: 1; padding: 12px 0; border-radius: 12px; font-weight: 800; text-align: center;
-            transition: 0.2s; cursor: pointer; color: white; text-transform: uppercase;
-            font-size: 0.9rem; backdrop-filter: blur(5px);
+            background: linear-gradient(180deg, #334155, #1e293b); 
+            border: 1px solid #475569; padding: 20px 0; 
+            border-radius: 12px; font-weight: 800; text-align: center;
+            transition: 0.2s; cursor: pointer; color: #cbd5e1; 
+            text-transform: uppercase; font-size: 1.2rem;
+            box-shadow: 0 4px 0 #0f172a;
         }
-        .penalty-btn:hover { background: rgba(236, 72, 153, 0.8); transform: translateY(-3px); border-color: #ec4899; }
-        .penalty-btn:active { transform: scale(0.95); }
+        .penalty-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #0f172a; }
+        .penalty-btn:hover { background: linear-gradient(180deg, #475569, #334155); color: white; border-color: #ec4899; }
 
-        /* Result Animation */
+        /* Chat */
+        .chat-area { margin-bottom: 15px; }
+        .chat-box { 
+            height: 120px; overflow-y: auto; background: rgba(0,0,0,0.4); 
+            border-radius: 12px; padding: 10px; margin-bottom: 10px; 
+            border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 6px;
+        }
+        .chat-msg { font-size: 0.8rem; padding: 6px 10px; border-radius: 8px; max-width: 85%; word-wrap: break-word; }
+        .msg-me { align-self: flex-end; background: #ec4899; color: white; }
+        .msg-other { align-self: flex-start; background: #334155; color: #e2e8f0; }
+
+        /* Modals */
         .anime-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .anime-text { font-size: 4rem; font-weight: 900; color: white; text-transform: uppercase; font-style: italic; text-shadow: 0 0 40px #ec4899; animation: bounceIn 0.6s; }
-
-        /* Badges */
-        .ready-badge { padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        .is-ready { background: #10b981; color: #064e3b; box-shadow: 0 0 10px #10b981; }
-        .not-ready { background: #334155; color: #94a3b8; border: 1px solid #475569; }
-        .rank-badge { padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: bold; background: linear-gradient(45deg, #f59e0b, #d97706); color: white; }
+        .anime-text { font-size: 4rem; font-weight: 900; color: white; text-transform: uppercase; font-style: italic; text-shadow: 0 0 30px #ec4899; animation: bounceIn 0.6s; }
+        .modal-box { background: #1e293b; width: 90%; max-width: 400px; padding: 30px; border-radius: 24px; border: 1px solid rgba(236, 72, 153, 0.3); animation: zoomIn 0.3s; position: relative; box-shadow: 0 0 60px rgba(0,0,0,0.7); }
     </style>
 </head>
 <body>
+
+    <canvas id="particle-canvas"></canvas>
+    <div class="bg-cyber"></div>
 
     <div id="splash-screen">
         <div class="relative">
             <div class="absolute inset-0 bg-pink-500 blur-3xl opacity-20 animate-pulse"></div>
             <h1 class="text-6xl font-black font-display text-white relative z-10 animate-bounce">ZONE.</h1>
         </div>
-        <p class="text-slate-500 mt-4 font-mono text-xs">LOADING RESOURCES...</p>
+        <p class="text-slate-500 mt-4 font-mono text-xs tracking-widest">LOADING SYSTEM...</p>
     </div>
-
-    <div class="bg-cyber"></div>
-    <div class="bg-grid"></div>
 
     <div id="maintenance-view" class="fixed inset-0 z-[9999] bg-[#050b14] flex flex-col items-center justify-center hidden">
         <i class="fa-solid fa-triangle-exclamation text-8xl text-pink-500 mb-6 animate-pulse"></i>
-        <h1 class="text-5xl font-black font-display text-white mb-2">ปิดปรับปรุงชั่วคราว</h1>
-        <p class="text-slate-400">ทีมงานกำลังพัฒนาระบบให้ดียิ่งขึ้น</p>
+        <h1 class="text-5xl font-black font-display text-white mb-2">ปิดปรับปรุง</h1>
+        <p class="text-slate-400">ระบบกำลังอัปเกรดเซิร์ฟเวอร์</p>
     </div>
 
     <div id="modal-news" class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center backdrop-blur-sm hidden">
-        <div class="w-[90%] max-w-sm bg-[#130821] p-8 rounded-3xl border border-pink-500/20 shadow-2xl text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent"></div>
-            <div class="w-16 h-16 bg-pink-600/20 rounded-full flex items-center justify-center mx-auto mb-4 text-pink-500 text-3xl animate-bounce">
+        <div class="modal-box text-center">
+            <div class="w-20 h-20 bg-pink-600/20 rounded-full flex items-center justify-center mx-auto mb-6 text-pink-500 text-4xl animate-bounce border border-pink-500/30">
                 <i class="fa-solid fa-bullhorn"></i>
             </div>
             <h3 class="text-2xl font-bold text-white mb-2 font-display">ประกาศจากระบบ</h3>
-            <div class="bg-white/5 p-4 rounded-xl text-slate-300 text-sm mb-6 leading-relaxed border border-white/5" id="news-content">
+            <div class="bg-white/5 p-4 rounded-xl text-slate-300 text-sm mb-6 border border-white/5 leading-relaxed" id="news-content">
                 ...
             </div>
-            <button onclick="document.getElementById('modal-news').style.display='none'" class="w-full btn-gradient py-3 text-lg">รับทราบ</button>
+            <button onclick="document.getElementById('modal-news').style.display='none'" class="w-full btn-gradient py-4 text-lg shadow-xl">รับทราบ</button>
         </div>
     </div>
 
@@ -261,29 +285,29 @@
         <div class="w-full max-w-sm glass-card p-10 shadow-2xl animate__animated animate__zoomIn">
             <div class="text-center mb-10">
                 <h1 class="text-7xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 drop-shadow-lg">ZONE.</h1>
-                <p class="text-slate-400 text-xs font-bold tracking-[0.5em] uppercase mt-2">อาณาจักรเดิมพัน</p>
+                <p class="text-pink-300 text-xs font-bold tracking-[0.5em] uppercase mt-4">อาณาจักรเดิมพันออนไลน์</p>
             </div>
             
             <div id="login-form" class="space-y-6">
                 <div class="relative">
                     <i class="fa-solid fa-envelope absolute left-5 top-4 text-slate-500"></i>
-                    <input id="l-email" class="input-cyber pl-14" placeholder="อีเมล (Email)">
+                    <input id="l-email" class="input-cyber pl-14 text-lg" placeholder="อีเมล (Email)">
                 </div>
                 <div class="relative">
                     <i class="fa-solid fa-key absolute left-5 top-4 text-slate-500"></i>
-                    <input id="l-pass" type="password" class="input-cyber pl-14" placeholder="รหัสผ่าน (Password)">
+                    <input id="l-pass" type="password" class="input-cyber pl-14 text-lg" placeholder="รหัสผ่าน (Password)">
                 </div>
-                <button onclick="Auth.login()" class="btn-gradient w-full py-4 text-xl shadow-lg shadow-pink-500/20">เข้าสู่ระบบ</button>
+                <button onclick="Auth.login()" class="btn-gradient w-full py-4 text-xl shadow-lg shadow-pink-500/30">เข้าสู่ระบบ</button>
                 <div class="text-center pt-2">
-                    <button onclick="UI.toggleAuth('reg')" class="text-slate-400 text-sm hover:text-pink-400 transition font-bold">สมัครสมาชิกใหม่</button>
+                    <button onclick="UI.toggleAuth('reg')" class="text-slate-400 text-sm hover:text-pink-400 transition font-bold">สมัครสมาชิกใหม่ คลิก!</button>
                 </div>
             </div>
 
             <div id="reg-form" class="space-y-6 hidden">
-                <input id="r-nick" class="input-cyber text-center" placeholder="ชื่อเล่นในเกม">
-                <input id="r-email" class="input-cyber text-center" placeholder="อีเมล">
-                <input id="r-pass" type="password" class="input-cyber text-center" placeholder="รหัสผ่าน (6+ ตัว)">
-                <button onclick="Auth.register()" class="btn-gradient w-full py-4 text-xl">ยืนยันสมัคร</button>
+                <input id="r-nick" class="input-cyber text-center text-lg" placeholder="ชื่อเล่นในเกม">
+                <input id="r-email" class="input-cyber text-center text-lg" placeholder="อีเมล">
+                <input id="r-pass" type="password" class="input-cyber text-center text-lg" placeholder="รหัสผ่าน (6 ตัวขึ้นไป)">
+                <button onclick="Auth.register()" class="btn-gradient w-full py-4 text-xl">ยืนยันการสมัคร</button>
                 <button onclick="UI.toggleAuth('log')" class="w-full text-slate-500 text-sm mt-2 hover:text-white">ย้อนกลับ</button>
             </div>
         </div>
@@ -293,7 +317,7 @@
         
         <nav class="sticky top-0 z-30 glass-nav">
             <div class="bg-indigo-950/40 h-9 flex items-center overflow-hidden border-b border-white/5 backdrop-blur-sm">
-                <div class="bg-pink-600 text-white text-[10px] font-black px-3 h-full flex items-center tracking-wider shadow-lg">HOT</div>
+                <div class="bg-pink-600 text-white text-[10px] font-black px-3 h-full flex items-center tracking-wider shadow-lg">HOT NEWS</div>
                 <div class="whitespace-nowrap animate-marquee text-xs text-pink-200 ml-4 font-light flex items-center" id="annc-marquee">...</div>
             </div>
             
@@ -305,54 +329,35 @@
                         <div class="text-[10px] text-green-400 font-bold bg-green-900/30 px-2 rounded-full inline-block mt-0.5 border border-green-500/20">● ONLINE</div>
                     </div>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-4">
                     <div class="text-right">
                         <div class="text-[9px] text-slate-400 font-bold tracking-widest uppercase">เครดิตคงเหลือ</div>
-                        <div class="font-mono text-xl font-bold text-yellow-400 drop-shadow-md">฿<span id="u-credit">0</span></div>
+                        <div class="font-mono text-2xl font-bold text-yellow-400 drop-shadow-md">฿<span id="u-credit">0</span></div>
                     </div>
                     <button onclick="document.getElementById('modal-news').style.display='flex'" class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white transition relative shadow-lg">
-                        <i class="fa-solid fa-bell"></i>
+                        <i class="fa-solid fa-bell text-lg"></i>
                         <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse border-2 border-[#050b14]"></span>
                     </button>
                 </div>
             </div>
         </nav>
 
-        <div id="page-home" class="p-5 max-w-2xl mx-auto animate__animated animate__fadeIn">
-            <div class="w-full h-32 rounded-2xl bg-gradient-to-r from-purple-900 to-indigo-900 mb-6 flex items-center justify-between px-6 relative overflow-hidden shadow-2xl border border-white/10 group">
-                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30"></div>
+        <div id="page-home" class="p-6 max-w-2xl mx-auto animate__animated animate__fadeIn">
+            <div class="glass-card p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-6 border-l-4 border-pink-500 shadow-2xl relative overflow-hidden group">
                 <div class="relative z-10">
-                    <span class="bg-pink-600 text-[10px] font-bold px-2 py-0.5 rounded text-white mb-1 inline-block">BATTLE ARENA</span>
-                    <h2 class="text-2xl font-black font-display italic text-white">ห้องเดิมพัน</h2>
-                    <p class="text-pink-200 text-xs">เลือกห้องเพื่อเริ่มประลอง</p>
+                    <h2 class="text-3xl font-black text-white italic font-display">ห้องเดิมพัน</h2>
+                    <p class="text-pink-300 text-sm font-bold">เลือกห้องเพื่อเริ่มประลอง</p>
                 </div>
-                <i class="fa-solid fa-trophy text-7xl text-yellow-500/20 absolute -right-2 -bottom-4 group-hover:scale-110 transition duration-500"></i>
-            </div>
-
-            <div class="relative w-full mb-6">
-                <i class="fa-solid fa-search absolute top-1/2 -translate-y-1/2 left-4 text-slate-500"></i>
-                <input id="search-input" onkeyup="Game.filterRooms()" class="input-cyber pl-10 py-3 text-sm rounded-full w-full shadow-inner bg-black/40" placeholder="ค้นหาห้องเกม...">
+                <div class="relative w-full md:w-auto z-10">
+                    <i class="fa-solid fa-search absolute top-1/2 -translate-y-1/2 left-4 text-pink-500/50"></i>
+                    <input id="search-input" onkeyup="Game.filterRooms()" class="input-cyber pl-10 py-3 text-sm rounded-full w-full shadow-inner" placeholder="ค้นหาห้อง...">
+                </div>
+                <i class="fa-solid fa-gamepad absolute -right-6 -bottom-6 text-9xl text-white/5 z-0 group-hover:rotate-12 transition duration-500"></i>
             </div>
             
-            <div id="room-list" class="grid grid-cols-1 gap-4 pb-28">
+            <div id="room-list" class="grid grid-cols-1 gap-5 pb-32">
                 <div class="py-20 text-center text-slate-500 animate-pulse font-bold tracking-widest">
                     <i class="fa-solid fa-satellite-dish text-5xl mb-4 opacity-50"></i><br>กำลังเชื่อมต่อเซิร์ฟเวอร์...
-                </div>
-            </div>
-        </div>
-
-        <div id="page-rank" class="full-page">
-            <div class="p-6 pt-10 max-w-lg mx-auto">
-                <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fa-solid fa-crown text-yellow-500"></i> อันดับผู้เล่น</h2>
-                <div class="glass-card overflow-hidden">
-                    <div class="p-4 bg-yellow-500/10 border-b border-yellow-500/20 text-center text-yellow-400 font-bold text-sm">
-                        TOP PLAYERS (Real-time)
-                    </div>
-                    <table class="w-full text-left text-sm">
-                        <tbody id="rank-list">
-                            <tr><td class="p-8 text-center text-slate-500">กำลังโหลด...</td></tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
@@ -360,18 +365,9 @@
         <div id="page-history" class="full-page">
             <div class="p-6 pt-10 max-w-lg mx-auto">
                 <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fa-solid fa-clock-rotate-left text-pink-500"></i> ประวัติการเล่น</h2>
-                
-                <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
-                    <button onclick="User.filterHistory('all')" class="bg-slate-800 px-4 py-1.5 rounded-full text-xs font-bold hover:bg-pink-600 transition border border-white/10">ทั้งหมด</button>
-                    <button onclick="User.filterHistory('game')" class="bg-slate-800 px-4 py-1.5 rounded-full text-xs font-bold hover:bg-pink-600 transition border border-white/10">เกม</button>
-                    <button onclick="User.filterHistory('finance')" class="bg-slate-800 px-4 py-1.5 rounded-full text-xs font-bold hover:bg-pink-600 transition border border-white/10">การเงิน</button>
-                </div>
-
                 <div class="glass-card overflow-hidden">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
-                            <tr><th class="p-4">รายการ</th><th class="p-4 text-right">จำนวน</th><th class="p-4 text-right">วัน/เวลา</th></tr>
-                        </thead>
+                        <thead class="bg-white/5 text-slate-400 text-xs uppercase tracking-wider"><tr><th class="p-5">รายการ</th><th class="p-5 text-right">จำนวน</th><th class="p-5 text-right">วัน/เวลา</th></tr></thead>
                         <tbody id="history-list"></tbody>
                     </table>
                 </div>
@@ -392,8 +388,8 @@
                         <i class="fa-solid fa-circle-info text-xl mt-0.5"></i>
                         <div>กรุณาโอนเงินตามเลขบัญชีที่แอดมินแจ้ง<br>ก่อนกรอกข้อมูลด้านล่าง</div>
                     </div>
-                    <div><label class="text-xs text-slate-400 ml-2 mb-1 block font-bold">จำนวนเงินที่โอน</label><input id="dep-amt" type="number" class="input-cyber text-center text-4xl font-bold text-emerald-400 placeholder-emerald-900/30" placeholder="0.00"></div>
-                    <div><label class="text-xs text-slate-400 ml-2 mb-1 block font-bold">เวลาโอน (ตามสลิป)</label><input id="dep-time" class="input-cyber text-center text-lg" placeholder="เช่น 14.30"></div>
+                    <input id="dep-amt" type="number" class="input-cyber text-center text-4xl font-bold text-emerald-400 placeholder-emerald-900/30" placeholder="0.00">
+                    <input id="dep-time" class="input-cyber text-center text-lg" placeholder="เช่น 14.30">
                     <button onclick="Finance.submit('deposit')" class="btn-gradient w-full py-4 text-xl shadow-lg border-none">ยืนยันแจ้งฝาก</button>
                     <button onclick="UI.contactAdmin()" class="w-full py-4 border border-slate-700 rounded-2xl text-slate-400 hover:bg-slate-800 transition font-bold">ติดต่อแอดมิน (ขอเลขบัญชี)</button>
                 </div>
@@ -404,31 +400,30 @@
                         <div>ถอนเข้าบัญชีที่ลงทะเบียนไว้เท่านั้น<br>กรุณาตรวจสอบยอดก่อนแจ้งถอน</div>
                     </div>
                     <div id="withdraw-lock-msg" class="hidden text-center text-xs text-red-400 bg-red-950/30 p-3 rounded-xl border border-red-900/50 font-bold">⚠ ติดเงื่อนไขเครดิตฟรี (ถอนไม่ได้)</div>
-                    <div><label class="text-xs text-slate-400 ml-2 mb-1 block font-bold">จำนวนเงินที่ต้องการถอน</label><input id="wit-amt" type="number" class="input-cyber text-center text-4xl font-bold text-red-400 placeholder-red-900/30" placeholder="0.00"></div>
+                    <input id="wit-amt" type="number" class="input-cyber text-center text-4xl font-bold text-red-400 placeholder-red-900/30" placeholder="0.00">
                     <button onclick="Finance.submit('withdraw')" class="btn-gradient w-full py-4 text-xl border-none shadow-lg from-red-600 to-rose-600">ยืนยันแจ้งถอน</button>
+                </div>
+                
+                <div class="mt-10">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 pl-2 border-l-4 border-pink-500">ประวัติล่าสุด (Recent)</h3>
+                    <div id="finance-history" class="space-y-3"></div>
                 </div>
             </div>
         </div>
 
         <div id="page-profile" class="full-page">
             <div class="p-6 pt-10 max-w-lg mx-auto">
-                <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fa-solid fa-user-gear text-purple-400"></i> บัญชีของฉัน</h2>
+                <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fa-solid fa-user-gear text-purple-400"></i> ตั้งค่าบัญชี</h2>
                 
                 <div class="glass-card p-8 mb-8 text-center border-t-4 border-pink-500 relative overflow-hidden shadow-2xl">
                     <div class="w-28 h-28 bg-slate-800 rounded-full mx-auto mb-4 flex items-center justify-center text-5xl border-4 border-slate-700 shadow-xl relative z-10">👤</div>
                     <div class="text-3xl font-black text-white relative z-10 mb-1" id="p-name-display">Guest</div>
-                    <div class="text-sm text-slate-400 font-mono relative z-10 bg-black/30 px-3 py-1 rounded-full inline-block" id="p-uid-full">UID: ...</div>
-                    
-                    <div class="mt-4 relative z-10">
-                        <div class="flex justify-between text-xs text-pink-300 font-bold mb-1"><span>LVL 1</span><span>LVL 2</span></div>
-                        <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-pink-500 to-purple-500 w-[20%]"></div></div>
-                    </div>
-                    
+                    <div class="text-sm text-slate-400 font-mono relative z-10 bg-black/30 px-3 py-1 rounded-full inline-block" id="p-uid-full">...</div>
                     <div class="absolute inset-0 bg-pink-900/20 blur-2xl"></div>
                 </div>
 
                 <div class="glass-card p-8 space-y-5">
-                    <div><label class="text-xs text-slate-400 ml-2 mb-1 block">ชื่อเล่นในเกม</label><input id="p-nick" class="input-cyber text-lg font-bold text-center"></div>
+                    <input id="p-nick" class="input-cyber text-lg font-bold text-center" placeholder="ชื่อเล่น">
                     <div class="h-px bg-slate-700 my-4"></div>
                     <h3 class="text-sm font-bold text-pink-400 uppercase tracking-wider mb-4"><i class="fa-solid fa-bank mr-2"></i> ข้อมูลรับเงิน</h3>
                     <select id="p-bank" class="input-cyber bg-[#0f172a] text-center font-bold cursor-pointer"><option value="KBANK">กสิกรไทย (KBANK)</option><option value="SCB">ไทยพาณิชย์ (SCB)</option><option value="TRUE">TrueMoney Wallet</option></select>
@@ -443,10 +438,9 @@
 
         <nav class="bottom-nav">
             <div onclick="UI.nav('home')" id="nav-home" class="nav-item active"><i class="fa-solid fa-gamepad"></i><span>ล็อบบี้</span></div>
-            <div onclick="UI.nav('rank')" id="nav-rank" class="nav-item"><i class="fa-solid fa-trophy"></i><span>อันดับ</span></div>
             <div onclick="UI.nav('finance')" id="nav-finance" class="nav-item"><i class="fa-solid fa-wallet"></i><span>ฝากถอน</span></div>
             <div onclick="UI.nav('history')" id="nav-history" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>ประวัติ</span></div>
-            <div onclick="UI.nav('profile')" id="nav-profile" class="nav-item"><i class="fa-solid fa-user-circle"></i><span>ฉัน</span></div>
+            <div onclick="UI.nav('profile')" id="nav-profile" class="nav-item"><i class="fa-solid fa-user-circle"></i><span>โปรไฟล์</span></div>
         </nav>
 
         <div id="view-game" class="fixed inset-0 z-[100] bg-[#050b14] hidden flex flex-col">
@@ -460,6 +454,7 @@
             </div>
             
             <div class="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+                
                 <div id="g-waiting" class="text-center z-10 hidden animate__animated animate__fadeIn">
                     <div class="w-40 h-40 bg-pink-900/10 rounded-full flex items-center justify-center mx-auto mb-8 relative border-2 border-pink-500/30 shadow-[0_0_50px_rgba(236,72,153,0.2)]">
                         <div class="absolute inset-0 bg-pink-500 blur-3xl opacity-20 animate-pulse"></div>
@@ -478,7 +473,7 @@
                         <button onclick="document.getElementById('anime-result').classList.add('hidden')" class="bg-white text-black px-12 py-4 rounded-full font-bold hover:scale-105 transition shadow-[0_0_30px_rgba(255,255,255,0.5)] text-xl">ปิดหน้าต่าง</button>
                     </div>
 
-                    <div class="flex justify-between items-center mb-10 bg-slate-800/40 p-6 rounded-[2rem] border border-white/5 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-6 bg-slate-800/40 p-6 rounded-[2rem] border border-white/5 backdrop-blur-xl shadow-2xl relative overflow-hidden">
                         <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan-500 via-white to-pink-500 opacity-50"></div>
                         <div class="text-center w-1/3 relative z-10">
                             <div class="text-xs font-bold text-slate-400 mb-2 truncate px-1" id="p1-name">คุณ</div>
@@ -493,6 +488,14 @@
                         </div>
                     </div>
 
+                    <div id="game-chat-area" class="mb-4 chat-area">
+                        <div id="chat-container" class="chat-container"></div>
+                        <div class="flex gap-2">
+                            <input id="chat-msg" class="input-cyber py-2 px-4 flex-1 text-sm rounded-full" placeholder="พิมพ์ข้อความ...">
+                            <button onclick="Game.sendChat()" class="bg-pink-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-pink-500 transition"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+
                     <div id="ready-section" class="text-center mb-8 hidden animate__animated animate__fadeInUp">
                         <p class="text-slate-400 mb-4 text-xs animate-pulse tracking-[0.2em] uppercase font-bold">กดพร้อมกันเพื่อเริ่มเกม</p>
                         <button id="btn-ready" onclick="Game.toggleReady()" class="w-full py-5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-2xl font-black text-2xl shadow-lg shadow-emerald-500/20 hover:scale-[1.02] transition active:scale-95 border-b-4 border-emerald-700 tracking-wider">
@@ -501,8 +504,8 @@
                     </div>
 
                     <div id="game-active-area" class="hidden animate__animated animate__zoomIn">
-                        <div class="text-center mb-8">
-                            <div id="status-text" class="text-3xl font-black text-white mb-4 drop-shadow-md font-display italic">START!</div>
+                        <div class="text-center mb-4">
+                            <div id="status-text" class="text-3xl font-black text-white mb-2 drop-shadow-md font-display italic">START!</div>
                             <div id="timer-box" class="w-full h-2 bg-slate-800 rounded-full overflow-hidden hidden shadow-inner">
                                 <div id="timer-bar" class="h-full bg-gradient-to-r from-pink-500 to-purple-500 w-full transition-all ease-linear duration-100"></div>
                             </div>
@@ -519,19 +522,17 @@
                         </div>
                         
                         <div id="area-penalty" class="hidden">
-                            <div class="text-center mb-6">
-                                <div class="inline-block bg-gradient-to-r from-pink-600 to-purple-600 px-6 py-2 rounded-full text-xs font-bold shadow-lg text-white tracking-wider border border-white/20" id="pen-role">ROLE</div>
-                            </div>
+                            <div class="text-center mb-4"><div class="inline-block bg-gradient-to-r from-pink-600 to-purple-600 px-6 py-2 rounded-full text-xs font-bold shadow-lg text-white tracking-wider border border-white/20" id="pen-role">ROLE</div></div>
                             <div class="penalty-wrapper">
                                 <div class="penalty-scene">
                                     <div class="goal-post"><div class="net"></div><div class="keeper" id="pen-keeper">🧤</div></div>
                                     <div class="soccer-ball" id="pen-ball">⚽</div>
-                                    <div class="penalty-controls">
-                                        <button onclick="Game.movePenalty('left')" class="penalty-btn">ซ้าย</button>
-                                        <button onclick="Game.movePenalty('center')" class="penalty-btn">กลาง</button>
-                                        <button onclick="Game.movePenalty('right')" class="penalty-btn">ขวา</button>
-                                    </div>
                                 </div>
+                            </div>
+                            <div class="penalty-controls">
+                                <button onclick="Game.movePenalty('left')" class="penalty-btn">ซ้าย</button>
+                                <button onclick="Game.movePenalty('center')" class="penalty-btn">กลาง</button>
+                                <button onclick="Game.movePenalty('right')" class="penalty-btn">ขวา</button>
                             </div>
                         </div>
                     </div>
@@ -542,6 +543,10 @@
     </div>
 
     <script>
+        // Init Particles
+        const canvas = document.getElementById('particle-canvas');
+        if(canvas){ const ctx=canvas.getContext('2d'); canvas.width=window.innerWidth; canvas.height=window.innerHeight; let particles=[]; class Particle{constructor(){this.x=Math.random()*canvas.width;this.y=Math.random()*canvas.height;this.size=Math.random()*2+0.5;this.speedX=Math.random()*0.5-0.25;this.speedY=Math.random()*0.5-0.25;this.color=`rgba(236,72,153,${Math.random()*0.5})`}update(){this.x+=this.speedX;this.y+=this.speedY;if(this.x>canvas.width||this.x<0)this.speedX*=-1;if(this.y>canvas.height||this.y<0)this.speedY*=-1}draw(){ctx.fillStyle=this.color;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill()}} function initParticles(){for(let i=0;i<50;i++)particles.push(new Particle())} function animateParticles(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{p.update();p.draw()});requestAnimationFrame(animateParticles)} initParticles(); animateParticles(); }
+
         // Init Splash
         setTimeout(() => document.getElementById('splash-screen').style.opacity = '0', 2000);
         setTimeout(() => document.getElementById('splash-screen').style.display = 'none', 2500);
@@ -555,27 +560,26 @@
         const sounds={ click: new Howl({src:['https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3']}), win: new Howl({src:['https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3']}), lose: new Howl({src:['https://assets.mixkit.co/active_storage/sfx/2034/2034-preview.mp3']}), pop: new Howl({src:['https://assets.mixkit.co/active_storage/sfx/2044/2044-preview.mp3']}) };
         moment.locale('th');
 
-        // --- SYSTEM CHECK ---
+        // SYSTEM CHECK
         db.collection('config').doc('settings').onSnapshot(d => {
             const c = d.exists ? d.data() : {}; adminLink = c.fbLink || '#';
             if(c.isOpen === false) document.getElementById('maintenance-view').classList.remove('hidden'); else document.getElementById('maintenance-view').classList.add('hidden');
             if(c.announcement) { document.getElementById('annc-marquee').innerText = c.announcement; document.getElementById('news-content').innerText = c.announcement; }
         }, e => document.getElementById('maintenance-view').classList.add('hidden'));
 
-        // --- UI UTILS ---
+        // UI UTILS
         const UI = {
             toggleAuth: (m) => { document.getElementById('login-form').style.display=m=='reg'?'none':'block'; document.getElementById('reg-form').style.display=m=='reg'?'block':'none'; },
             toast: (msg, type='success') => Swal.fire({ title: msg, icon: type, toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, background: '#1a0b2e', color: '#fff' }),
             nav: (id) => {
-                ['home','finance','history','profile','rank'].forEach(p => { document.getElementById(`nav-${p}`).classList.remove('active'); document.getElementById(`page-${p}`).style.display = (id === p ? 'block' : 'none'); });
+                ['home','finance','history','profile'].forEach(p => { document.getElementById(`nav-${p}`).classList.remove('active'); document.getElementById(`page-${p}`).style.display = (id === p ? 'block' : 'none'); });
                 document.getElementById(`nav-${id}`).classList.add('active');
-                if(id==='finance') Finance.load(); if(id==='history') User.loadHistory(); if(id==='rank') User.loadRank();
+                if(id==='finance') Finance.load(); if(id==='history') User.loadHistory();
             },
-            openPage: (id) => UI.nav(id), contactAdmin: () => window.open(adminLink, '_blank'),
-            copyUid: () => navigator.clipboard.writeText(document.getElementById('p-uid-full').innerText).then(()=>UI.toast('คัดลอก UID แล้ว'))
+            openPage: (id) => UI.nav(id), closePage: (id) => UI.nav('home'), contactAdmin: () => window.open(adminLink, '_blank'), copyUid: () => navigator.clipboard.writeText(document.getElementById('p-uid-full').innerText).then(()=>UI.toast('คัดลอก UID แล้ว'))
         };
 
-        // --- FINANCE ---
+        // FINANCE
         const Finance = {
             tab: (t) => {
                 document.getElementById('form-deposit').classList.toggle('hidden',t!=='deposit'); document.getElementById('form-withdraw').classList.toggle('hidden',t!=='withdraw');
@@ -602,7 +606,7 @@
             }
         };
 
-        // --- AUTH & USER ---
+        // AUTH & USER
         const Auth = {
             login: () => auth.signInWithEmailAndPassword(document.getElementById('l-email').value, document.getElementById('l-pass').value).catch(e => UI.toast(e.message, 'error')),
             register: () => {
@@ -621,7 +625,7 @@
                 currentUser = u;
                 document.getElementById('view-auth').classList.add('hidden');
                 document.getElementById('view-app').classList.remove('hidden');
-                UI.nav('home');
+                document.getElementById(`page-home`).style.display = 'block'; // Default page
                 
                 if(!sessionStorage.getItem('newsShown')) { document.getElementById('modal-news').style.display='flex'; sessionStorage.setItem('newsShown','true'); }
                 
@@ -640,34 +644,18 @@
             },
             saveProfile: () => db.collection('users').doc(currentUser.uid).update({ nickname: document.getElementById('p-nick').value, bankName: document.getElementById('p-bank').value, bankAcc: document.getElementById('p-acc').value, bankOwner: document.getElementById('p-own').value }).then(() => UI.toast('บันทึกข้อมูลแล้ว')),
             loadHistory: () => {
-                // Client Sort for History + Moment JS
                 db.collection('transactions').where('uid', '==', currentUser.uid).onSnapshot(s => {
-                    const l=document.getElementById('history-list'); const docs = s.docs.map(d=>d.data()).sort((a,b)=>(b.timestamp?.seconds||0)-(a.timestamp?.seconds||0)).slice(0,30);
+                    const l=document.getElementById('history-list'); const docs = s.docs.map(d=>d.data()).sort((a,b)=>(b.timestamp?.seconds||0)-(a.timestamp?.seconds||0)).slice(0,20);
                     if(docs.length===0){l.innerHTML='<tr><td colspan="3" class="p-8 text-center text-slate-500">ไม่มีข้อมูล</td></tr>';return;}
                     l.innerHTML = docs.map(t => {
                         const color = t.amount>0?'text-green-400':'text-red-400';
-                        const time = t.timestamp ? moment(t.timestamp.toDate()).format('D MMM YY, HH:mm') : '-';
-                        return `<tr class="border-b border-white/5 hover:bg-white/5 transition"><td class="p-5"><div class="font-bold text-white text-xs">${t.type}</div></td><td class="p-5 text-right font-mono font-bold ${color}">${t.amount>0?'+':''}${t.amount}</td><td class="p-5 text-right text-[10px] text-slate-500">${time}</td></tr>`;
-                    }).join('');
-                });
-            },
-            filterHistory: (type) => {
-               // Implement client side filter logic if needed, currently loads all sorted
-               // Can toggle hidden class on rows based on data-type
-            },
-            loadRank: () => {
-                db.collection('users').orderBy('credit', 'desc').limit(10).get().then(snap => {
-                    const list = document.getElementById('rank-list');
-                    list.innerHTML = snap.docs.map((d, i) => {
-                        const u = d.data();
-                        let medal = i===0 ? '🥇' : (i===1 ? '🥈' : (i===2 ? '🥉' : `#${i+1}`));
-                        return `<tr class="border-b border-white/5"><td class="p-4 font-bold text-lg">${medal}</td><td class="p-4 font-bold text-white">${u.nickname}</td><td class="p-4 text-right font-mono text-yellow-400">${u.credit.toLocaleString()}</td></tr>`;
+                        return `<tr class="border-b border-white/5 hover:bg-white/5 transition"><td class="p-5"><div class="font-bold text-white text-xs">${t.type}</div></td><td class="p-5 text-right font-mono font-bold ${color}">${t.amount>0?'+':''}${t.amount}</td><td class="p-5 text-right text-[10px] text-slate-500">${t.timestamp?new Date(t.timestamp.toDate()).toLocaleTimeString():'-'}</td></tr>`;
                     }).join('');
                 });
             }
         };
 
-        // --- GAME ENGINE (FIXED + PENALTY UI) ---
+        // --- GAME ENGINE (FIXED) ---
         const Game = {
             loadLobby: () => {
                 db.collection('rooms').onSnapshot(s => { 
@@ -703,6 +691,7 @@
                 currentRoomId = id; document.getElementById('view-game').classList.remove('hidden');
                 ['xo','rps','penalty'].forEach(t => document.getElementById(`area-${t}`)?.classList.add('hidden'));
                 document.getElementById('game-active-area').classList.add('hidden'); document.getElementById('anime-result').classList.add('hidden');
+                document.getElementById('game-chat-area').classList.remove('hidden'); // Show Chat
                 if(unsubRoom) unsubRoom(); 
                 unsubRoom = db.collection('rooms').doc(id).onSnapshot(snap => {
                     if(!snap.exists) { Game.leave(); return; }
@@ -712,6 +701,13 @@
                     const isFull = r.players.length === 2;
                     document.getElementById('g-waiting').classList.toggle('hidden', isFull);
                     document.getElementById('g-playing').classList.toggle('hidden', !isFull);
+                    
+                    // Chat Update
+                    if(r.chat) {
+                        const cBox = document.getElementById('chat-container');
+                        cBox.innerHTML = r.chat.map(c => `<div class="chat-msg ${c.uid===currentUser.uid?'msg-me':'msg-other'}"><b>${c.name}:</b> ${c.msg}</div>`).join('');
+                        cBox.scrollTop = cBox.scrollHeight;
+                    }
 
                     if(isFull) {
                         const p1 = r.players[0], p2 = r.players[1]; const isMeP1 = currentUser.uid === p1;
@@ -757,6 +753,15 @@
             showResult: (win) => { const el=document.getElementById('anime-result'), txt=document.getElementById('anime-text'); el.classList.remove('hidden'); el.style.display='flex'; txt.innerText = win ? "ชนะ!" : "แพ้!"; txt.style.color = win ? "#facc15" : "#f87171"; },
             handleTimer: (start, dur, cb) => { const box=document.getElementById('timer-box'), bar=document.getElementById('timer-bar'); box.classList.remove('hidden'); if(gameInterval) clearInterval(gameInterval); gameInterval = setInterval(() => { const diff=(Date.now()-start)/1000, rem=dur-diff; if(rem<=0) { clearInterval(gameInterval); gameInterval=null; cb(); } else { bar.style.width = (rem/dur)*100 + '%'; } }, 100); },
             
+            sendChat: () => {
+                const msg = document.getElementById('chat-msg').value;
+                if(!msg) return;
+                db.collection('rooms').doc(currentRoomId).update({
+                    chat: firebase.firestore.FieldValue.arrayUnion({ uid: currentUser.uid, name: userDoc.nickname, msg: msg, time: Date.now() })
+                });
+                document.getElementById('chat-msg').value = '';
+            },
+
             renderXO: (r) => {
                 const b=document.getElementById('xo-board'); b.innerHTML=''; const board=r.board||Array(9).fill(null);
                 const isTurn=r.currentTurn?r.currentTurn===currentUser.uid:currentUser.uid===r.players[0];
