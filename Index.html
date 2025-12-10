@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#050b14">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>ZONE. | อาณาจักรเดิมพัน</title>
+    <title>ZONE. | SUPERIOR GAMING</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -52,8 +52,7 @@
                         'marquee': 'marquee 30s linear infinite', 
                         'pulse-glow': 'pulseGlow 2s infinite', 
                         'bounce-in': 'bounceIn 0.5s cubic-bezier(0.8, -0.6, 0.2, 1.5) forwards',
-                        'float': 'float 4s ease-in-out infinite',
-                        'spin-slow': 'spin 8s linear infinite'
+                        'float': 'float 4s ease-in-out infinite'
                     },
                     keyframes: {
                         marquee: { '0%': { transform: 'translateX(100%)' }, '100%': { transform: 'translateX(-100%)' } },
@@ -80,75 +79,71 @@
         /* --- BACKGROUND ANIMATIONS --- */
         .bg-cyber { 
             position: fixed; inset: 0; z-index: -2; 
-            background: radial-gradient(circle at 50% -20%, #4c1d95 0%, #050b14 70%); 
+            background: radial-gradient(circle at 50% 0%, #312e81 0%, #050b14 80%); 
         }
         .bg-grid { 
             position: fixed; inset: 0; z-index: -1; 
-            background-image: linear-gradient(rgba(217, 70, 239, 0.03) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(217, 70, 239, 0.03) 1px, transparent 1px); 
+            background-image: linear-gradient(rgba(236, 72, 153, 0.03) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(236, 72, 153, 0.03) 1px, transparent 1px); 
             background-size: 40px 40px; 
             mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-        }
-        #particle-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
         }
         
         /* --- GLASSMORPHISM COMPONENTS --- */
         .glass-card { 
-            background: linear-gradient(180deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.95)); 
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95)); 
             backdrop-filter: blur(16px); 
             border: 1px solid rgba(255, 255, 255, 0.08); 
-            border-radius: 20px; 
+            border-radius: 24px; 
             transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
-        .glass-card:active {
-            transform: scale(0.98);
+        .glass-card:hover {
+            border-color: rgba(236, 72, 153, 0.5);
+            transform: translateY(-2px);
         }
         .glass-nav { 
-            background: rgba(15, 23, 42, 0.9); 
+            background: rgba(15, 23, 42, 0.95); 
             backdrop-filter: blur(20px); 
             border-bottom: 1px solid rgba(255,255,255,0.05); 
         }
         
         /* --- BOTTOM NAVIGATION --- */
         .bottom-nav { 
-            position: fixed; bottom: 0; left: 0; right: 0; height: 85px; 
-            background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(20px); 
-            border-top: 1px solid rgba(217, 70, 239, 0.2); 
+            position: fixed; bottom: 0; left: 0; right: 0; height: 80px; 
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); 
+            border-top: 1px solid rgba(255,255,255,0.05); 
             display: flex; justify-content: space-around; align-items: center; 
             z-index: 50; padding-bottom: 15px; 
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
         }
         .nav-item { 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            color: #64748b; font-size: 0.75rem; transition: 0.3s; width: 100%; height: 100%; cursor: pointer;
+            color: #64748b; font-size: 0.7rem; transition: 0.3s; width: 100%; height: 100%; cursor: pointer;
         }
-        .nav-item i { font-size: 1.6rem; margin-bottom: 4px; transition: 0.3s; }
+        .nav-item i { font-size: 1.5rem; margin-bottom: 4px; transition: 0.3s; }
         .nav-item span { font-weight: 500; }
-        .nav-item.active { color: #d946ef; }
-        .nav-item.active i { transform: translateY(-5px); filter: drop-shadow(0 0 10px #d946ef); }
+        .nav-item.active { color: #ec4899; }
+        .nav-item.active i { transform: translateY(-5px); filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.6)); }
 
         /* --- INPUTS & BUTTONS --- */
         .input-cyber { 
-            width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid #4c1d95; 
-            padding: 16px 20px; border-radius: 14px; color: white; outline: none; transition: 0.3s; 
-            font-size: 1rem;
+            width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid #334155; 
+            padding: 14px 20px; border-radius: 12px; color: white; outline: none; transition: 0.3s; 
         }
-        .input-cyber:focus { border-color: #d946ef; background: rgba(217, 70, 239, 0.05); box-shadow: 0 0 15px rgba(217, 70, 239, 0.1); }
+        .input-cyber:focus { border-color: #ec4899; background: rgba(236, 72, 153, 0.05); box-shadow: 0 0 15px rgba(236, 72, 153, 0.1); }
         
         .btn-gradient { 
-            background: linear-gradient(135deg, #d946ef, #8b5cf6); color: white; font-weight: 800; 
-            border-radius: 14px; box-shadow: 0 4px 20px rgba(217, 70, 239, 0.3); transition: 0.3s; 
-            text-transform: uppercase; letter-spacing: 0.5px; position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; font-weight: 700; 
+            border-radius: 14px; box-shadow: 0 4px 20px rgba(236, 72, 153, 0.3); transition: 0.3s; 
+            position: relative; overflow: hidden; text-transform: uppercase;
         }
+        .btn-gradient:active { transform: scale(0.97); }
         .btn-gradient::after {
             content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
             transition: 0.5s;
         }
         .btn-gradient:hover::after { left: 100%; }
-        .btn-gradient:active { transform: scale(0.97); }
 
         /* --- FULL PAGE OVERLAYS --- */
         .full-page { 
@@ -167,13 +162,13 @@
             max-width: 320px; margin: 0 auto; 
         }
         .xo-cell { 
-            height: 95px; background: rgba(255,255,255,0.05); border-radius: 16px; 
+            height: 95px; background: rgba(255,255,255,0.03); border-radius: 16px; 
             display: flex; align-items: center; justify-content: center; font-size: 3.5rem; 
             font-weight: 900; cursor: pointer; transition: 0.2s; border: 2px solid transparent; 
         }
-        .xo-cell:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
-        .xo-cell.X { color: #d946ef; text-shadow: 0 0 20px rgba(217, 70, 239, 0.6); }
-        .xo-cell.O { color: #22d3ee; text-shadow: 0 0 20px rgba(34, 211, 238, 0.6); }
+        .xo-cell:hover { background: rgba(255,255,255,0.08); }
+        .xo-cell.X { color: #ec4899; text-shadow: 0 0 20px rgba(236, 72, 153, 0.6); }
+        .xo-cell.O { color: #3b82f6; text-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
         .xo-cell.win { background: rgba(16, 185, 129, 0.2); border-color: #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
 
         /* --- GAME: RPS (ROCK PAPER SCISSORS) --- */
@@ -182,29 +177,29 @@
             border: 2px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; 
             font-size: 3rem; cursor: pointer; transition: all 0.3s; 
         }
-        .rps-btn:hover { transform: scale(1.1); background: rgba(255, 255, 255, 0.1); border-color: #d946ef; }
+        .rps-btn:hover { transform: scale(1.1); background: rgba(236, 72, 153, 0.1); border-color: #ec4899; }
         .rps-btn.selected { 
             border-color: #fbbf24; background: rgba(251, 191, 36, 0.2); 
             box-shadow: 0 0 30px rgba(251, 191, 36, 0.4); transform: scale(1.15); 
         }
 
-        /* --- GAME: PENALTY (NEW FIXED DESIGN) --- */
+        /* --- GAME: PENALTY (FIXED IN-FRAME DESIGN) --- */
         .penalty-wrapper {
             position: relative;
             width: 100%;
-            height: 300px; /* Fixed height for consistency */
+            height: 350px; /* เพิ่มความสูงให้พอดีกับปุ่ม */
             margin-bottom: 20px;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 2px solid #34d399;
+            box-shadow: 0 0 30px rgba(52, 211, 153, 0.3);
         }
 
         .penalty-scene { 
             perspective: 800px; 
             width: 100%; height: 100%; 
-            position: relative; 
-            overflow: hidden; 
+            position: absolute; top: 0; left: 0;
             background: radial-gradient(circle at center, #1e293b 0%, #064e3b 80%); 
-            border-radius: 20px; 
-            border: 2px solid #34d399;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
         }
 
         /* สนามหญ้า */
@@ -216,7 +211,7 @@
 
         /* เสาประตู */
         .goal-post { 
-            position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); 
+            position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); 
             width: 220px; height: 120px; 
             border-top: 8px solid #e2e8f0; 
             border-left: 8px solid #e2e8f0; 
@@ -237,7 +232,7 @@
 
         /* ผู้รักษาประตู */
         .keeper { 
-            position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); 
+            position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); 
             font-size: 4rem; 
             transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); 
             z-index: 5; 
@@ -246,37 +241,34 @@
 
         /* ลูกบอล */
         .soccer-ball { 
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); 
+            position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); 
             font-size: 2.5rem; 
             transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
             z-index: 20; 
             filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
         }
 
-        /* ปุ่มเลือกทิศทาง */
+        /* ปุ่มเลือกทิศทาง (Overlay ทับในสนาม) */
         .penalty-controls {
-            display: grid; 
-            grid-template-columns: 1fr 1fr 1fr; 
-            gap: 10px; 
-            margin-top: 10px;
+            position: absolute; bottom: 15px; left: 0; width: 100%;
+            display: flex; justify-content: center; gap: 10px; z-index: 50;
+            padding: 0 20px;
         }
         .penalty-btn {
-            background: rgba(255,255,255,0.05); 
-            border: 1px solid rgba(255,255,255,0.2); 
-            padding: 15px; 
+            background: rgba(0, 0, 0, 0.6); 
+            border: 2px solid rgba(255,255,255,0.3); 
+            flex: 1; padding: 15px 0; 
             border-radius: 12px; 
-            font-weight: bold; 
+            font-weight: 800; 
             text-align: center;
-            transition: 0.2s; 
-            cursor: pointer; 
-            color: #e2e8f0;
-            text-transform: uppercase;
-            font-size: 0.8rem;
+            transition: 0.2s; cursor: pointer; 
+            color: white; text-transform: uppercase;
+            font-size: 1rem; backdrop-filter: blur(5px);
         }
-        .penalty-btn:hover { background: rgba(217, 70, 239, 0.2); color: white; transform: translateY(-2px); border-color: #d946ef; }
+        .penalty-btn:hover { background: rgba(236, 72, 153, 0.8); transform: translateY(-5px); border-color: #ec4899; box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4); }
         .penalty-btn:active { transform: scale(0.95); }
 
-        /* --- MODALS & POPUPS --- */
+        /* --- MODALS & BADGES --- */
         .anime-overlay { 
             position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
             z-index: 100; display: none; align-items: center; justify-content: center; 
@@ -285,31 +277,23 @@
         .anime-text { 
             font-size: 5rem; font-weight: 900; color: white; 
             text-transform: uppercase; font-style: italic; 
-            text-shadow: 0 0 30px #d946ef; animation: bounceIn 0.6s; 
+            text-shadow: 0 0 30px #ec4899; animation: bounceIn 0.6s; 
         }
-        
         .ready-badge { padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
         .is-ready { background: #10b981; color: #064e3b; box-shadow: 0 0 10px #10b981; }
         .not-ready { background: #334155; color: #94a3b8; border: 1px solid #475569; }
-        
-        .modal-box { 
-            background: #1e293b; width: 90%; max-width: 400px; 
-            padding: 30px; border-radius: 24px; 
-            border: 1px solid rgba(217, 70, 239, 0.3); 
-            animation: zoomIn 0.3s; position: relative; 
-            box-shadow: 0 0 60px rgba(0,0,0,0.7); 
-        }
+        .modal-box { background: #1e293b; width: 90%; max-width: 400px; padding: 30px; border-radius: 24px; border: 1px solid rgba(236, 72, 153, 0.3); animation: zoomIn 0.3s; position: relative; box-shadow: 0 0 60px rgba(0,0,0,0.7); }
     </style>
 </head>
 <body>
 
-    <canvas id="particle-canvas"></canvas>
     <div class="bg-cyber"></div>
+    <div class="bg-grid"></div>
 
     <div id="maintenance-view" class="fixed inset-0 z-[9999] bg-[#050b14] flex flex-col items-center justify-center hidden">
         <i class="fa-solid fa-triangle-exclamation text-8xl text-pink-500 mb-6 animate-pulse"></i>
         <h1 class="text-6xl font-black font-display text-white mb-2 tracking-tighter">ปิดปรับปรุง</h1>
-        <p class="text-pink-300 font-bold text-lg">กำลังอัปเกรดระบบเพื่อความมันส์ที่มากกว่า!</p>
+        <p class="text-pink-300 font-bold text-lg">ระบบกำลังอัปเกรดเซิร์ฟเวอร์ โปรดรอสักครู่</p>
     </div>
 
     <div id="modal-news" class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center backdrop-blur-sm hidden">
@@ -328,10 +312,7 @@
     <div id="view-auth" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[#050b14] hidden">
         <div class="w-full max-w-sm glass-card p-10 shadow-2xl animate__animated animate__zoomIn">
             <div class="text-center mb-10">
-                <div class="inline-block relative animate-float">
-                    <div class="absolute inset-0 bg-pink-500 blur-3xl opacity-30"></div>
-                    <h1 class="text-7xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 relative z-10 drop-shadow-lg">ZONE.</h1>
-                </div>
+                <h1 class="text-7xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 relative z-10 drop-shadow-lg">ZONE.</h1>
                 <p class="text-pink-300 text-xs font-bold tracking-[0.5em] uppercase mt-4">อาณาจักรเดิมพันออนไลน์</p>
             </div>
             
@@ -584,13 +565,13 @@
                                         <div class="keeper" id="pen-keeper">🧤</div>
                                     </div>
                                     <div class="soccer-ball" id="pen-ball">⚽</div>
+                                    
+                                    <div class="penalty-controls">
+                                        <button onclick="Game.movePenalty('left')" class="penalty-btn">ซ้าย</button>
+                                        <button onclick="Game.movePenalty('center')" class="penalty-btn">กลาง</button>
+                                        <button onclick="Game.movePenalty('right')" class="penalty-btn">ขวา</button>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="grid grid-cols-3 gap-3 mt-4">
-                                <button onclick="Game.movePenalty('left')" class="penalty-btn">ซ้าย</button>
-                                <button onclick="Game.movePenalty('center')" class="penalty-btn">กลาง</button>
-                                <button onclick="Game.movePenalty('right')" class="penalty-btn">ขวา</button>
                             </div>
                         </div>
 
@@ -602,41 +583,6 @@
     </div>
 
     <script>
-        // === PARTICLE SYSTEM ===
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        let particles = [];
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = Math.random() * 0.5 - 0.25;
-                this.speedY = Math.random() * 0.5 - 0.25;
-                this.color = `rgba(236, 72, 153, ${Math.random() * 0.5})`;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY;
-                if(this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                if(this.y > canvas.height || this.y < 0) this.speedY *= -1;
-            }
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-        function initParticles() { for(let i=0; i<50; i++) particles.push(new Particle()); }
-        function animateParticles() {
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animateParticles);
-        }
-        initParticles(); animateParticles();
-
         // === FIREBASE CONFIG ===
         const firebaseConfig = { apiKey: "AIzaSyAHAkBhypqyJuuL22tLrFKN7ZqdEsqGDTk", authDomain: "rsdm-9ca2a.firebaseapp.com", projectId: "rsdm-9ca2a", storageBucket: "rsdm-9ca2a.firebasestorage.app", messagingSenderId: "299212700124", appId: "1:299212700124:web:730160dae6bb1b09cbb719", measurementId: "G-CMX9GKW7FF" };
         firebase.initializeApp(firebaseConfig);
@@ -733,17 +679,16 @@
                     const l=document.getElementById('history-list'); const docs = s.docs.map(d=>d.data()).sort((a,b)=>(b.timestamp?.seconds||0)-(a.timestamp?.seconds||0)).slice(0,20);
                     if(docs.length===0){l.innerHTML='<tr><td colspan="3" class="p-8 text-center text-slate-500">ไม่มีข้อมูล</td></tr>';return;}
                     l.innerHTML = docs.map(t => {
-                        const color = t.amount>0?'text-emerald-400':'text-red-400';
+                        const color = t.amount>0?'text-green-400':'text-red-400';
                         return `<tr class="border-b border-white/5 hover:bg-white/5 transition"><td class="p-5"><div class="font-bold text-white text-xs">${t.type}</div></td><td class="p-5 text-right font-mono font-bold ${color}">${t.amount>0?'+':''}${t.amount}</td><td class="p-5 text-right text-[10px] text-slate-500">${t.timestamp?new Date(t.timestamp.toDate()).toLocaleTimeString():'-'}</td></tr>`;
                     }).join('');
                 });
             }
         };
 
-        // === GAME ENGINE (FIXED) ===
+        // === GAME ENGINE ===
         const Game = {
             loadLobby: () => {
-                // Client Sort for Rooms
                 db.collection('rooms').onSnapshot(s => { 
                     allRooms=[]; s.forEach(d => allRooms.push({id:d.id, ...d.data()})); 
                     allRooms.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
@@ -757,7 +702,7 @@
                 if(!filtered.length) { list.innerHTML = `<div class="col-span-full py-20 text-center text-slate-500 text-sm">ไม่พบห้อง (รอแอดมินสร้าง)</div>`; return; }
                 list.innerHTML = filtered.map(r => {
                     const isFull = r.players.length >= 2;
-                    const typeMap = {'xo':'XO', 'rps':'เป่ายิงฉุบ', 'cup':'ยิงจุดโทษ'};
+                    const typeMap = {'xo':'XO', 'rps':'เป่ายิงฉุบ', 'cup':'ยิงลูกโทษ'};
                     const typeIcon = r.gameType==='cup'?'⚽':(r.gameType==='xo'?'❌':'✊');
                     const betDisplay = r.betAmount === 0 ? '<span class="text-emerald-400 font-bold text-xs bg-emerald-900/30 px-2 py-0.5 rounded shadow">ซ้อมมือ</span>' : `฿${r.betAmount}`;
                     return `<div onclick="Game.join('${r.id}', ${r.betAmount}, '${r.password}')" class="glass-card p-6 cursor-pointer relative overflow-hidden group hover:border-pink-500 transition shadow-lg"><div class="absolute -right-5 -top-5 text-8xl opacity-5 group-hover:opacity-10 transition duration-500">${typeIcon}</div><div class="flex justify-between items-start mb-4 relative z-10"><div><span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-white/5 font-bold mb-1 inline-block uppercase tracking-wider">${typeMap[r.gameType]||'GAME'}</span><h3 class="text-xl font-black text-white truncate w-48 leading-tight font-display italic">${r.roomName}</h3></div><span class="font-mono font-bold text-xl text-yellow-400 drop-shadow-md">${betDisplay}</span></div><div class="flex justify-between items-center text-xs text-slate-400 relative z-10 border-t border-white/5 pt-3 mt-1"><span><i class="fa-solid fa-trophy text-yellow-500 mr-1"></i> ชนะ ${r.maxWins} ตา</span><span class="${isFull?'text-red-400':'text-emerald-400'} font-bold flex items-center gap-1 bg-black/30 px-2 py-1 rounded-full"><i class="fa-solid fa-users"></i> ${r.players.length}/2</span></div></div>`;
@@ -782,21 +727,26 @@
                     if(!snap.exists) { Game.leave(); return; }
                     const r = snap.data();
                     document.getElementById('g-room-name').innerText = r.roomName; document.getElementById('g-bet-badge').innerText = r.betAmount === 0 ? 'DEMO' : `BET: ${r.betAmount}`; document.getElementById('g-pass').innerText = r.password || 'ไม่มี';
+
                     const isFull = r.players.length === 2;
-                    document.getElementById('g-waiting').classList.toggle('hidden', isFull); document.getElementById('g-playing').classList.toggle('hidden', !isFull);
+                    document.getElementById('g-waiting').classList.toggle('hidden', isFull);
+                    document.getElementById('g-playing').classList.toggle('hidden', !isFull);
+
                     if(isFull) {
                         const p1 = r.players[0], p2 = r.players[1]; const isMeP1 = currentUser.uid === p1;
                         document.getElementById('p1-name').innerText = isMeP1 ? (r.playerNames?.[p1]||"Me") : (r.playerNames?.[p2]||"Enemy");
                         document.getElementById('p2-name').innerText = isMeP1 ? (r.playerNames?.[p2]||"Enemy") : (r.playerNames?.[p1]||"Me");
                         document.getElementById('p1-score').innerText = isMeP1 ? (r.scores?.[p1]||0) : (r.scores?.[p2]||0);
                         document.getElementById('p2-score').innerText = isMeP1 ? (r.scores?.[p2]||0) : (r.scores?.[p1]||0);
+
                         const r1 = r.readyStatus?.[p1], r2 = r.readyStatus?.[p2], myR = isMeP1 ? r1 : r2, enR = isMeP1 ? r2 : r1;
-                        document.getElementById('p1-ready-badge').innerText = myR ? "พร้อม!" : "รอ"; document.getElementById('p1-ready-badge').className = `ready-badge ${myR?'is-ready':'not-ready'} mx-auto w-max mb-2`;
-                        document.getElementById('p2-ready-badge').innerText = enR ? "พร้อม!" : "รอ"; document.getElementById('p2-ready-badge').className = `ready-badge ${enR?'is-ready':'not-ready'} mx-auto w-max mb-2`;
-                        
+                        const setBadge=(el,rd)=>{ el.innerText=rd?"พร้อม!":"รอ..."; el.className=`ready-badge ${rd?'is-ready':'not-ready'} mx-auto w-max mb-2 shadow-lg transition-all`; }
+                        setBadge(document.getElementById('p1-ready-badge'), myR); setBadge(document.getElementById('p2-ready-badge'), enR);
+
                         if(r1 && r2) {
                             document.getElementById('ready-section').classList.add('hidden'); document.getElementById('game-active-area').classList.remove('hidden'); 
                             const targetArea = type === 'cup' ? 'penalty' : type; document.getElementById(`area-${targetArea}`).classList.remove('hidden');
+                            
                             const s1 = r.scores?.[p1]||0, s2 = r.scores?.[p2]||0;
                             if(s1 >= r.maxWins || s2 >= r.maxWins) {
                                 const w=s1>s2?p1:p2, isWin=w===currentUser.uid;
