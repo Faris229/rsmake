@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#050b14">
+    <meta name="theme-color" content="#030014">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>EA STUDIO | MOBILE</title>
+    <title>EA STUDIO | NEXT GEN</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Kanit:wght@200;300;400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -22,28 +22,27 @@
             theme: {
                 extend: {
                     fontFamily: { 
-                        sans: ['Kanit', 'sans-serif'], 
+                        sans: ['Plus Jakarta Sans', 'sans-serif'], 
                         code: ['JetBrains Mono', 'monospace'],
                         display: ['Orbitron', 'sans-serif']
                     },
                     colors: { 
                         brand: { 
-                            bg: '#050b14', 
-                            card: '#11111b',
-                            primary: '#d946ef', 
-                            secondary: '#8b5cf6',
-                            success: '#22c55e',
-                            warning: '#eab308',
-                            danger: '#ef4444'
+                            bg: '#030014', 
+                            card: 'rgba(30, 27, 75, 0.4)',
+                            border: 'rgba(139, 92, 246, 0.3)',
+                            accent: '#8b5cf6', // Violet
+                            primary: '#ec4899', // Pink
+                            secondary: '#06b6d4', // Cyan
                         } 
                     },
                     animation: { 
-                        'pulse-glow': 'pulseGlow 2s infinite',
-                        'slide-up': 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                        'blob': 'blob 7s infinite',
+                        'float': 'float 6s ease-in-out infinite'
                     },
                     keyframes: {
-                        pulseGlow: { '0%, 100%': { boxShadow: '0 0 5px #d946ef' }, '50%': { boxShadow: '0 0 20px #d946ef' } },
-                        slideUp: { '0%': { transform: 'translateY(100%)' }, '100%': { transform: 'translateY(0)' } }
+                        blob: { '0%': { transform: 'translate(0px, 0px) scale(1)' }, '33%': { transform: 'translate(30px, -50px) scale(1.1)' }, '66%': { transform: 'translate(-20px, 20px) scale(0.9)' }, '100%': { transform: 'translate(0px, 0px) scale(1)' } },
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } }
                     }
                 }
             }
@@ -51,243 +50,313 @@
     </script>
 
     <style>
-        /* --- CORE STYLES --- */
         body { 
-            background-color: #050b14; 
+            background-color: #030014; 
             color: #e2e8f0; 
             overflow-x: hidden; 
             -webkit-tap-highlight-color: transparent;
-            padding-bottom: 20px;
         }
 
-        /* --- BACKGROUND --- */
-        .bg-cyber { position: fixed; inset: 0; z-index: -2; background: radial-gradient(circle at 50% 0%, #2e1065 0%, #050b14 70%); }
-        .bg-grid { 
-            position: fixed; inset: 0; z-index: -1; 
-            background-image: linear-gradient(rgba(217, 70, 239, 0.03) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(217, 70, 239, 0.03) 1px, transparent 1px); 
-            background-size: 40px 40px; 
+        /* --- BACKGROUND FX --- */
+        .bg-gradient-mesh {
+            position: fixed; inset: 0; z-index: -2;
+            background: 
+                radial-gradient(at 0% 0%, rgba(76, 29, 149, 0.4) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.4) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.4) 0px, transparent 50%);
+            filter: blur(100px);
+        }
+        .bg-grid-pattern {
+            position: fixed; inset: 0; z-index: -1;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
             mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
         }
 
-        /* --- GLASS UI --- */
-        .glass-card { 
-            background: linear-gradient(160deg, rgba(30, 41, 59, 0.6), rgba(17, 17, 27, 0.95)); 
-            backdrop-filter: blur(16px); 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            border-radius: 20px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
+        /* --- GLASS COMPONENTS --- */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
-        .glass-card:active { transform: scale(0.98); }
+        
+        .glass-card {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.6) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; overflow: hidden;
+        }
+        .glass-card::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
+            transform: translateX(-100%); transition: 0.5s;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 10px 40px -10px rgba(139, 92, 246, 0.3);
+        }
+        .glass-card:hover::before { transform: translateX(100%); }
 
-        .glass-nav { 
-            background: rgba(5, 11, 20, 0.9); 
-            backdrop-filter: blur(20px); 
-            border-bottom: 1px solid rgba(255,255,255,0.05); 
+        /* --- INPUTS --- */
+        .input-modern {
+            width: 100%; background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 20px; border-radius: 16px;
+            color: white; font-size: 1rem; outline: none;
+            transition: 0.3s;
         }
-
-        /* --- FORMS --- */
-        .input-cyber { 
-            width: 100%; background: rgba(0, 0, 0, 0.4); 
-            border: 1px solid #334155; padding: 16px; 
-            border-radius: 14px; color: white; outline: none; transition: 0.3s;
-            font-size: 1rem;
-        }
-        .input-cyber:focus { 
-            border-color: #d946ef; 
-            background: rgba(217, 70, 239, 0.05); 
-            box-shadow: 0 0 15px rgba(217, 70, 239, 0.15); 
+        .input-modern:focus {
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.05);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
         }
 
         /* --- BUTTONS --- */
-        .btn-gradient { 
-            background: linear-gradient(135deg, #d946ef, #8b5cf6); 
-            color: white; font-weight: 700; border-radius: 14px; 
-            box-shadow: 0 4px 15px rgba(217, 70, 239, 0.3); 
-            transition: 0.3s; position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white; font-weight: 700; border-radius: 16px;
+            padding: 16px; width: 100%; text-align: center;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+            transition: 0.3s; cursor: pointer;
+            position: relative; overflow: hidden;
         }
-        .btn-gradient:active { transform: scale(0.96); }
-
-        /* --- EDITOR --- */
-        .full-page-editor {
-            position: fixed; inset: 0; z-index: 100;
-            background: #050b14; display: none; flex-direction: column;
+        .btn-primary:active { transform: scale(0.98); }
+        
+        .btn-icon {
+            width: 45px; height: 45px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s; cursor: pointer;
         }
-        .full-page-editor.active { display: flex; animation: slide-up 0.3s forwards; }
+        .btn-icon:hover { background: rgba(255,255,255,0.1); transform: scale(1.1); }
 
-        .code-area {
-            flex: 1;
-            background-color: #1a1a1a;
-            color: #d4d4d4;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
-            padding: 20px;
-            border: none;
-            outline: none;
-            resize: none;
-            line-height: 1.6;
+        /* --- NAVIGATION --- */
+        .nav-dock {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 400px; height: 70px;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px; display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 50;
+        }
+        .nav-item {
+            color: #64748b; font-size: 1.5rem; transition: 0.3s;
+            width: 50px; height: 50px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nav-item.active {
+            color: white; background: linear-gradient(135deg, #6366f1, #a855f7);
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4); transform: translateY(-10px);
         }
 
         /* --- STATUS BADGES --- */
-        .status-radio { display: none; }
-        .status-label {
-            padding: 10px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
-            color: #94a3b8; font-size: 0.8rem; font-weight: bold; cursor: pointer;
-            transition: 0.2s; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center;
-        }
-        .status-radio:checked + .status-label.st-work { background: rgba(34, 197, 94, 0.2); border-color: #22c55e; color: #22c55e; box-shadow: 0 0 10px rgba(34,197,94,0.2); }
-        .status-radio:checked + .status-label.st-test { background: rgba(234, 179, 8, 0.2); border-color: #eab308; color: #eab308; box-shadow: 0 0 10px rgba(234,179,8,0.2); }
-        .status-radio:checked + .status-label.st-bug { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ef4444; box-shadow: 0 0 10px rgba(239,68,68,0.2); }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .st-ok { color: #4ade80; background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.2); }
+        .st-test { color: #facc15; background: rgba(250, 204, 21, 0.1); border: 1px solid rgba(250, 204, 21, 0.2); }
+        .st-bug { color: #f87171; background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.2); }
+        .badge { padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .badge-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
-        .dot-green { background: #22c55e; box-shadow: 0 0 5px #22c55e; }
-        .dot-yellow { background: #eab308; box-shadow: 0 0 5px #eab308; }
-        .dot-red { background: #ef4444; box-shadow: 0 0 5px #ef4444; }
-
-        /* --- FAB --- */
-        .fab {
-            position: fixed; bottom: 25px; right: 25px;
-            width: 65px; height: 65px;
-            background: linear-gradient(135deg, #d946ef, #8b5cf6);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 28px;
-            box-shadow: 0 10px 30px rgba(217, 70, 239, 0.5);
-            z-index: 50; animation: pulse-glow 3s infinite;
+        /* --- EDITOR --- */
+        .full-page-overlay {
+            position: fixed; inset: 0; background: #030014; z-index: 100;
+            display: none; flex-direction: column; opacity: 0; transition: 0.3s;
         }
+        .full-page-overlay.active { opacity: 1; display: flex; }
+        
+        .code-container {
+            background: #0d1117; border-radius: 16px; border: 1px solid #30363d;
+            flex: 1; display: flex; flex-direction: column; overflow: hidden;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .code-header { background: #161b22; padding: 8px 16px; border-bottom: 1px solid #30363d; display: flex; gap: 8px; }
+        .traffic-light { width: 12px; height: 12px; border-radius: 50%; }
+        .code-input {
+            flex: 1; background: transparent; color: #c9d1d9; border: none; outline: none;
+            padding: 16px; resize: none; font-size: 14px; line-height: 1.6; tab-size: 4;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
     </style>
 </head>
 <body>
 
-    <div class="bg-cyber"></div>
-    <div class="bg-grid"></div>
+    <div class="bg-gradient-mesh"></div>
+    <div class="bg-grid-pattern"></div>
 
-    <div id="view-auth" class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-[#050b14]">
-        <div class="w-full max-w-sm glass-card p-8 animate__animated animate__zoomIn">
+    <div id="view-auth" class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-[#030014]/90 backdrop-blur-xl">
+        <div class="w-full max-w-sm glass-panel p-8 rounded-3xl animate__animated animate__zoomIn border border-white/10 shadow-2xl">
             <div class="text-center mb-8">
-                <h1 class="text-5xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 mb-2">EA STUDIO</h1>
-                <p class="text-slate-400 text-xs tracking-widest uppercase">Mobile Code Builder</p>
+                <div class="w-20 h-20 bg-gradient-to-tr from-violet-600 to-pink-600 rounded-2xl mx-auto flex items-center justify-center text-4xl text-white font-bold shadow-lg mb-4 animate-float">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+                <h1 class="text-4xl font-black font-display text-white tracking-wide">EA STUDIO</h1>
+                <p class="text-slate-400 text-sm mt-1">แพลตฟอร์มสร้างและเก็บโค้ดอัจฉริยะ</p>
             </div>
             
             <div id="login-form" class="space-y-4">
-                <input id="l-email" class="input-cyber" placeholder="อีเมล">
-                <input id="l-pass" type="password" class="input-cyber" placeholder="รหัสผ่าน">
-                <button onclick="Auth.login()" class="btn-gradient w-full py-4 text-lg mt-2">เข้าสู่ระบบ</button>
+                <div class="space-y-2">
+                    <label class="text-xs text-slate-400 ml-1">อีเมล</label>
+                    <input id="l-email" class="input-modern" placeholder="user@example.com">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs text-slate-400 ml-1">รหัสผ่าน</label>
+                    <input id="l-pass" type="password" class="input-modern" placeholder="••••••••">
+                </div>
+                <button onclick="Auth.login()" class="btn-primary mt-4">เข้าสู่ระบบ</button>
                 <div class="text-center pt-4">
-                    <button onclick="UI.toggleAuth('reg')" class="text-pink-400 text-sm font-bold">สมัครสมาชิกใหม่</button>
+                    <span class="text-slate-500 text-xs">ยังไม่มีบัญชี?</span>
+                    <button onclick="UI.toggleAuth('reg')" class="text-violet-400 text-xs font-bold hover:underline">สมัครสมาชิก</button>
                 </div>
             </div>
 
             <div id="reg-form" class="space-y-4 hidden">
-                <input id="r-nick" class="input-cyber" placeholder="ชื่อเล่น">
-                <input id="r-email" class="input-cyber" placeholder="อีเมล">
-                <input id="r-pass" type="password" class="input-cyber" placeholder="รหัสผ่าน (6+ ตัว)">
-                <button onclick="Auth.register()" class="btn-gradient w-full py-4 text-lg mt-2">ยืนยันการสมัคร</button>
-                <button onclick="UI.toggleAuth('log')" class="w-full text-slate-500 text-sm mt-2">ย้อนกลับ</button>
+                <div class="space-y-2">
+                    <label class="text-xs text-slate-400 ml-1">ชื่อเล่น (Display Name)</label>
+                    <input id="r-nick" class="input-modern" placeholder="เช่น Trader Joe">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs text-slate-400 ml-1">อีเมล</label>
+                    <input id="r-email" class="input-modern" placeholder="user@example.com">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs text-slate-400 ml-1">รหัสผ่าน (6 ตัวขึ้นไป)</label>
+                    <input id="r-pass" type="password" class="input-modern" placeholder="••••••••">
+                </div>
+                <button onclick="Auth.register()" class="btn-primary mt-4 from-pink-600 to-rose-600">สมัครสมาชิก</button>
+                <button onclick="UI.toggleAuth('log')" class="w-full text-slate-500 text-xs mt-2 hover:text-white">กลับไปหน้าล็อกอิน</button>
             </div>
         </div>
     </div>
 
     <div id="view-app" class="hidden flex flex-col h-screen">
         
-        <nav class="sticky top-0 z-40 glass-nav px-5 py-4 flex justify-between items-center shadow-lg">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center font-bold text-white text-xl">E</div>
-                <div>
-                    <div class="font-bold text-lg leading-none font-display text-white">MY BOTS</div>
-                    <div class="text-[10px] text-pink-400 font-bold" id="u-name-display">User</div>
+        <header class="pt-6 pb-2 px-6 flex justify-between items-center z-40">
+            <div>
+                <h1 class="text-2xl font-bold font-display text-white">MY PROJECTS</h1>
+                <p class="text-xs text-slate-400" id="u-welcome">ยินดีต้อนรับ, Guest</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="Admin.fixData()" class="btn-icon text-yellow-400 border-yellow-500/30 bg-yellow-500/10" title="ซ่อมข้อมูล"><i class="fa-solid fa-wrench"></i></button>
+                <button onclick="Auth.logout()" class="btn-icon text-red-400 border-red-500/30 bg-red-500/10"><i class="fa-solid fa-power-off"></i></button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto px-6 pb-32">
+            
+            <div class="flex gap-3 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+                <button onclick="BotSystem.filter('all')" class="px-5 py-2 rounded-full bg-white/10 text-xs font-bold text-white border border-white/10 hover:bg-white/20 transition whitespace-nowrap active-tab" id="filter-all">ทั้งหมด</button>
+                <button onclick="BotSystem.filter('working')" class="px-5 py-2 rounded-full bg-white/5 text-xs font-bold text-slate-400 border border-white/5 hover:text-green-400 transition whitespace-nowrap" id="filter-working">🟢 ใช้งานได้</button>
+                <button onclick="BotSystem.filter('testing')" class="px-5 py-2 rounded-full bg-white/5 text-xs font-bold text-slate-400 border border-white/5 hover:text-yellow-400 transition whitespace-nowrap" id="filter-testing">🟡 ทดสอบ</button>
+                <button onclick="BotSystem.filter('buggy')" class="px-5 py-2 rounded-full bg-white/5 text-xs font-bold text-slate-400 border border-white/5 hover:text-red-400 transition whitespace-nowrap" id="filter-buggy">🔴 มีบั๊ก</button>
+            </div>
+
+            <div id="bot-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="col-span-full py-20 text-center text-slate-500 animate-pulse">
+                    <i class="fa-solid fa-robot text-4xl mb-4 opacity-30"></i><br>กำลังเชื่อมต่อข้อมูล...
                 </div>
             </div>
-            <button onclick="Auth.logout()" class="w-10 h-10 rounded-lg bg-slate-800 text-red-400 flex items-center justify-center">
-                <i class="fa-solid fa-power-off"></i>
-            </button>
-        </nav>
 
-        <div class="px-5 pt-6 pb-2">
-            <div class="relative w-full">
-                <i class="fa-solid fa-search absolute left-4 top-4 text-slate-500"></i>
-                <input id="search-bot" onkeyup="BotSystem.filter()" class="input-cyber pl-12 py-3.5 text-sm w-full rounded-full shadow-inner bg-black/30" placeholder="ค้นหาชื่อบอท...">
-            </div>
-        </div>
-
-        <main class="flex-1 overflow-y-auto p-5 pb-24">
-            <div id="bot-list" class="grid grid-cols-1 gap-4">
-                <div class="py-20 text-center text-slate-500 animate-pulse">
-                    <i class="fa-solid fa-cloud-arrow-down text-4xl mb-4 opacity-30"></i><br>
-                    กำลังโหลดข้อมูล...
-                </div>
-            </div>
         </main>
 
-        <button onclick="UI.openEditor()" class="fab"><i class="fa-solid fa-plus"></i></button>
+        <div class="nav-dock">
+            <div class="nav-item active" onclick="BotSystem.filter('all')">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <div class="nav-item text-white bg-gradient-to-br from-violet-600 to-pink-600 rounded-full w-14 h-14 -mt-8 border-4 border-[#030014] shadow-lg shadow-purple-500/40 flex items-center justify-center" onclick="UI.openEditor()">
+                <i class="fa-solid fa-plus text-xl"></i>
+            </div>
+            <div class="nav-item" onclick="UI.openProfile()">
+                <i class="fa-solid fa-user"></i>
+            </div>
+        </div>
 
     </div>
 
-    <div id="view-editor" class="full-page-editor">
+    <div id="view-editor" class="full-page-overlay">
         
-        <div class="glass-nav px-5 py-4 flex justify-between items-center shrink-0 z-50">
-            <button onclick="UI.closeEditor()" class="text-slate-400 hover:text-white px-2">
-                <i class="fa-solid fa-chevron-left text-xl"></i>
+        <div class="px-6 py-4 flex justify-between items-center bg-[#030014]/90 backdrop-blur border-b border-white/5 sticky top-0 z-50">
+            <button onclick="UI.closeEditor()" class="text-slate-400 hover:text-white flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> กลับ
             </button>
-            <div class="font-bold text-lg text-white font-display">EDITOR</div>
-            <button onclick="BotSystem.copyCode()" class="text-pink-400 hover:text-white px-2">
-                <i class="fa-regular fa-copy text-xl"></i>
+            <div class="font-bold text-white font-display tracking-wider">EDITOR</div>
+            <button onclick="BotSystem.save()" class="text-green-400 font-bold hover:text-green-300">
+                <i class="fa-solid fa-check mr-1"></i> บันทึก
             </button>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-5 pb-32">
+        <div class="p-6 pb-32 flex flex-col gap-6 flex-1">
             <input type="hidden" id="edit-id">
-
-            <div class="mb-5">
-                <label class="text-xs text-slate-400 ml-2 mb-1 block">ชื่อโปรเจกต์</label>
-                <input id="bot-name" class="input-cyber text-lg font-bold" placeholder="ตั้งชื่อบอท...">
-            </div>
-
-            <div class="mb-5">
-                <label class="text-xs text-slate-400 ml-2 mb-2 block">สถานะการใช้งาน</label>
-                <div class="flex gap-2 w-full">
-                    <input type="radio" name="bot-status" value="working" id="st-work" class="status-radio" checked>
-                    <label for="st-work" class="status-label st-work"><i class="fa-solid fa-check-circle"></i> ใช้งานได้</label>
-
-                    <input type="radio" name="bot-status" value="testing" id="st-test" class="status-radio">
-                    <label for="st-test" class="status-label st-test"><i class="fa-solid fa-vial"></i> ทดสอบ</label>
-
-                    <input type="radio" name="bot-status" value="buggy" id="st-bug" class="status-radio">
-                    <label for="st-bug" class="status-label st-bug"><i class="fa-solid fa-bug"></i> มีบั๊ก</label>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-slate-400 ml-1 mb-1 block">ชื่อโปรเจกต์</label>
+                    <input id="bot-name" class="input-modern text-lg font-bold" placeholder="ตั้งชื่อบอท...">
+                </div>
+                
+                <div>
+                    <label class="text-xs text-slate-400 ml-1 mb-2 block">สถานะ</label>
+                    <div class="flex gap-2">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="status" value="working" class="peer sr-only" checked>
+                            <div class="text-center py-2 rounded-xl border border-white/10 peer-checked:bg-green-500/20 peer-checked:border-green-500 peer-checked:text-green-400 text-xs font-bold transition text-slate-500">
+                                ใช้งานได้
+                            </div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="status" value="testing" class="peer sr-only">
+                            <div class="text-center py-2 rounded-xl border border-white/10 peer-checked:bg-yellow-500/20 peer-checked:border-yellow-500 peer-checked:text-yellow-400 text-xs font-bold transition text-slate-500">
+                                ทดสอบ
+                            </div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="status" value="buggy" class="peer sr-only">
+                            <div class="text-center py-2 rounded-xl border border-white/10 peer-checked:bg-red-500/20 peer-checked:border-red-500 peer-checked:text-red-400 text-xs font-bold transition text-slate-500">
+                                มีบั๊ก
+                            </div>
+                        </label>
+                    </div>
                 </div>
             </div>
 
-            <div class="flex flex-col h-[500px] border border-slate-700 rounded-2xl overflow-hidden shadow-2xl">
-                <div class="bg-[#1e1e1e] px-4 py-2 text-xs text-slate-500 font-mono border-b border-slate-700 flex justify-between">
-                    <span>source.mq4</span>
-                    <span>UTF-8</span>
+            <div class="flex-1 flex flex-col">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-xs text-violet-400 font-bold ml-1">SOURCE CODE</label>
+                    <button onclick="BotSystem.copyCode()" class="text-[10px] bg-white/10 px-2 py-1 rounded text-white hover:bg-white/20"><i class="fa-regular fa-copy"></i> คัดลอก</button>
                 </div>
-                <textarea id="code-input" class="code-area custom-scrollbar" placeholder="// พิมพ์โค้ดของคุณที่นี่..."></textarea>
+                <div class="code-container shadow-2xl">
+                    <div class="code-header">
+                        <div class="traffic-light bg-red-500"></div>
+                        <div class="traffic-light bg-yellow-500"></div>
+                        <div class="traffic-light bg-green-500"></div>
+                    </div>
+                    <textarea id="code-input" class="code-input custom-scrollbar" placeholder="// เขียนโค้ดของคุณที่นี่..."></textarea>
+                </div>
             </div>
-
-            <button id="btn-delete" onclick="BotSystem.delete()" class="w-full mt-8 py-3 text-red-500 text-sm font-bold border border-red-500/30 rounded-xl hidden">
-                <i class="fa-solid fa-trash-can mr-2"></i> ลบโปรเจกต์นี้
+            
+            <button id="btn-delete" onclick="BotSystem.delete()" class="w-full py-3 text-red-500 text-sm font-bold border border-red-500/30 rounded-xl bg-red-500/5 hidden">
+                ลบโปรเจกต์นี้
             </button>
         </div>
-
-        <div class="absolute bottom-0 left-0 right-0 bg-[#0f172a]/95 backdrop-blur-md p-5 border-t border-white/10 z-50 flex gap-3">
-            <button onclick="document.getElementById('code-input').value=''" class="px-6 py-3 rounded-xl border border-slate-600 text-slate-400 font-bold">ล้าง</button>
-            <button onclick="BotSystem.save()" class="flex-1 btn-gradient py-3 text-lg shadow-lg">บันทึกข้อมูล</button>
-        </div>
-
     </div>
 
     <script>
         // --- CONFIGURATION ---
         const firebaseConfig = { apiKey: "AIzaSyAHAkBhypqyJuuL22tLrFKN7ZqdEsqGDTk", authDomain: "rsdm-9ca2a.firebaseapp.com", projectId: "rsdm-9ca2a", storageBucket: "rsdm-9ca2a.firebasestorage.app", messagingSenderId: "299212700124", appId: "1:299212700124:web:730160dae6bb1b09cbb719" };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); 
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
         let currentUser = null;
         let allBots = [];
+        let currentFilter = 'all';
 
         // --- UI CONTROLLER ---
         const UI = {
@@ -301,46 +370,48 @@
                     toast: true, position: 'top', icon: icon, title: msg,
                     showConfirmButton: false, timer: 1500,
                     background: '#1e293b', color: '#fff',
-                    customClass: { popup: 'rounded-xl border border-slate-700 mt-4' }
+                    customClass: { popup: 'rounded-2xl border border-white/10 mt-4 shadow-xl' }
                 });
             },
 
             openEditor: (botId = null) => {
                 const view = document.getElementById('view-editor');
-                view.style.display = 'flex';
                 view.classList.add('active');
                 
-                // Reset Fields
+                // Reset
                 document.getElementById('bot-name').value = '';
                 document.getElementById('code-input').value = '';
                 document.getElementById('edit-id').value = '';
                 document.getElementById('btn-delete').classList.add('hidden');
-                document.getElementById('st-work').checked = true; // Default
+                document.querySelector('input[name="status"][value="working"]').checked = true;
 
                 if (botId) {
-                    // Edit Mode
                     const bot = allBots.find(b => b.id === botId);
                     if (bot) {
                         document.getElementById('bot-name').value = bot.name;
                         document.getElementById('code-input').value = bot.code;
                         document.getElementById('edit-id').value = bot.id;
                         document.getElementById('btn-delete').classList.remove('hidden');
-                        
-                        // Set Status Radio
-                        const radios = document.getElementsByName('bot-status');
-                        for(let r of radios) { if(r.value === bot.status) r.checked = true; }
+                        document.querySelector(`input[name="status"][value="${bot.status}"]`).checked = true;
                     }
                 }
             },
 
             closeEditor: () => {
-                const view = document.getElementById('view-editor');
-                view.classList.remove('active');
-                setTimeout(() => view.style.display = 'none', 300);
+                document.getElementById('view-editor').classList.remove('active');
+            },
+
+            openProfile: () => {
+                Swal.fire({
+                    title: 'โปรไฟล์',
+                    text: `ผู้ใช้: ${currentUser.email}`,
+                    icon: 'info',
+                    background: '#1e293b', color: '#fff', confirmButtonColor: '#8b5cf6'
+                });
             }
         };
 
-        // --- AUTHENTICATION ---
+        // --- AUTH ---
         const Auth = {
             login: () => {
                 const email = document.getElementById('l-email').value;
@@ -348,42 +419,49 @@
                 if(!email || !pass) return UI.toast('กรอกข้อมูลให้ครบ', 'warning');
                 auth.signInWithEmailAndPassword(email, pass).catch(e => UI.toast(e.message, 'error'));
             },
-            
             register: () => {
                 const nick = document.getElementById('r-nick').value;
                 const email = document.getElementById('r-email').value;
                 const pass = document.getElementById('r-pass').value;
-                if(!nick || !email || !pass) return UI.toast('กรอกให้ครบ', 'warning');
-                
-                auth.createUserWithEmailAndPassword(email, pass).then(cred => {
-                    db.collection('users').doc(cred.user.uid).set({
-                        nickname: nick, email: email, uid: cred.user.uid, createdAt: new Date()
-                    });
+                if(!nick || !email || !pass) return UI.toast('กรอกข้อมูลให้ครบ', 'warning');
+                auth.createUserWithEmailAndPassword(email, pass).then(c => {
+                    db.collection('users').doc(c.user.uid).set({ nickname: nick, email: email, uid: c.user.uid });
                     UI.toast('สมัครสำเร็จ!');
                 }).catch(e => UI.toast(e.message, 'error'));
             },
-            
             logout: () => auth.signOut()
         };
 
-        // --- BOT SYSTEM LOGIC ---
+        // --- BOT SYSTEM ---
         const BotSystem = {
             init: () => {
-                db.collection('ea_bots').where('uid', '==', currentUser.uid).onSnapshot(snapshot => {
-                      allBots = [];
-                      snapshot.forEach(doc => allBots.push({ id: doc.id, ...doc.data() }));
-                      // Client Side Sort (Timestamp Desc)
-                      allBots.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-                      BotSystem.renderList();
-                  }, error => {
-                      document.getElementById('bot-list').innerHTML = '<div class="col-span-full text-center text-slate-500 py-10">โหลดข้อมูลไม่สำเร็จ</div>';
-                  });
+                // Client-side Sort to fix Index Error
+                db.collection('ea_bots').where('uid', '==', currentUser.uid).onSnapshot(s => {
+                    allBots = [];
+                    s.forEach(d => allBots.push({ id: d.id, ...d.data() }));
+                    allBots.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                    BotSystem.renderList();
+                }, e => console.log('Load Error (Ignore if index missing):', e));
+            },
+
+            filter: (status = null) => {
+                if(status) {
+                    currentFilter = status;
+                    document.querySelectorAll('.scroll-pl-6 button').forEach(b => b.classList.remove('bg-white/20', 'text-white'));
+                    // Simple highlighting logic would go here
+                }
+                BotSystem.renderList();
             },
 
             renderList: () => {
                 const list = document.getElementById('bot-list');
                 const search = document.getElementById('search-bot').value.toLowerCase();
-                const filtered = allBots.filter(b => b.name.toLowerCase().includes(search));
+                
+                const filtered = allBots.filter(b => {
+                    const matchName = b.name.toLowerCase().includes(search);
+                    const matchStatus = currentFilter === 'all' || b.status === currentFilter;
+                    return matchName && matchStatus;
+                });
 
                 if (filtered.length === 0) {
                     list.innerHTML = `<div class="col-span-full text-center py-20 opacity-50"><i class="fa-solid fa-robot text-6xl mb-4 text-slate-600"></i><p class="text-slate-400">ยังไม่มีข้อมูล</p></div>`;
@@ -391,47 +469,44 @@
                 }
 
                 list.innerHTML = filtered.map(b => {
+                    let badgeClass = '';
+                    let badgeText = '';
+                    if(b.status === 'working') { badgeClass = 'st-ok badge'; badgeText = 'ใช้งานได้'; }
+                    else if(b.status === 'testing') { badgeClass = 'st-test badge'; badgeText = 'ทดสอบ'; }
+                    else { badgeClass = 'st-bug badge'; badgeText = 'มีบั๊ก'; }
+
                     const date = b.timestamp ? new Date(b.timestamp.toDate()).toLocaleDateString('th-TH') : '-';
-                    const codePreview = b.code.slice(0, 80) + '...';
-                    
-                    // Status Config
-                    let statusBadge = '';
-                    if(b.status === 'working') statusBadge = '<span class="badge-dot dot-green"></span> ใช้งานได้';
-                    else if(b.status === 'testing') statusBadge = '<span class="badge-dot dot-yellow"></span> กำลังเทส';
-                    else if(b.status === 'buggy') statusBadge = '<span class="badge-dot dot-red"></span> มีปัญหา';
-                    else statusBadge = '<span class="badge-dot dot-green"></span> ปกติ';
+                    const lines = b.code.split('\n').length;
 
                     return `
-                        <div onclick="UI.openEditor('${b.id}')" class="glass-card p-5 cursor-pointer relative overflow-hidden active:scale-95 transition-transform duration-100">
-                            <div class="flex justify-between items-start mb-3">
-                                <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-xl text-pink-500 border border-white/5">
-                                    <i class="fa-solid fa-code"></i>
+                        <div onclick="UI.openEditor('${b.id}')" class="glass-card p-5 cursor-pointer relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-100 transition"><i class="fa-solid fa-pen text-white"></i></div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl flex items-center justify-center text-xl text-white shadow-inner">
+                                    <i class="fa-brands fa-js"></i>
                                 </div>
-                                <div class="text-[10px] text-slate-400 bg-slate-900/50 px-2 py-1 rounded border border-white/5 flex items-center">
-                                    ${statusBadge}
+                                <div>
+                                    <h3 class="font-bold text-white text-lg leading-tight truncate w-40">${b.name}</h3>
+                                    <div class="text-xs text-slate-500 font-mono">${date} • ${lines} lines</div>
                                 </div>
                             </div>
-                            <h3 class="text-lg font-bold text-white mb-1 truncate">${b.name}</h3>
-                            <div class="text-[10px] text-slate-500 mb-3 flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${date}</div>
-                            <div class="bg-[#0a0a0f] p-3 rounded-lg border border-slate-800 mb-1">
-                                <p class="text-xs text-slate-500 font-mono h-8 overflow-hidden opacity-70 leading-relaxed">${codePreview}</p>
+                            <div class="flex justify-between items-center mt-2">
+                                <span class="${badgeClass}">${badgeText}</span>
                             </div>
                         </div>
                     `;
                 }).join('');
             },
 
-            filter: () => BotSystem.renderList(),
-
             save: () => {
                 const id = document.getElementById('edit-id').value;
                 const name = document.getElementById('bot-name').value;
                 const code = document.getElementById('code-input').value;
-                const status = document.querySelector('input[name="bot-status"]:checked').value;
+                const status = document.querySelector('input[name="status"]:checked').value;
 
-                if (!name || !code) return UI.toast('กรอกชื่อและโค้ด', 'warning');
+                if (!name) return UI.toast('กรุณาตั้งชื่อโปรเจกต์', 'warning');
 
-                const data = { uid: currentUser.uid, name: name, code: code, status: status, timestamp: new Date() };
+                const data = { uid: currentUser.uid, name, code, status, timestamp: new Date() };
 
                 if (id) {
                     db.collection('ea_bots').doc(id).update(data).then(() => { UI.toast('อัปเดตแล้ว'); UI.closeEditor(); });
@@ -443,7 +518,7 @@
             delete: () => {
                 const id = document.getElementById('edit-id').value;
                 Swal.fire({
-                    title: 'ลบโปรเจกต์?', text: "ไม่สามารถกู้คืนได้", icon: 'warning',
+                    title: 'ลบโปรเจกต์?', icon: 'warning',
                     showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'ลบเลย',
                     background: '#1e293b', color: '#fff'
                 }).then((r) => {
@@ -457,7 +532,22 @@
                 const code = document.getElementById('code-input');
                 code.select();
                 code.setSelectionRange(0, 99999);
-                navigator.clipboard.writeText(code.value).then(() => UI.toast('คัดลอกแล้ว!'));
+                navigator.clipboard.writeText(code.value).then(() => UI.toast('คัดลอกโค้ดแล้ว!'));
+            }
+        };
+
+        // --- ADMIN FIX ---
+        const Admin = {
+            fixData: async () => {
+                // Dummy Data Creator (Hidden Feature for Debug)
+                const c = confirm("สร้างข้อมูลตัวอย่าง?");
+                if(c) {
+                    await db.collection('ea_bots').add({
+                        uid: currentUser.uid, name: 'MA Crossover V1', code: '// Sample Code\nint start() { return(0); }', 
+                        status: 'working', timestamp: new Date()
+                    });
+                    UI.toast("สร้างข้อมูลแล้ว");
+                }
             }
         };
 
@@ -467,7 +557,7 @@
                 currentUser = user;
                 db.collection('users').doc(user.uid).get().then(doc => {
                     const u = doc.exists ? doc.data() : { nickname: 'User' };
-                    document.getElementById('u-name-display').innerText = u.nickname;
+                    document.getElementById('u-welcome').innerText = `ยินดีต้อนรับ, ${u.nickname}`;
                 });
                 document.getElementById('view-auth').classList.add('hidden');
                 document.getElementById('view-app').classList.remove('hidden');
@@ -477,7 +567,6 @@
                 document.getElementById('view-app').classList.add('hidden');
             }
         });
-
     </script>
 </body>
 </html>
