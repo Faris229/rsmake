@@ -3,16 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EA Code Studio | Minimal</title>
+    <title>ระบบเก็บโค้ด EA | ใช้งานง่าย</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -21,38 +16,13 @@
 
     <script>
         tailwind.config = {
-            darkMode: 'class', // เปิดใช้ Dark Mode แบบ Class-based
+            darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { 
-                        sans: ['Inter', 'Prompt', 'sans-serif'], 
-                        mono: ['JetBrains Mono', 'monospace'] 
-                    },
+                    fontFamily: { sans: ['Prompt', 'sans-serif'] },
                     colors: {
-                        // Light Mode Colors
-                        light: {
-                            bg: '#f8fafc',
-                            card: '#ffffff',
-                            text: '#0f172a',
-                            border: '#e2e8f0',
-                            primary: '#3b82f6'
-                        },
-                        // Dark Mode Colors
-                        dark: {
-                            bg: '#0f172a',
-                            card: '#1e293b',
-                            text: '#f1f5f9',
-                            border: '#334155',
-                            primary: '#60a5fa'
-                        }
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.3s ease-out forwards',
-                        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards'
-                    },
-                    keyframes: {
-                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
+                        primary: '#3b82f6', // สีฟ้าหลัก
+                        dark: '#1e293b'     // สีพื้นหลังโหมดมืด
                     }
                 }
             }
@@ -60,311 +30,199 @@
     </script>
 
     <style>
-        /* Base Setup */
-        body { 
-            transition: background-color 0.3s, color 0.3s;
-            overflow: hidden; /* App-like feel */
-        }
-
-        /* Scrollbar Styling */
-        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .dark .custom-scroll::-webkit-scrollbar-thumb { background: #475569; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        /* Auth Container Center */
-        .auth-container {
-            display: flex; align-items: center; justify-content: center;
-            min-height: 100vh; width: 100%;
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 24px 24px;
-        }
-        .dark .auth-container {
-            background-image: radial-gradient(#1e293b 1px, transparent 1px);
-        }
-
-        /* Layout Grid */
-        .app-layout {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            grid-template-rows: 60px 1fr;
-            height: 100vh;
-            width: 100vw;
-        }
+        /* CSS ปรับแต่งพิเศษ */
+        body { transition: background-color 0.3s, color 0.3s; }
         
-        /* Mobile Layout */
-        @media (max-width: 768px) {
-            .app-layout {
-                grid-template-columns: 1fr;
-                grid-template-rows: 60px 1fr;
-            }
-            .sidebar { display: none; } /* Hide sidebar on mobile initially */
-            .sidebar.mobile-active { 
-                display: flex; position: fixed; inset: 0; z-index: 50; width: 100%; 
-            }
-        }
-
-        /* Inputs */
-        .input-clean {
-            width: 100%; padding: 12px 16px;
-            border-radius: 10px; outline: none; transition: all 0.2s;
-            font-size: 14px;
-        }
-        /* Light Mode Input */
-        .input-clean { background: #f1f5f9; border: 1px solid #e2e8f0; color: #0f172a; }
-        .input-clean:focus { border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-        /* Dark Mode Input */
-        .dark .input-clean { background: #0f172a; border: 1px solid #334155; color: #f8fafc; }
-        .dark .input-clean:focus { border-color: #60a5fa; background: #1e293b; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1); }
-
-        /* Code Editor Area */
-        .editor-wrapper {
-            display: flex; flex-direction: column; height: 100%;
-            border-radius: 12px; overflow: hidden;
+        /* การ์ดรายการ */
+        .bot-card {
+            transition: all 0.2s;
             border: 1px solid #e2e8f0;
         }
-        .dark .editor-wrapper { border-color: #334155; }
+        .dark .bot-card { border-color: #334155; }
+        .bot-card:active { transform: scale(0.98); }
 
-        .line-numbers {
-            padding: 20px 10px; text-align: right;
-            font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6;
-            color: #94a3b8; background: #f8fafc; border-right: 1px solid #e2e8f0;
-            user-select: none;
+        /* ปุ่มกด */
+        .btn-action {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;
         }
-        .dark .line-numbers { background: #0f172a; border-color: #334155; color: #64748b; }
+        .btn-action:active { transform: translateY(2px); }
 
-        .code-textarea {
-            flex: 1; padding: 20px;
-            font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6;
-            border: none; outline: none; resize: none; white-space: pre;
-            background: #ffffff; color: #334155;
+        /* พื้นที่เขียนโค้ด */
+        textarea {
+            font-family: 'Sarabun', monospace;
+            line-height: 1.5;
+            resize: none;
         }
-        .dark .code-textarea { background: #1e293b; color: #e2e8f0; }
 
-        /* Buttons */
-        .btn-primary {
-            background-color: #0f172a; color: white;
-            padding: 10px 20px; border-radius: 8px; font-weight: 500; font-size: 14px;
-            transition: 0.2s; display: inline-flex; align-items: center; gap: 8px;
-            cursor: pointer;
+        /* สถานะ */
+        .status-badge {
+            padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;
+            display: inline-flex; align-items: center; gap: 5px;
         }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .dark .btn-primary { background-color: #3b82f6; color: white; }
-        .dark .btn-primary:hover { background-color: #2563eb; }
 
-        /* Mobile View Switcher */
-        .view-section { display: none; width: 100%; height: 100%; }
-        .view-section.active { display: flex; flex-direction: column; animation: fadeIn 0.3s ease; }
-
-        /* Status Badge */
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
-        .st-green { background-color: #22c55e; box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2); }
-        .st-yellow { background-color: #eab308; box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.2); }
-        .st-red { background-color: #ef4444; box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2); }
+        /* Overlay Editor */
+        #editor-page {
+            position: fixed; inset: 0; z-index: 100;
+            display: none; flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text">
+<body class="bg-gray-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
 
-    <div id="view-auth" class="auth-container fixed inset-0 z-50">
-        <div class="w-full max-w-md bg-white dark:bg-dark-card p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 animate-slide-up mx-4">
-            
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-blue-600 rounded-xl mx-auto flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg shadow-blue-500/20">
+    <div id="view-auth" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-100 dark:bg-slate-900">
+        <div class="w-full max-w-sm bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-500 text-white rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg">
                     <i class="fa-solid fa-code"></i>
                 </div>
-                <h1 class="text-2xl font-bold mb-1">EA Code Studio</h1>
-                <p class="text-slate-500 text-sm">ระบบจัดการโค้ดบอทเทรด</p>
+                <h1 class="text-2xl font-bold">EA Code Keeper</h1>
+                <p class="text-slate-500 text-sm">เข้าสู่ระบบเพื่อจัดการโค้ดของคุณ</p>
             </div>
-
-            <div id="login-form" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1 ml-1">อีเมล</label>
-                    <input id="l-email" type="email" class="input-clean" placeholder="name@example.com">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1 ml-1">รหัสผ่าน</label>
-                    <input id="l-pass" type="password" class="input-clean" placeholder="••••••••">
-                </div>
-                <button onclick="Auth.login()" class="btn-primary w-full justify-center py-3 mt-2">
-                    เข้าสู่ระบบ
-                </button>
-                <div class="text-center pt-4">
-                    <button onclick="UI.toggleAuth('reg')" class="text-sm text-blue-500 hover:underline">ยังไม่มีบัญชี? สมัครสมาชิก</button>
-                </div>
-            </div>
-
-            <div id="reg-form" class="space-y-4 hidden">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1 ml-1">ชื่อเล่น (Nickname)</label>
-                    <input id="r-nick" type="text" class="input-clean" placeholder="CoderName">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1 ml-1">อีเมล</label>
-                    <input id="r-email" type="email" class="input-clean" placeholder="name@example.com">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1 ml-1">รหัสผ่าน</label>
-                    <input id="r-pass" type="password" class="input-clean" placeholder="กำหนดรหัสผ่าน 6 ตัวขึ้นไป">
-                </div>
-                <button onclick="Auth.register()" class="btn-primary w-full justify-center py-3 mt-2">
-                    สมัครสมาชิก
-                </button>
-                <div class="text-center pt-4">
-                    <button onclick="UI.toggleAuth('log')" class="text-sm text-slate-500 hover:text-slate-800 dark:hover:text-white">ย้อนกลับ</button>
+            
+            <div id="login-box">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold mb-1">อีเมล</label>
+                        <input id="l-email" class="w-full p-3 rounded-xl border bg-gray-50 dark:bg-slate-700 dark:border-slate-600 outline-none focus:ring-2 focus:ring-blue-500" placeholder="อีเมลของคุณ">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">รหัสผ่าน</label>
+                        <input id="l-pass" type="password" class="w-full p-3 rounded-xl border bg-gray-50 dark:bg-slate-700 dark:border-slate-600 outline-none focus:ring-2 focus:ring-blue-500" placeholder="รหัสผ่าน">
+                    </div>
+                    <button onclick="Auth.login()" class="btn-action w-full bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/30">
+                        เข้าสู่ระบบ
+                    </button>
+                    <div class="text-center pt-2">
+                        <button onclick="UI.toggleAuth('reg')" class="text-blue-500 text-sm font-bold">สมัครสมาชิกใหม่</button>
+                    </div>
                 </div>
             </div>
 
+            <div id="reg-box" class="hidden space-y-4">
+                <input id="r-nick" class="w-full p-3 rounded-xl border bg-gray-50 dark:bg-slate-700 dark:border-slate-600" placeholder="ชื่อเล่น">
+                <input id="r-email" class="w-full p-3 rounded-xl border bg-gray-50 dark:bg-slate-700 dark:border-slate-600" placeholder="อีเมล">
+                <input id="r-pass" type="password" class="w-full p-3 rounded-xl border bg-gray-50 dark:bg-slate-700 dark:border-slate-600" placeholder="รหัสผ่าน (6 ตัวขึ้นไป)">
+                <button onclick="Auth.register()" class="btn-action w-full bg-green-500 text-white hover:bg-green-600 shadow-lg">ยืนยันการสมัคร</button>
+                <button onclick="UI.toggleAuth('log')" class="w-full text-center text-sm text-slate-500">ย้อนกลับ</button>
+            </div>
         </div>
     </div>
 
-    <div id="view-app" class="app-layout hidden">
-
-        <header class="col-span-2 bg-white dark:bg-dark-card border-b border-gray-200 dark:border-gray-800 flex justify-between items-center px-6 z-40">
-            <div class="flex items-center gap-4">
-                <button onclick="UI.toggleSidebar()" class="md:hidden text-slate-500 hover:text-slate-900 dark:hover:text-white">
-                    <i class="fa-solid fa-bars text-xl"></i>
-                </button>
-                
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                        <i class="fa-solid fa-terminal text-sm"></i>
-                    </div>
-                    <span class="font-bold text-lg tracking-tight hidden sm:block">EA STUDIO</span>
-                </div>
+    <div id="view-app" class="hidden flex flex-col h-screen">
+        
+        <nav class="bg-white dark:bg-slate-800 px-5 py-4 shadow-sm flex justify-between items-center z-10">
+            <div>
+                <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400">EA STUDIO</h1>
+                <p class="text-xs text-slate-500" id="u-display">ยินดีต้อนรับ, ผู้ใช้งาน</p>
             </div>
-
-            <div class="flex items-center gap-4">
-                <button onclick="Theme.toggle()" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-blue-500 transition">
+            <div class="flex gap-3">
+                <button onclick="UI.toggleTheme()" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 text-slate-600 dark:text-yellow-400 flex items-center justify-center transition">
                     <i id="theme-icon" class="fa-solid fa-moon"></i>
                 </button>
-                
-                <div class="h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
-
-                <div class="flex items-center gap-3">
-                    <div class="text-right hidden sm:block">
-                        <div class="text-xs text-slate-400 uppercase font-bold">User</div>
-                        <div class="text-sm font-bold" id="u-name-display">Guest</div>
-                    </div>
-                    <button onclick="Auth.logout()" class="text-slate-400 hover:text-red-500 transition px-2">
-                        <i class="fa-solid fa-right-from-bracket text-lg"></i>
-                    </button>
-                </div>
+                <button onclick="Auth.logout()" class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 flex items-center justify-center">
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
             </div>
-        </header>
+        </nav>
 
-        <aside id="sidebar" class="sidebar bg-gray-50 dark:bg-[#0f172a] border-r border-gray-200 dark:border-gray-800 flex flex-col row-span-2 overflow-hidden transition-all duration-300">
-            <div class="p-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-dark-card sticky top-0 z-10">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Projects</h3>
-                    <button onclick="BotSystem.create()" class="text-blue-500 hover:text-blue-600 text-xs font-bold flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
-                        <i class="fa-solid fa-plus"></i> ใหม่
-                    </button>
-                </div>
-                <div class="relative">
-                    <i class="fa-solid fa-search absolute left-3 top-3 text-slate-400 text-xs"></i>
-                    <input id="search-bot" onkeyup="BotSystem.renderList()" class="input-clean pl-8 py-2 text-xs rounded-full" placeholder="ค้นหาชื่อ...">
-                </div>
-            </div>
-
-            <div id="bot-list" class="flex-1 overflow-y-auto p-2 space-y-2 custom-scroll">
-                <div class="text-center py-10 text-slate-400 text-sm">กำลังโหลด...</div>
-            </div>
-
-            <button onclick="UI.toggleSidebar()" class="md:hidden p-4 text-center text-slate-500 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-dark-card font-bold">
-                ปิดเมนู
-            </button>
-        </aside>
-
-        <main class="bg-white dark:bg-[#131720] relative flex flex-col h-full overflow-hidden">
+        <main class="flex-1 overflow-y-auto p-5 pb-24">
             
-            <div id="editor-empty" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 z-0">
-                <i class="fa-solid fa-code text-6xl mb-4 opacity-20"></i>
-                <p>เลือกโปรเจกต์ทางซ้าย หรือกดสร้างใหม่</p>
+            <div class="flex gap-3 mb-6">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-search absolute left-3 top-3.5 text-slate-400"></i>
+                    <input id="search-input" onkeyup="Bot.render()" class="w-full pl-10 pr-4 py-3 rounded-xl border-none shadow-sm bg-white dark:bg-slate-800 outline-none" placeholder="ค้นหาชื่อบอท...">
+                </div>
             </div>
 
-            <div id="editor-ui" class="flex flex-col h-full hidden z-10 relative">
-                
-                <div class="h-14 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-6 bg-white dark:bg-dark-card">
-                    <div class="flex items-center gap-4 flex-1">
-                        <input id="edit-name" class="bg-transparent text-lg font-bold text-slate-800 dark:text-white outline-none w-full placeholder-slate-400" placeholder="ตั้งชื่อโปรเจกต์...">
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <select id="edit-status" class="bg-gray-100 dark:bg-slate-800 text-xs font-bold rounded-lg px-3 py-1.5 border-none outline-none text-slate-600 dark:text-slate-300 cursor-pointer">
-                            <option value="working">🟢 ใช้งานได้</option>
-                            <option value="testing">🟡 กำลังทดสอบ</option>
-                            <option value="buggy">🔴 มีบั๊ก</option>
-                        </select>
-                        <div class="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-2"></div>
-                        <button onclick="BotSystem.save()" class="btn-primary py-1.5 px-4 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-sm">
-                            <i class="fa-solid fa-save"></i> <span class="hidden sm:inline">บันทึก</span>
-                        </button>
-                        <button onclick="BotSystem.delete()" class="text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 rounded-lg transition" title="ลบ">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex-1 p-4 bg-gray-50 dark:bg-[#0d1117] overflow-hidden">
-                    <div class="editor-wrapper h-full shadow-inner bg-white dark:bg-[#1e1e1e]">
-                        <input type="hidden" id="edit-id">
-                        <div class="flex h-full">
-                            <div class="line-numbers w-12 hidden sm:block">1<br>2<br>3<br>4<br>5<br>6...</div>
-                            <textarea id="edit-code" class="code-textarea custom-scroll" placeholder="// พิมพ์โค้ด EA ของคุณที่นี่..."></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="h-10 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-dark-card flex items-center justify-between px-4 text-xs text-slate-500 font-mono">
-                    <div class="flex items-center gap-4">
-                        <span><i class="fa-solid fa-file-code mr-1"></i> MQ4 Source File</span>
-                        <span>UTF-8</span>
-                    </div>
-                    <button onclick="BotSystem.copy()" class="hover:text-blue-500 flex items-center gap-1">
-                        <i class="fa-regular fa-copy"></i> Copy All
-                    </button>
-                </div>
+            <h2 class="text-sm font-bold text-slate-500 mb-3 uppercase tracking-wider">รายการทั้งหมด</h2>
+            <div id="bot-list" class="space-y-3">
+                <div class="text-center py-10 text-slate-400">กำลังโหลดข้อมูล...</div>
             </div>
 
         </main>
 
+        <button onclick="UI.openEditor()" class="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-xl shadow-blue-600/40 flex items-center justify-center text-2xl hover:scale-110 transition z-40">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+
+    <div id="editor-page" class="bg-gray-100 dark:bg-slate-900">
+        
+        <div class="bg-white dark:bg-slate-800 px-4 py-3 shadow-md flex justify-between items-center z-50">
+            <button onclick="UI.closeEditor()" class="text-slate-500 hover:text-slate-800 dark:hover:text-white flex items-center gap-2 px-2 py-1">
+                <i class="fa-solid fa-chevron-left"></i> กลับ
+            </button>
+            <span class="font-bold text-lg">แก้ไขโค้ด</span>
+            <button onclick="Bot.save()" class="text-green-600 font-bold bg-green-100 dark:bg-green-900/30 px-4 py-1.5 rounded-lg text-sm">
+                บันทึก
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 pb-32">
+            <input type="hidden" id="edit-id">
+            
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm mb-4 space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-500 mb-1 block">ชื่อโปรเจกต์</label>
+                    <input id="edit-name" class="w-full p-3 rounded-lg border bg-gray-50 dark:bg-slate-900 dark:border-slate-700 outline-none font-bold text-lg" placeholder="ตั้งชื่อบอท เช่น MA Cross">
+                </div>
+                
+                <div>
+                    <label class="text-xs font-bold text-slate-500 mb-2 block">สถานะการใช้งาน</label>
+                    <div class="flex gap-2">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="status" value="ok" class="peer sr-only" checked>
+                            <div class="text-center py-2 rounded-lg border dark:border-slate-700 peer-checked:bg-green-500 peer-checked:text-white peer-checked:border-green-500 transition text-sm">
+                                <i class="fa-solid fa-check-circle mr-1"></i> ปกติ
+                            </div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="status" value="bug" class="peer sr-only">
+                            <div class="text-center py-2 rounded-lg border dark:border-slate-700 peer-checked:bg-red-500 peer-checked:text-white peer-checked:border-red-500 transition text-sm">
+                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> มีปัญหา
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden flex flex-col h-[500px]">
+                <div class="bg-slate-100 dark:bg-slate-900 px-4 py-2 flex justify-between items-center border-b dark:border-slate-700">
+                    <span class="text-xs font-bold text-slate-500">SOURCE CODE</span>
+                    <button onclick="Bot.copy()" class="text-xs text-blue-500 font-bold hover:underline"><i class="fa-regular fa-copy"></i> คัดลอกทั้งหมด</button>
+                </div>
+                <textarea id="edit-code" class="flex-1 p-4 bg-slate-50 dark:bg-[#1e1e1e] dark:text-gray-300 outline-none text-sm font-mono" placeholder="// ใส่โค้ดของคุณที่นี่..."></textarea>
+            </div>
+
+            <button id="btn-delete" onclick="Bot.delete()" class="w-full mt-6 py-3 text-red-500 bg-white dark:bg-slate-800 border border-red-200 rounded-xl font-bold shadow-sm hidden">
+                <i class="fa-solid fa-trash mr-2"></i> ลบโปรเจกต์นี้
+            </button>
+        </div>
     </div>
 
     <script>
-        // --- CONFIG (เปลี่ยนเป็นของคุณ) ---
+        // --- 1. FIREBASE CONFIG (ใส่ค่าของคุณ) ---
         const firebaseConfig = { apiKey: "AIzaSyAHAkBhypqyJuuL22tLrFKN7ZqdEsqGDTk", authDomain: "rsdm-9ca2a.firebaseapp.com", projectId: "rsdm-9ca2a", storageBucket: "rsdm-9ca2a.firebasestorage.app", messagingSenderId: "299212700124", appId: "1:299212700124:web:730160dae6bb1b09cbb719" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
 
         let currentUser = null;
         let allBots = [];
-        let currentBotId = null;
 
-        // --- THEME MANAGER ---
-        const Theme = {
-            init: () => {
-                const saved = localStorage.getItem('theme');
-                if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.classList.add('dark');
-                    document.getElementById('theme-icon').className = 'fa-solid fa-sun';
-                } else {
-                    document.documentElement.classList.remove('dark');
-                    document.getElementById('theme-icon').className = 'fa-solid fa-moon';
-                }
-            },
-            toggle: () => {
-                const isDark = document.documentElement.classList.toggle('dark');
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-                document.getElementById('theme-icon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-            }
-        };
-        Theme.init();
-
-        // --- UI CONTROLLER ---
+        // --- 2. UI CONTROLLER ---
         const UI = {
             toggleAuth: (mode) => {
-                document.getElementById('login-form').style.display = mode === 'reg' ? 'none' : 'block';
-                document.getElementById('reg-form').style.display = mode === 'reg' ? 'block' : 'none';
+                document.getElementById('login-box').style.display = mode === 'reg' ? 'none' : 'block';
+                document.getElementById('reg-box').style.display = mode === 'reg' ? 'block' : 'none';
+            },
+            toggleTheme: () => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                document.documentElement.classList.toggle('light');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                document.getElementById('theme-icon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
             },
             toast: (msg, icon = 'success') => {
                 Swal.fire({
@@ -374,173 +232,150 @@
                     color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
                 });
             },
-            toggleSidebar: () => {
-                const sidebar = document.getElementById('sidebar');
-                if (sidebar.classList.contains('mobile-active')) {
-                    sidebar.classList.remove('mobile-active');
-                    sidebar.style.display = 'none'; // Force hide on mobile close
-                } else {
-                    sidebar.classList.add('mobile-active');
-                    sidebar.style.display = 'flex';
+            openEditor: (botId = null) => {
+                const page = document.getElementById('editor-page');
+                page.style.display = 'flex';
+                
+                // Reset Form
+                document.getElementById('edit-id').value = '';
+                document.getElementById('edit-name').value = '';
+                document.getElementById('edit-code').value = '';
+                document.getElementById('btn-delete').classList.add('hidden');
+                document.querySelector('input[name="status"][value="ok"]').checked = true;
+
+                if (botId) {
+                    const bot = allBots.find(b => b.id === botId);
+                    if (bot) {
+                        document.getElementById('edit-id').value = bot.id;
+                        document.getElementById('edit-name').value = bot.name;
+                        document.getElementById('edit-code').value = bot.code;
+                        document.getElementById('btn-delete').classList.remove('hidden');
+                        document.querySelector(`input[name="status"][value="${bot.status}"]`).checked = true;
+                    }
                 }
-                // Reset display for desktop resize
-                if(window.innerWidth > 768) sidebar.style.display = 'flex';
             },
-            showEditor: (show) => {
-                document.getElementById('editor-empty').style.display = show ? 'none' : 'flex';
-                document.getElementById('editor-ui').classList.toggle('hidden', !show);
-                if (window.innerWidth <= 768 && show) {
-                    // On mobile, close sidebar when opening editor
-                    document.getElementById('sidebar').classList.remove('mobile-active');
-                    document.getElementById('sidebar').style.display = 'none';
-                }
+            closeEditor: () => {
+                document.getElementById('editor-page').style.display = 'none';
             }
         };
 
-        // --- AUTH ---
+        // --- 3. AUTHENTICATION ---
         const Auth = {
             login: () => {
-                const e = document.getElementById('l-email').value;
-                const p = document.getElementById('l-pass').value;
-                auth.signInWithEmailAndPassword(e, p).catch(er => UI.toast(er.message, 'error'));
+                auth.signInWithEmailAndPassword(document.getElementById('l-email').value, document.getElementById('l-pass').value)
+                    .catch(e => UI.toast('อีเมลหรือรหัสผ่านผิด', 'error'));
             },
             register: () => {
-                const n = document.getElementById('r-nick').value;
-                const e = document.getElementById('r-email').value;
-                const p = document.getElementById('r-pass').value;
-                if(!n||!e||!p) return UI.toast('กรอกข้อมูลให้ครบ', 'warning');
+                const n = document.getElementById('r-nick').value, e = document.getElementById('r-email').value, p = document.getElementById('r-pass').value;
+                if(!n || !e || !p) return UI.toast('กรอกข้อมูลให้ครบ', 'warning');
                 auth.createUserWithEmailAndPassword(e, p).then(c => {
                     db.collection('users').doc(c.user.uid).set({ nickname: n, email: e });
                     UI.toast('สมัครสำเร็จ');
-                }).catch(er => UI.toast(er.message, 'error'));
+                }).catch(e => UI.toast(e.message, 'error'));
             },
             logout: () => auth.signOut()
         };
 
-        // --- BOT SYSTEM ---
-        const BotSystem = {
+        // --- 4. BOT LOGIC ---
+        const Bot = {
             init: () => {
-                // Client-side Sort to Fix Index Issue
-                db.collection('ea_bots').where('uid', '==', currentUser.uid).onSnapshot(snap => {
+                // Client-side Sort (Fix Loading Issue)
+                db.collection('ea_bots').where('uid', '==', currentUser.uid).onSnapshot(s => {
                     allBots = [];
-                    snap.forEach(doc => allBots.push({ id: doc.id, ...doc.data() }));
+                    s.forEach(d => allBots.push({ id: d.id, ...d.data() }));
                     allBots.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-                    BotSystem.renderList();
-                });
+                    Bot.render();
+                }, e => document.getElementById('bot-list').innerHTML = '<div class="text-center py-10 text-red-400">โหลดข้อมูลไม่สำเร็จ (ลองรีเฟรช)</div>');
             },
-
-            renderList: () => {
+            render: () => {
                 const list = document.getElementById('bot-list');
-                const search = document.getElementById('search-bot').value.toLowerCase();
-                const filtered = allBots.filter(b => b.name.toLowerCase().includes(search));
+                const txt = document.getElementById('search-input').value.toLowerCase();
+                const filtered = allBots.filter(b => b.name.toLowerCase().includes(txt));
 
                 if (filtered.length === 0) {
-                    list.innerHTML = `<div class="text-center p-4 text-slate-400 text-sm">ไม่พบข้อมูล</div>`;
+                    list.innerHTML = `<div class="text-center py-12 text-slate-400"><i class="fa-solid fa-folder-open text-4xl mb-2"></i><p>ไม่พบข้อมูล</p></div>`;
                     return;
                 }
 
                 list.innerHTML = filtered.map(b => {
-                    let statusColor = 'st-green';
-                    if (b.status === 'testing') statusColor = 'st-yellow';
-                    if (b.status === 'buggy') statusColor = 'st-red';
+                    const statusHtml = b.status === 'ok' 
+                        ? `<span class="status-badge bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"><i class="fa-solid fa-check-circle"></i> ปกติ</span>`
+                        : `<span class="status-badge bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"><i class="fa-solid fa-triangle-exclamation"></i> แก้ไข</span>`;
                     
-                    const isActive = b.id === currentBotId ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500' : 'bg-white dark:bg-dark-card border-transparent hover:bg-gray-50 dark:hover:bg-slate-800';
+                    const date = b.timestamp ? new Date(b.timestamp.toDate()).toLocaleDateString('th-TH') : '-';
 
                     return `
-                    <div onclick="BotSystem.select('${b.id}')" class="p-3 rounded-xl border ${isActive} cursor-pointer transition mb-2 shadow-sm">
-                        <div class="flex justify-between items-start mb-1">
-                            <h4 class="font-bold text-sm truncate w-32 dark:text-white">${b.name}</h4>
-                            <div class="status-dot ${statusColor}"></div>
+                    <div onclick="UI.openEditor('${b.id}')" class="bot-card bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm cursor-pointer hover:shadow-md flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-gray-100 dark:bg-slate-700 rounded-lg flex items-center justify-center text-xl text-blue-500">
+                                <i class="fa-solid fa-file-code"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg leading-tight dark:text-white">${b.name}</h3>
+                                <div class="text-xs text-slate-500 mt-1 flex items-center gap-2">
+                                    <i class="fa-regular fa-clock"></i> ${date}
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-[10px] text-slate-400 font-mono truncate">${b.code.substring(0, 30)}...</div>
+                        <div class="text-right">
+                            ${statusHtml}
+                        </div>
                     </div>`;
                 }).join('');
             },
-
-            create: () => {
-                currentBotId = null;
-                UI.showEditor(true);
-                document.getElementById('edit-id').value = '';
-                document.getElementById('edit-name').value = 'Untitled Bot';
-                document.getElementById('edit-code').value = '';
-                document.getElementById('edit-status').value = 'working';
-                document.getElementById('edit-name').focus();
-            },
-
-            select: (id) => {
-                const bot = allBots.find(b => b.id === id);
-                if (!bot) return;
-                
-                currentBotId = id;
-                UI.showEditor(true);
-                BotSystem.renderList(); // Refresh active highlight
-
-                document.getElementById('edit-id').value = bot.id;
-                document.getElementById('edit-name').value = bot.name;
-                document.getElementById('edit-code').value = bot.code;
-                document.getElementById('edit-status').value = bot.status || 'working';
-            },
-
             save: () => {
                 const id = document.getElementById('edit-id').value;
                 const name = document.getElementById('edit-name').value;
                 const code = document.getElementById('edit-code').value;
-                const status = document.getElementById('edit-status').value;
+                const status = document.querySelector('input[name="status"]:checked').value;
 
-                if (!name) return UI.toast('กรุณาตั้งชื่อ', 'warning');
+                if (!name) return UI.toast('กรุณาตั้งชื่อโปรเจกต์', 'warning');
 
                 const data = { uid: currentUser.uid, name, code, status, timestamp: new Date() };
 
                 if (id) {
-                    db.collection('ea_bots').doc(id).update(data).then(() => UI.toast('บันทึกเรียบร้อย'));
+                    db.collection('ea_bots').doc(id).update(data).then(() => { UI.toast('อัปเดตเรียบร้อย'); UI.closeEditor(); });
                 } else {
-                    db.collection('ea_bots').add(data).then((doc) => {
-                        UI.toast('สร้างใหม่เรียบร้อย');
-                        currentBotId = doc.id;
-                        document.getElementById('edit-id').value = doc.id;
-                    });
+                    db.collection('ea_bots').add(data).then(() => { UI.toast('สร้างใหม่เรียบร้อย'); UI.closeEditor(); });
                 }
             },
-
             delete: () => {
-                if (!currentBotId) return;
+                const id = document.getElementById('edit-id').value;
                 Swal.fire({
-                    title: 'ลบโปรเจกต์?', icon: 'warning',
-                    showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'ลบเลย',
-                    background: document.body.classList.contains('dark') ? '#1e293b' : '#fff'
+                    title: 'ยืนยันการลบ?', text: "ข้อมูลจะหายไปถาวร", icon: 'warning',
+                    showCancelButton: true, confirmButtonText: 'ลบเลย', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#ef4444'
                 }).then((r) => {
                     if (r.isConfirmed) {
-                        db.collection('ea_bots').doc(currentBotId).delete().then(() => {
-                            UI.toast('ลบแล้ว');
-                            currentBotId = null;
-                            UI.showEditor(false);
-                        });
+                        db.collection('ea_bots').doc(id).delete().then(() => { UI.toast('ลบแล้ว'); UI.closeEditor(); });
                     }
                 });
             },
-
             copy: () => {
-                const c = document.getElementById('edit-code');
-                c.select(); navigator.clipboard.writeText(c.value).then(() => UI.toast('คัดลอกแล้ว'));
+                const code = document.getElementById('edit-code');
+                code.select(); navigator.clipboard.writeText(code.value).then(() => UI.toast('คัดลอกโค้ดแล้ว'));
             }
         };
 
         // --- INIT ---
+        // Auto Load Theme
+        if(localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').className = 'fa-solid fa-sun';
+        }
+
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
                 db.collection('users').doc(user.uid).get().then(doc => {
                     const u = doc.exists ? doc.data() : { nickname: 'User' };
-                    document.getElementById('u-name-display').innerText = u.nickname;
+                    document.getElementById('u-display').innerText = `สวัสดี, ${u.nickname}`;
                 });
                 document.getElementById('view-auth').classList.add('hidden');
                 document.getElementById('view-app').classList.remove('hidden');
-                document.getElementById('view-app').classList.add('app-layout'); // Apply grid layout
-                BotSystem.init();
+                Bot.init();
             } else {
                 document.getElementById('view-auth').classList.remove('hidden');
                 document.getElementById('view-app').classList.add('hidden');
-                document.getElementById('view-app').classList.remove('app-layout');
             }
         });
     </script>
