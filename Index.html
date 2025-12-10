@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#050b14">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>กลาง เป่า ฉุบ by rs</title>
+    <title>กลางเป่า ฉุบ Xo by rs</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -19,11 +19,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/th.min.js"></script>
 
@@ -42,14 +39,14 @@
                     },
                     colors: { 
                         brand: { 
-                            bg: '#05020a',          // ดำม่วงลึก
-                            card: '#130821',        // พื้นหลังการ์ด
-                            primary: '#ec4899',     // ชมพู Neon
-                            secondary: '#8b5cf6',   // ม่วง Neon
-                            accent: '#06b6d4',      // ฟ้า Neon
-                            gold: '#fbbf24',        // ทอง
-                            success: '#10b981',     // เขียว
-                            danger: '#ef4444'       // แดง
+                            bg: '#05020a',          
+                            card: '#130821',        
+                            primary: '#ec4899',     
+                            secondary: '#8b5cf6',   
+                            accent: '#06b6d4',      
+                            gold: '#fbbf24',        
+                            success: '#10b981',     
+                            danger: '#ef4444'       
                         } 
                     },
                     animation: { 
@@ -73,7 +70,7 @@
     </script>
 
     <style>
-        /* --- GLOBAL RESET --- */
+        /* --- CORE SETTINGS --- */
         body { 
             background-color: #05020a; 
             color: #e2e8f0; 
@@ -83,12 +80,12 @@
             user-select: none;
         }
 
-        /* Custom Scrollbar */
+        /* --- SCROLLBAR --- */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #ec4899; border-radius: 4px; }
         
-        /* Background & Particles */
+        /* --- BACKGROUNDS --- */
         #particle-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
         }
@@ -101,7 +98,7 @@
             mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
         }
         
-        /* Glass Components */
+        /* --- GLASS COMPONENTS --- */
         .glass-card { 
             background: linear-gradient(160deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.9)); 
             backdrop-filter: blur(16px); 
@@ -118,7 +115,7 @@
             border-bottom: 1px solid rgba(255,255,255,0.05); 
         }
         
-        /* Bottom Navigation */
+        /* --- BOTTOM NAV --- */
         .bottom-nav { 
             position: fixed; bottom: 0; left: 0; right: 0; height: 85px; 
             background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(20px); 
@@ -129,16 +126,17 @@
         }
         .nav-item { 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            color: #64748b; font-size: 0.7rem; transition: 0.3s; width: 100%; height: 100%; cursor: pointer;
+            color: #64748b; font-size: 0.75rem; transition: 0.3s; width: 100%; height: 100%; cursor: pointer;
         }
         .nav-item i { font-size: 1.6rem; margin-bottom: 4px; transition: 0.3s; }
         .nav-item.active { color: #d946ef; }
         .nav-item.active i { transform: translateY(-5px); filter: drop-shadow(0 0 10px #d946ef); }
 
-        /* Buttons & Inputs */
+        /* --- INPUTS & BUTTONS --- */
         .input-cyber { 
             width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid #4c1d95; 
-            padding: 14px 20px; border-radius: 14px; color: white; outline: none; transition: 0.3s; 
+            padding: 16px 20px; border-radius: 14px; color: white; outline: none; transition: 0.3s; 
+            font-size: 1rem;
         }
         .input-cyber:focus { border-color: #d946ef; background: rgba(236, 72, 153, 0.05); box-shadow: 0 0 15px rgba(236, 72, 153, 0.2); }
         
@@ -149,103 +147,154 @@
         }
         .btn-gradient:active { transform: scale(0.97); }
 
-        /* Splash Screen */
+        /* --- SPLASH SCREEN --- */
         #splash-screen {
             position: fixed; inset: 0; z-index: 9999; background: #05020a;
             display: flex; align-items: center; justify-content: center; flex-direction: column;
             transition: opacity 0.5s;
         }
 
-        /* --- GAME 1: XO --- */
-        .xo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 320px; margin: 0 auto; }
+        /* =========================================
+           GAME ASSETS
+        ========================================= */
+
+        /* --- GAME: XO (TIC TAC TOE) --- */
+        .xo-board-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 320px; margin: 0 auto; }
         .xo-cell { 
             height: 90px; background: rgba(255,255,255,0.05); border-radius: 16px; 
             display: flex; align-items: center; justify-content: center; font-size: 3.5rem; 
             font-weight: 900; cursor: pointer; transition: 0.2s; border: 2px solid transparent; 
         }
-        .xo-cell:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
-        .xo-cell.X { color: #ec4899; text-shadow: 0 0 20px #ec4899; }
-        .xo-cell.O { color: #22d3ee; text-shadow: 0 0 20px #22d3ee; }
-        .xo-cell.win { background: rgba(16, 185, 129, 0.2); border-color: #10b981; }
-        
-        /* --- GAME 2: RPS --- */
+        .xo-cell:hover { background: rgba(255,255,255,0.1); }
+        .xo-cell.X { color: #ec4899; text-shadow: 0 0 20px rgba(236, 72, 153, 0.6); }
+        .xo-cell.O { color: #3b82f6; text-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+        .xo-cell.win { background: rgba(16, 185, 129, 0.2); border-color: #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+
+        /* --- GAME: RPS (ROCK PAPER SCISSORS) --- */
         .rps-btn { 
             width: 80px; height: 80px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); 
             border: 2px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; 
             font-size: 2.5rem; cursor: pointer; transition: all 0.3s; 
         }
-        .rps-btn:hover { transform: scale(1.1); background: rgba(236, 72, 153, 0.2); border-color: #ec4899; }
+        .rps-btn:hover { transform: scale(1.1); background: rgba(236, 72, 153, 0.1); border-color: #ec4899; }
         .rps-btn.selected { 
             border-color: #fbbf24; background: rgba(251, 191, 36, 0.2); 
             box-shadow: 0 0 30px rgba(251, 191, 36, 0.4); transform: scale(1.15); 
         }
 
-        /* --- GAME 3: PENALTY (FIXED LAYOUT) --- */
-        /* สนามบอล */
-        .penalty-wrapper {
-            position: relative; width: 100%; height: 250px;
-            margin-bottom: 20px; border-radius: 20px; overflow: hidden;
-            border: 2px solid #34d399; box-shadow: 0 0 30px rgba(52, 211, 153, 0.2);
+        /* --- GAME: PENALTY (NEW OVERLAY UI) --- */
+        .penalty-container {
+            position: relative;
+            width: 100%;
+            height: 380px; /* เพิ่มความสูงให้เห็นชัดๆ */
+            margin-bottom: 20px;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 2px solid #34d399;
+            box-shadow: 0 0 40px rgba(52, 211, 153, 0.3);
+            background: radial-gradient(circle at center, #1e293b 0%, #064e3b 80%);
         }
+
+        /* ฉากสนามบอล */
         .penalty-scene { 
-            perspective: 600px; width: 100%; height: 100%; 
+            perspective: 800px; 
+            width: 100%; height: 100%; 
             position: absolute; top: 0; left: 0;
-            background: radial-gradient(circle at center, #1e293b 0%, #064e3b 90%); 
+            z-index: 1;
         }
-        .penalty-scene::after { /* Grass */
+
+        .penalty-scene::after { /* พื้นหญ้า */
             content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 40%;
             background: linear-gradient(to top, #065f46, transparent); z-index: 1;
         }
+
+        /* ประตู */
         .goal-post { 
-            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); 
-            width: 180px; height: 100px; 
-            border-top: 6px solid #e2e8f0; border-left: 6px solid #e2e8f0; border-right: 6px solid #e2e8f0;
-            box-shadow: 0 0 20px rgba(255,255,255,0.3); z-index: 2;
+            position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); 
+            width: 240px; height: 120px; 
+            border-top: 8px solid #f1f5f9; 
+            border-left: 8px solid #f1f5f9; 
+            border-right: 8px solid #f1f5f9;
+            box-shadow: 0 0 30px rgba(255,255,255,0.4); 
+            z-index: 2;
         }
-        .net { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 6px 6px; opacity: 0.3; z-index: 1; }
-        
+        .net { 
+            position: absolute; inset: 0; 
+            background-image: radial-gradient(rgba(255,255,255,0.3) 1px, transparent 1px); 
+            background-size: 8px 8px; opacity: 0.4; z-index: 1; 
+        }
+
+        /* ผู้รักษาประตู */
         .keeper { 
-            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); 
-            font-size: 3.5rem; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
-            z-index: 5; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.6));
+            position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); 
+            font-size: 4.5rem; 
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            z-index: 5; 
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.7));
         }
+
+        /* ลูกบอล */
         .soccer-ball { 
-            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); 
-            font-size: 2rem; transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); 
-            z-index: 20; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
+            font-size: 2.8rem; 
+            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            z-index: 20; 
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
         }
 
-        /* ปุ่มควบคุมแบบ Grid ใหญ่ๆ ด้านล่าง (ไม่จม) */
-        .penalty-controls {
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
-            padding: 10px; background: rgba(0,0,0,0.3); border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+        /* --- ปุ่มควบคุมแบบลอยทับ (Overlay Buttons) --- */
+        .penalty-controls-overlay {
+            position: absolute; 
+            bottom: 20px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            display: flex; 
+            justify-content: center; 
+            gap: 20px; 
+            z-index: 50; /* อยู่บนสุด */
+            width: 90%;
         }
-        .penalty-btn {
-            background: linear-gradient(180deg, #334155, #1e293b); 
-            border: 1px solid #475569; padding: 20px 0; 
-            border-radius: 12px; font-weight: 800; text-align: center;
-            transition: 0.2s; cursor: pointer; color: #cbd5e1; 
-            text-transform: uppercase; font-size: 1.2rem;
-            box-shadow: 0 4px 0 #0f172a;
-        }
-        .penalty-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #0f172a; }
-        .penalty-btn:hover { background: linear-gradient(180deg, #475569, #334155); color: white; border-color: #ec4899; }
 
-        /* Chat */
-        .chat-area { margin-bottom: 15px; }
-        .chat-box { 
-            height: 120px; overflow-y: auto; background: rgba(0,0,0,0.4); 
-            border-radius: 12px; padding: 10px; margin-bottom: 10px; 
-            border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 6px;
+        .penalty-btn-round {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: 800;
+            font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .chat-msg { font-size: 0.8rem; padding: 6px 10px; border-radius: 8px; max-width: 85%; word-wrap: break-word; }
-        .msg-me { align-self: flex-end; background: #ec4899; color: white; }
-        .msg-other { align-self: flex-start; background: #334155; color: #e2e8f0; }
 
-        /* Modals */
+        .penalty-btn-round i { font-size: 1.2rem; margin-bottom: 2px; }
+
+        .penalty-btn-round:hover {
+            background: rgba(236, 72, 153, 0.6);
+            border-color: #ec4899;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.6);
+        }
+
+        .penalty-btn-round:active { transform: scale(0.9); }
+        
+        .penalty-btn-round.selected {
+            background: #ec4899;
+            border-color: white;
+            box-shadow: 0 0 30px #ec4899;
+            transform: scale(1.1);
+        }
+
+        /* --- MODALS & BADGES --- */
         .anime-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .anime-text { font-size: 4rem; font-weight: 900; color: white; text-transform: uppercase; font-style: italic; text-shadow: 0 0 30px #ec4899; animation: bounceIn 0.6s; }
+        .anime-text { font-size: 5rem; font-weight: 900; color: white; text-transform: uppercase; font-style: italic; text-shadow: 0 0 40px #ec4899; animation: bounceIn 0.6s; }
+        .ready-badge { padding: 4px 12px; border-radius: 99px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .is-ready { background: #10b981; color: #064e3b; box-shadow: 0 0 10px #10b981; }
+        .not-ready { background: #334155; color: #94a3b8; border: 1px solid #475569; }
         .modal-box { background: #1e293b; width: 90%; max-width: 400px; padding: 30px; border-radius: 24px; border: 1px solid rgba(236, 72, 153, 0.3); animation: zoomIn 0.3s; position: relative; box-shadow: 0 0 60px rgba(0,0,0,0.7); }
     </style>
 </head>
@@ -265,7 +314,7 @@
     <div id="maintenance-view" class="fixed inset-0 z-[9999] bg-[#050b14] flex flex-col items-center justify-center hidden">
         <i class="fa-solid fa-triangle-exclamation text-8xl text-pink-500 mb-6 animate-pulse"></i>
         <h1 class="text-5xl font-black font-display text-white mb-2">ปิดปรับปรุง</h1>
-        <p class="text-slate-400">ระบบกำลังอัปเกรดเซิร์ฟเวอร์</p>
+        <p class="text-slate-400">ระบบกำลังอัปเกรดเซิร์ฟเวอร์ โปรดรอสักครู่</p>
     </div>
 
     <div id="modal-news" class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center backdrop-blur-sm hidden">
@@ -275,7 +324,7 @@
             </div>
             <h3 class="text-2xl font-bold text-white mb-2 font-display">ประกาศจากระบบ</h3>
             <div class="bg-white/5 p-4 rounded-xl text-slate-300 text-sm mb-6 border border-white/5 leading-relaxed" id="news-content">
-                ...
+                กำลังโหลดข้อมูล...
             </div>
             <button onclick="document.getElementById('modal-news').style.display='none'" class="w-full btn-gradient py-4 text-lg shadow-xl">รับทราบ</button>
         </div>
@@ -317,8 +366,8 @@
         
         <nav class="sticky top-0 z-30 glass-nav">
             <div class="bg-indigo-950/40 h-9 flex items-center overflow-hidden border-b border-white/5 backdrop-blur-sm">
-                <div class="bg-pink-600 text-white text-[10px] font-black px-3 h-full flex items-center tracking-wider shadow-lg">HOT NEWS</div>
-                <div class="whitespace-nowrap animate-marquee text-xs text-pink-200 ml-4 font-light flex items-center" id="annc-marquee">...</div>
+                <div class="bg-pink-600 text-white text-[10px] font-black px-3 h-full flex items-center tracking-wider shadow-lg">ข่าวสาร</div>
+                <div class="whitespace-nowrap animate-marquee text-sm text-pink-200 ml-4 font-light flex items-center" id="annc-marquee">...</div>
             </div>
             
             <div class="px-5 py-4 flex justify-between items-center">
@@ -326,7 +375,7 @@
                     <div class="w-11 h-11 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center font-black text-white text-xl shadow-lg rotate-3">Z</div>
                     <div>
                         <div class="font-black text-lg leading-none font-display tracking-wide">ZONE.</div>
-                        <div class="text-[10px] text-green-400 font-bold bg-green-900/30 px-2 rounded-full inline-block mt-0.5 border border-green-500/20">● ONLINE</div>
+                        <div class="text-[10px] text-green-400 font-bold bg-green-900/30 px-2 rounded-full inline-block mt-0.5 border border-green-500/20">● ออนไลน์</div>
                     </div>
                 </div>
                 <div class="flex items-center gap-4">
@@ -379,7 +428,7 @@
                 <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fa-solid fa-wallet text-green-400"></i> กระเป๋าเงิน</h2>
                 
                 <div class="glass-card p-1.5 mb-8 flex rounded-2xl bg-slate-900/50 border border-white/5">
-                    <button onclick="Finance.tab('deposit')" id="btn-tab-deposit" class="flex-1 py-4 rounded-xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg transition transform">แจ้งฝาก</button>
+                    <button onclick="Finance.tab('deposit')" id="btn-tab-deposit" class="flex-1 py-4 rounded-xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg transition transform hover:scale-105">แจ้งฝาก</button>
                     <button onclick="Finance.tab('withdraw')" id="btn-tab-withdraw" class="flex-1 py-4 rounded-xl font-bold text-slate-400 transition hover:text-white">แจ้งถอน</button>
                 </div>
 
@@ -388,8 +437,14 @@
                         <i class="fa-solid fa-circle-info text-xl mt-0.5"></i>
                         <div>กรุณาโอนเงินตามเลขบัญชีที่แอดมินแจ้ง<br>ก่อนกรอกข้อมูลด้านล่าง</div>
                     </div>
-                    <input id="dep-amt" type="number" class="input-cyber text-center text-4xl font-bold text-emerald-400 placeholder-emerald-900/30" placeholder="0.00">
-                    <input id="dep-time" class="input-cyber text-center text-lg" placeholder="เช่น 14.30">
+                    <div>
+                        <label class="text-xs text-slate-400 ml-2 mb-1 block font-bold">จำนวนเงินที่โอน</label>
+                        <input id="dep-amt" type="number" class="input-cyber text-center text-4xl font-bold text-emerald-400 placeholder-emerald-900/30" placeholder="0.00">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-400 ml-2 mb-1 block font-bold">เวลาโอน (ตามสลิป)</label>
+                        <input id="dep-time" class="input-cyber text-center text-lg" placeholder="เช่น 14.30">
+                    </div>
                     <button onclick="Finance.submit('deposit')" class="btn-gradient w-full py-4 text-xl shadow-lg border-none">ยืนยันแจ้งฝาก</button>
                     <button onclick="UI.contactAdmin()" class="w-full py-4 border border-slate-700 rounded-2xl text-slate-400 hover:bg-slate-800 transition font-bold">ติดต่อแอดมิน (ขอเลขบัญชี)</button>
                 </div>
@@ -400,7 +455,10 @@
                         <div>ถอนเข้าบัญชีที่ลงทะเบียนไว้เท่านั้น<br>กรุณาตรวจสอบยอดก่อนแจ้งถอน</div>
                     </div>
                     <div id="withdraw-lock-msg" class="hidden text-center text-xs text-red-400 bg-red-950/30 p-3 rounded-xl border border-red-900/50 font-bold">⚠ ติดเงื่อนไขเครดิตฟรี (ถอนไม่ได้)</div>
-                    <input id="wit-amt" type="number" class="input-cyber text-center text-4xl font-bold text-red-400 placeholder-red-900/30" placeholder="0.00">
+                    <div>
+                        <label class="text-xs text-slate-400 ml-2 mb-1 block font-bold">จำนวนเงินที่ต้องการถอน</label>
+                        <input id="wit-amt" type="number" class="input-cyber text-center text-4xl font-bold text-red-400 placeholder-red-900/30" placeholder="0.00">
+                    </div>
                     <button onclick="Finance.submit('withdraw')" class="btn-gradient w-full py-4 text-xl border-none shadow-lg from-red-600 to-rose-600">ยืนยันแจ้งถอน</button>
                 </div>
                 
@@ -423,7 +481,7 @@
                 </div>
 
                 <div class="glass-card p-8 space-y-5">
-                    <input id="p-nick" class="input-cyber text-lg font-bold text-center" placeholder="ชื่อเล่น">
+                    <div><label class="text-xs text-slate-400 ml-2 mb-1 block">ชื่อเล่นในเกม</label><input id="p-nick" class="input-cyber text-lg font-bold text-center"></div>
                     <div class="h-px bg-slate-700 my-4"></div>
                     <h3 class="text-sm font-bold text-pink-400 uppercase tracking-wider mb-4"><i class="fa-solid fa-bank mr-2"></i> ข้อมูลรับเงิน</h3>
                     <select id="p-bank" class="input-cyber bg-[#0f172a] text-center font-bold cursor-pointer"><option value="KBANK">กสิกรไทย (KBANK)</option><option value="SCB">ไทยพาณิชย์ (SCB)</option><option value="TRUE">TrueMoney Wallet</option></select>
@@ -468,12 +526,13 @@
                 </div>
 
                 <div id="g-playing" class="hidden w-full max-w-md z-10 relative">
+                    
                     <div id="anime-result" class="anime-overlay hidden flex-col">
                         <div id="anime-text" class="anime-text mb-8 drop-shadow-[0_0_30px_rgba(236,72,153,0.8)]">WIN!</div>
                         <button onclick="document.getElementById('anime-result').classList.add('hidden')" class="bg-white text-black px-12 py-4 rounded-full font-bold hover:scale-105 transition shadow-[0_0_30px_rgba(255,255,255,0.5)] text-xl">ปิดหน้าต่าง</button>
                     </div>
 
-                    <div class="flex justify-between items-center mb-6 bg-slate-800/40 p-6 rounded-[2rem] border border-white/5 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-10 bg-slate-800/40 p-6 rounded-[2rem] border border-white/5 backdrop-blur-xl shadow-2xl relative overflow-hidden">
                         <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan-500 via-white to-pink-500 opacity-50"></div>
                         <div class="text-center w-1/3 relative z-10">
                             <div class="text-xs font-bold text-slate-400 mb-2 truncate px-1" id="p1-name">คุณ</div>
@@ -488,14 +547,6 @@
                         </div>
                     </div>
 
-                    <div id="game-chat-area" class="mb-4 chat-area">
-                        <div id="chat-container" class="chat-container"></div>
-                        <div class="flex gap-2">
-                            <input id="chat-msg" class="input-cyber py-2 px-4 flex-1 text-sm rounded-full" placeholder="พิมพ์ข้อความ...">
-                            <button onclick="Game.sendChat()" class="bg-pink-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-pink-500 transition"><i class="fa-solid fa-paper-plane"></i></button>
-                        </div>
-                    </div>
-
                     <div id="ready-section" class="text-center mb-8 hidden animate__animated animate__fadeInUp">
                         <p class="text-slate-400 mb-4 text-xs animate-pulse tracking-[0.2em] uppercase font-bold">กดพร้อมกันเพื่อเริ่มเกม</p>
                         <button id="btn-ready" onclick="Game.toggleReady()" class="w-full py-5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-2xl font-black text-2xl shadow-lg shadow-emerald-500/20 hover:scale-[1.02] transition active:scale-95 border-b-4 border-emerald-700 tracking-wider">
@@ -504,8 +555,8 @@
                     </div>
 
                     <div id="game-active-area" class="hidden animate__animated animate__zoomIn">
-                        <div class="text-center mb-4">
-                            <div id="status-text" class="text-3xl font-black text-white mb-2 drop-shadow-md font-display italic">START!</div>
+                        <div class="text-center mb-8">
+                            <div id="status-text" class="text-3xl font-black text-white mb-4 drop-shadow-md font-display italic">START!</div>
                             <div id="timer-box" class="w-full h-2 bg-slate-800 rounded-full overflow-hidden hidden shadow-inner">
                                 <div id="timer-bar" class="h-full bg-gradient-to-r from-pink-500 to-purple-500 w-full transition-all ease-linear duration-100"></div>
                             </div>
@@ -522,19 +573,34 @@
                         </div>
                         
                         <div id="area-penalty" class="hidden">
-                            <div class="text-center mb-4"><div class="inline-block bg-gradient-to-r from-pink-600 to-purple-600 px-6 py-2 rounded-full text-xs font-bold shadow-lg text-white tracking-wider border border-white/20" id="pen-role">ROLE</div></div>
-                            <div class="penalty-wrapper">
-                                <div class="penalty-scene">
-                                    <div class="goal-post"><div class="net"></div><div class="keeper" id="pen-keeper">🧤</div></div>
-                                    <div class="soccer-ball" id="pen-ball">⚽</div>
+                            <div class="text-center mb-6">
+                                <div class="inline-block bg-gradient-to-r from-pink-600 to-purple-600 px-6 py-2 rounded-full text-xs font-bold shadow-lg text-white tracking-wider border border-white/20" id="pen-role">
+                                    ROLE
                                 </div>
                             </div>
-                            <div class="penalty-controls">
-                                <button onclick="Game.movePenalty('left')" class="penalty-btn">ซ้าย</button>
-                                <button onclick="Game.movePenalty('center')" class="penalty-btn">กลาง</button>
-                                <button onclick="Game.movePenalty('right')" class="penalty-btn">ขวา</button>
+                            
+                            <div class="penalty-container">
+                                <div class="penalty-wrapper">
+                                    <div class="penalty-scene">
+                                        <div class="goal-post"><div class="net"></div><div class="keeper" id="pen-keeper">🧤</div></div>
+                                        <div class="soccer-ball" id="pen-ball">⚽</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="penalty-controls-overlay">
+                                    <div onclick="Game.movePenalty('left')" class="penalty-btn-round" title="Left">
+                                        <i class="fa-solid fa-arrow-left"></i> ซ้าย
+                                    </div>
+                                    <div onclick="Game.movePenalty('center')" class="penalty-btn-round" title="Center">
+                                        <i class="fa-solid fa-bullseye"></i> กลาง
+                                    </div>
+                                    <div onclick="Game.movePenalty('right')" class="penalty-btn-round" title="Right">
+                                        <i class="fa-solid fa-arrow-right"></i> ขวา
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -655,7 +721,7 @@
             }
         };
 
-        // --- GAME ENGINE (FIXED) ---
+        // --- GAME ENGINE ---
         const Game = {
             loadLobby: () => {
                 db.collection('rooms').onSnapshot(s => { 
@@ -691,7 +757,6 @@
                 currentRoomId = id; document.getElementById('view-game').classList.remove('hidden');
                 ['xo','rps','penalty'].forEach(t => document.getElementById(`area-${t}`)?.classList.add('hidden'));
                 document.getElementById('game-active-area').classList.add('hidden'); document.getElementById('anime-result').classList.add('hidden');
-                document.getElementById('game-chat-area').classList.remove('hidden'); // Show Chat
                 if(unsubRoom) unsubRoom(); 
                 unsubRoom = db.collection('rooms').doc(id).onSnapshot(snap => {
                     if(!snap.exists) { Game.leave(); return; }
@@ -701,13 +766,6 @@
                     const isFull = r.players.length === 2;
                     document.getElementById('g-waiting').classList.toggle('hidden', isFull);
                     document.getElementById('g-playing').classList.toggle('hidden', !isFull);
-                    
-                    // Chat Update
-                    if(r.chat) {
-                        const cBox = document.getElementById('chat-container');
-                        cBox.innerHTML = r.chat.map(c => `<div class="chat-msg ${c.uid===currentUser.uid?'msg-me':'msg-other'}"><b>${c.name}:</b> ${c.msg}</div>`).join('');
-                        cBox.scrollTop = cBox.scrollHeight;
-                    }
 
                     if(isFull) {
                         const p1 = r.players[0], p2 = r.players[1]; const isMeP1 = currentUser.uid === p1;
@@ -753,15 +811,6 @@
             showResult: (win) => { const el=document.getElementById('anime-result'), txt=document.getElementById('anime-text'); el.classList.remove('hidden'); el.style.display='flex'; txt.innerText = win ? "ชนะ!" : "แพ้!"; txt.style.color = win ? "#facc15" : "#f87171"; },
             handleTimer: (start, dur, cb) => { const box=document.getElementById('timer-box'), bar=document.getElementById('timer-bar'); box.classList.remove('hidden'); if(gameInterval) clearInterval(gameInterval); gameInterval = setInterval(() => { const diff=(Date.now()-start)/1000, rem=dur-diff; if(rem<=0) { clearInterval(gameInterval); gameInterval=null; cb(); } else { bar.style.width = (rem/dur)*100 + '%'; } }, 100); },
             
-            sendChat: () => {
-                const msg = document.getElementById('chat-msg').value;
-                if(!msg) return;
-                db.collection('rooms').doc(currentRoomId).update({
-                    chat: firebase.firestore.FieldValue.arrayUnion({ uid: currentUser.uid, name: userDoc.nickname, msg: msg, time: Date.now() })
-                });
-                document.getElementById('chat-msg').value = '';
-            },
-
             renderXO: (r) => {
                 const b=document.getElementById('xo-board'); b.innerHTML=''; const board=r.board||Array(9).fill(null);
                 const isTurn=r.currentTurn?r.currentTurn===currentUser.uid:currentUser.uid===r.players[0];
@@ -805,7 +854,18 @@
                     }
                 }
             },
-            movePenalty: (dir) => { sounds.click.play(); if(gameInterval) clearInterval(gameInterval); db.collection('rooms').doc(currentRoomId).update({[`moves.${currentUser.uid}`]: dir}); },
+            movePenalty: (dir) => { 
+                sounds.click.play(); 
+                if(gameInterval) clearInterval(gameInterval); 
+                
+                // Highlight Selected Button
+                document.querySelectorAll('.penalty-btn-round').forEach(el => el.classList.remove('selected'));
+                const btnMap = { 'left': 0, 'center': 1, 'right': 2 };
+                const btns = document.querySelectorAll('.penalty-btn-round');
+                if(btns[btnMap[dir]]) btns[btnMap[dir]].classList.add('selected');
+
+                db.collection('rooms').doc(currentRoomId).update({[`moves.${currentUser.uid}`]: dir}); 
+            },
             animatePenalty: (shotDir, saveDir) => {
                 const ball = document.getElementById('pen-ball'), keeper = document.getElementById('pen-keeper');
                 let ballX='-50%'; if(shotDir==='left') ballX='-150%'; if(shotDir==='right') ballX='50%'; ball.style.transform = `translate(${ballX}, -160px) scale(0.7)`;
